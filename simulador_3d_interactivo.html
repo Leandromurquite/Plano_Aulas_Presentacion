@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador 3D y Videojuego Institucional - Editor Sandbox de Aulas y Redes</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js & OrbitControls (Local offline first, CDN fallback) -->
+  <script src="lib/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
+  <script src="lib/OrbitControls.js"></script>
+  <script>
+    if (typeof THREE !== 'undefined' && typeof THREE.OrbitControls === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>');
+    }
+  </script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: system-ui, -apple-system, sans-serif; }
+    #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+    .glass { background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); }
+    .glass-light { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); }
+    .crosshair {
+      position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
+      transform: translate(-50%, -50%); pointer-events: none; z-index: 20;
+    }
+    .crosshair::before, .crosshair::after {
+      content: ''; position: absolute; background: rgba(255, 255, 255, 0.85); box-shadow: 0 0 4px rgba(0,0,0,0.8);
+    }
+    .crosshair::before { top: 4px; left: -6px; width: 22px; height: 2px; }
+    .crosshair::after { top: -6px; left: 4px; width: 2px; height: 22px; }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    /* Animated pulse for network APs */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.3; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .minimap-canvas { border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 h-full overflow-hidden">
+
+  <!-- 3D WEBGL CANVAS -->
+  <div id="canvas-container"></div>
+
+  <!-- CROSSHAIR FOR FPS MODE -->
+  <div id="fps-crosshair" class="crosshair hidden"></div>
+
+  <!-- TOP APP BAR -->
+  <header class="absolute top-3 left-4 right-4 z-20 flex items-center justify-between gap-3 pointer-events-none">
+    
+    <!-- Title & Status Badge -->
+    <div class="glass px-4 py-2 rounded-2xl flex items-center space-x-3 pointer-events-auto shadow-2xl shrink-0">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xl shadow-lg">
+        🏛️
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="font-bold text-sm tracking-wide text-white">Simulador 3D & Videojuego Escolar</h1>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">
+            WebGL 3D
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400">Editor Sandbox de Aulas y Red Wi-Fi (AP1 - AP16)</p>
+      </div>
+    </div>
+
+    <!-- Center Control Bar: Modes & Layers -->
+    <div class="glass p-1.5 rounded-2xl flex items-center space-x-2 pointer-events-auto shadow-2xl">
+      
+      <!-- Perspective: Orbit vs FPS Video Game -->
+      <div class="flex items-center bg-slate-900/90 rounded-xl p-1 border border-slate-700/60">
+        <button id="btn-mode-orbit" onclick="setCameraMode('orbit')" 
+          class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-blue-600 text-white shadow">
+          <i class="fa-solid fa-cube"></i>
+          <span>Vista 3D Orbital</span>
+        </button>
+        <button id="btn-mode-fps" onclick="setCameraMode('fps')" 
+          class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-gamepad"></i>
+          <span>Modo Videojuego (WASD)</span>
+        </button>
+      </div>
+
+      <!-- Layer View: Aulas vs Redes vs Híbrido -->
+      <div class="flex items-center bg-slate-900/90 rounded-xl p-1 border border-slate-700/60">
+        <button id="layer-btn-aulas" onclick="setLayerMode('aulas')" 
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-chalkboard-user text-rose-400"></i>
+          <span>Aulas</span>
+        </button>
+        <button id="layer-btn-redes" onclick="setLayerMode('redes')" 
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-wifi text-emerald-400"></i>
+          <span>Redes (16 APs)</span>
+        </button>
+        <button id="layer-btn-hybrid" onclick="setLayerMode('hybrid')" 
+          class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-cyan-600/40 text-cyan-200 border border-cyan-500/40">
+          <i class="fa-solid fa-layer-group text-cyan-300"></i>
+          <span>Híbrido</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Right Actions: Lighting, Add, Save, Help -->
+    <div class="glass px-3 py-1.5 rounded-2xl flex items-center space-x-2 pointer-events-auto shadow-2xl shrink-0">
+      
+      <!-- Lighting presets -->
+      <div class="flex items-center bg-slate-900/80 rounded-lg p-0.5 border border-slate-700/60 mr-1">
+        <button onclick="setLighting('day')" title="Día soleado" class="p-1.5 px-2 rounded text-xs text-amber-400 hover:bg-slate-800"><i class="fa-solid fa-sun"></i></button>
+        <button onclick="setLighting('sunset')" title="Atardecer cálido" class="p-1.5 px-2 rounded text-xs text-orange-400 hover:bg-slate-800"><i class="fa-solid fa-cloud-sun"></i></button>
+        <button onclick="setLighting('night')" title="Modo Nocturno con LEDs" class="p-1.5 px-2 rounded text-xs text-indigo-400 hover:bg-slate-800"><i class="fa-solid fa-moon"></i></button>
+      </div>
+
+      <!-- Add object button -->
+      <button onclick="toggleAddModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow">
+        <i class="fa-solid fa-plus"></i>
+        <span>Añadir</span>
+      </button>
+
+      <!-- Save Project -->
+      <button onclick="exportProjectJSON()" title="Exportar Proyecto en JSON" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs transition border border-slate-700">
+        <i class="fa-solid fa-floppy-disk"></i>
+      </button>
+
+      <!-- Load Project -->
+      <label title="Cargar Proyecto JSON" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs transition border border-slate-700 cursor-pointer">
+        <i class="fa-solid fa-folder-open"></i>
+        <input type="file" id="file-import" accept=".json" class="hidden" onchange="importProjectJSON(event)">
+      </label>
+
+      <!-- Screenshot HD -->
+      <button onclick="takeScreenshot()" title="Sacar Foto 3D en HD (.png)" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs transition shadow">
+        <i class="fa-solid fa-camera"></i>
+      </button>
+
+      <!-- Help / Controls -->
+      <button onclick="toggleHelpModal()" title="Ayuda y Controles" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs transition border border-slate-700">
+        <i class="fa-solid fa-circle-question"></i>
+      </button>
+
+    </div>
+
+  </header>
+
+  <!-- LEFT TOOLBAR: QUICK EDIT TOOLS -->
+  <aside class="absolute left-4 top-24 z-20 flex flex-col space-y-2 pointer-events-none">
+    
+    <div class="glass p-2 rounded-2xl flex flex-col space-y-2 pointer-events-auto shadow-2xl">
+      <button onclick="resetCameraView()" title="Centrar Vista General" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700">
+        <i class="fa-solid fa-arrows-to-dot"></i>
+      </button>
+      <button onclick="toggleTopDownView()" title="Vista Superior 2D/3D (Plano Cenital)" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700">
+        <i class="fa-solid fa-map"></i>
+      </button>
+      <button onclick="toggleWifiSignals()" title="Conmutar Cobertura Wi-Fi 3D" id="btn-toggle-wifi" class="w-10 h-10 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 flex items-center justify-center transition border border-emerald-500/40">
+        <i class="fa-solid fa-tower-broadcast"></i>
+      </button>
+      <button onclick="toggleRoofs()" title="Ocultar / Mostrar Techos" id="btn-toggle-roof" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700">
+        <i class="fa-solid fa-house"></i>
+      </button>
+      <div class="w-full h-px bg-slate-700 my-1"></div>
+      <button onclick="undoAction()" title="Restaurar Maqueta Oficial Original" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition border border-slate-700">
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- BOTTOM FPS / WALKTROUGH INSTRUCTION BAR -->
+  <div id="fps-hud" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 glass px-6 py-2.5 rounded-2xl flex items-center space-x-6 text-xs text-slate-300 pointer-events-none shadow-2xl hidden">
+    <div class="flex items-center space-x-1.5"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-white border border-slate-600">W A S D</span> <span>Caminar</span></div>
+    <div class="flex items-center space-x-1.5"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-white border border-slate-600">Shift</span> <span>Correr</span></div>
+    <div class="flex items-center space-x-1.5"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-white border border-slate-600">Espacio</span> <span>Saltar</span></div>
+    <div class="flex items-center space-x-1.5"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-white border border-slate-600">F</span> <span>Linterna</span></div>
+    <div class="flex items-center space-x-1.5"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-white border border-slate-600">E</span> <span>Inspeccionar</span></div>
+    <div class="flex items-center space-x-1.5 text-cyan-400 font-semibold"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono border border-cyan-500/40">Tab / Esc</span> <span>Modo Orbital</span></div>
+  </div>
+
+  <!-- ROOM HOVER / INTERACTION TOOLTIP -->
+  <div id="hover-tooltip" class="absolute z-20 pointer-events-none hidden glass px-3.5 py-2 rounded-xl text-xs shadow-2xl border border-cyan-500/30">
+    <div class="font-bold text-white flex items-center space-x-1.5">
+      <span id="tooltip-icon">🏛️</span>
+      <span id="tooltip-title">Aula</span>
+    </div>
+    <p id="tooltip-sub" class="text-[11px] text-cyan-300">Detalles...</p>
+  </div>
+
+  <!-- RIGHT INSPECTOR SIDEBAR (OPENS WHEN OBJECT IS SELECTED) -->
+  <aside id="inspector-panel" class="absolute right-4 top-24 bottom-24 w-80 z-20 glass rounded-2xl p-4 flex flex-col shadow-2xl pointer-events-auto hidden overflow-hidden border border-slate-700/80">
+    
+    <!-- Inspector Header -->
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div class="flex items-center space-x-2">
+        <span id="insp-badge-icon" class="text-xl">🏛️</span>
+        <div>
+          <h2 id="insp-header-title" class="font-bold text-sm text-white leading-tight">Propiedades</h2>
+          <span id="insp-type-badge" class="text-[10px] text-cyan-400 font-mono">Aula Seleccionada</span>
+        </div>
+      </div>
+      <button onclick="deselectObject()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Inspector Content (Scrollable) -->
+    <div class="flex-1 overflow-y-auto py-3 space-y-4 pr-1 text-xs">
+      
+      <!-- Basic Info -->
+      <div class="space-y-2">
+        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Nombre / Identificador</label>
+        <input type="text" id="insp-name" onchange="updateSelectedObject()" 
+          class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-cyan-500">
+      </div>
+
+      <!-- Category & Theme Color -->
+      <div id="insp-category-group" class="space-y-2">
+        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Área / Categoría</label>
+        <select id="insp-category" onchange="changeCategoryColor()" 
+          class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-cyan-500">
+          <option value="Tecnología">💻 Tecnología / Computación</option>
+          <option value="Salud">🏥 Salud / Enfermería</option>
+          <option value="Seguridad">🦺 Higiene y Seguridad</option>
+          <option value="Sociales">⚖️ Sociales / Jurídica</option>
+          <option value="Gastronomía">🍳 Gastronomía / Cocina</option>
+          <option value="Deportes">🏃 Preparación Física</option>
+          <option value="Administración">🏛️ Administración / Rectoría</option>
+          <option value="Servicios">🔧 Sanitarios / Kiosco / Servicios</option>
+          <option value="Pasillos">🚶 Pasillo / Conector</option>
+          <option value="Libre">✨ Espacio Libre</option>
+        </select>
+      </div>
+
+      <!-- Dimensions & Position -->
+      <div class="space-y-2">
+        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Dimensiones (Metros)</label>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <span class="text-[10px] text-slate-400">Ancho (X)</span>
+            <input type="number" id="insp-dim-w" step="0.5" onchange="updateSelectedDimensions()" 
+              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400">Largo (Z)</span>
+            <input type="number" id="insp-dim-d" step="0.5" onchange="updateSelectedDimensions()" 
+              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400">Alto (Y)</span>
+            <input type="number" id="insp-dim-h" step="0.2" onchange="updateSelectedDimensions()" 
+              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+          </div>
+        </div>
+      </div>
+
+      <!-- Coordinate Positions -->
+      <div class="space-y-2">
+        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Posición en Planta</label>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <span class="text-[10px] text-slate-400">Coord X</span>
+            <input type="number" id="insp-pos-x" step="0.5" onchange="updateSelectedPosition()" 
+              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400">Coord Z</span>
+            <input type="number" id="insp-pos-z" step="0.5" onchange="updateSelectedPosition()" 
+              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+          </div>
+        </div>
+      </div>
+
+      <!-- Shifts Assignments (Mañana, Tarde, Noche) -->
+      <div id="insp-shifts-group" class="space-y-2.5 pt-2 border-t border-slate-800">
+        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider flex items-center justify-between">
+          <span>Turnos Académicos</span>
+          <span class="text-[9px] text-cyan-400 font-normal">Editable</span>
+        </label>
+        
+        <div class="space-y-1.5">
+          <div class="flex items-center space-x-1.5">
+            <span class="w-5 h-5 rounded bg-blue-600/30 text-blue-300 flex items-center justify-center font-bold text-[10px]">M</span>
+            <input type="text" id="insp-shift-m" placeholder="Turno Mañana" onchange="updateSelectedShifts()"
+              class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <span class="w-5 h-5 rounded bg-amber-600/30 text-amber-300 flex items-center justify-center font-bold text-[10px]">T</span>
+            <input type="text" id="insp-shift-t" placeholder="Turno Tarde" onchange="updateSelectedShifts()"
+              class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <span class="w-5 h-5 rounded bg-purple-600/30 text-purple-300 flex items-center justify-center font-bold text-[10px]">N</span>
+            <input type="text" id="insp-shift-n" placeholder="Turno Noche" onchange="updateSelectedShifts()"
+              class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
+          </div>
+        </div>
+      </div>
+
+      <!-- Network specifics (If AP or Network device) -->
+      <div id="insp-net-group" class="space-y-2 pt-2 border-t border-slate-800 hidden">
+        <label class="font-bold text-emerald-400 block text-[11px] uppercase tracking-wider">Parámetros Telecom (Anexo 1)</label>
+        <div class="space-y-1.5">
+          <div>
+            <span class="text-[10px] text-slate-400">IP de Gestión</span>
+            <input type="text" id="insp-net-ip" onchange="updateSelectedNet()" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white font-mono text-xs">
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400">Puerto Switch / VLAN</span>
+            <input type="text" id="insp-net-port" onchange="updateSelectedNet()" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-xs">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Inspector Actions (Duplicate, Delete) -->
+    <div class="pt-3 border-t border-slate-800 flex items-center space-x-2">
+      <button onclick="duplicateSelectedObject()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold text-xs flex items-center justify-center space-x-1.5 transition border border-slate-700">
+        <i class="fa-solid fa-clone"></i>
+        <span>Duplicar</span>
+      </button>
+      <button onclick="deleteSelectedObject()" class="flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-semibold text-xs flex items-center justify-center space-x-1.5 transition shadow">
+        <i class="fa-solid fa-trash-can"></i>
+        <span>Eliminar</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- BOTTOM-RIGHT RADAR MINIMAP -->
+  <div class="absolute right-4 bottom-4 z-20 pointer-events-auto flex flex-col items-end">
+    <div class="relative">
+      <canvas id="minimap" width="220" height="130" class="minimap-canvas bg-slate-900/90"></canvas>
+      <div class="absolute bottom-1.5 left-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest pointer-events-none">
+        Radar 2D • Vista Superior
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AÑADIR ELEMENTO -->
+  <div id="modal-add" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="glass w-full max-w-md p-6 rounded-3xl shadow-2xl border border-slate-700 space-y-4">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+          <h3 class="font-bold text-base text-white">Añadir Nuevo Elemento 3D</h3>
+        </div>
+        <button onclick="toggleAddModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        
+        <!-- Add Classroom -->
+        <button onclick="addNewClassroom()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-blue-500 text-left transition space-y-1.5 group">
+          <div class="w-8 h-8 rounded-xl bg-blue-600/30 text-blue-400 flex items-center justify-center group-hover:scale-110 transition">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <div class="font-bold text-xs text-white">Nueva Aula</div>
+          <div class="text-[10px] text-slate-400">Espacio lectivo con muros, puerta y pupitres.</div>
+        </button>
+
+        <!-- Add Access Point -->
+        <button onclick="addNewAP()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500 text-left transition space-y-1.5 group">
+          <div class="w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition">
+            <i class="fa-solid fa-wifi"></i>
+          </div>
+          <div class="font-bold text-xs text-white">Punto de Acceso (AP)</div>
+          <div class="text-[10px] text-slate-400">Domo Wi-Fi de techo con LED y cobertura.</div>
+        </button>
+
+        <!-- Add Rack / Switch -->
+        <button onclick="addNewRack()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500 text-left transition space-y-1.5 group">
+          <div class="w-8 h-8 rounded-xl bg-cyan-600/30 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition">
+            <i class="fa-solid fa-server"></i>
+          </div>
+          <div class="font-bold text-xs text-white">Rack / Switch Core</div>
+          <div class="text-[10px] text-slate-400">Gabinete 42U o Switch de pared.</div>
+        </button>
+
+        <!-- Add Corridor / Room -->
+        <button onclick="addNewCorridor()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-amber-500 text-left transition space-y-1.5 group">
+          <div class="w-8 h-8 rounded-xl bg-amber-600/30 text-amber-400 flex items-center justify-center group-hover:scale-110 transition">
+            <i class="fa-solid fa-shoe-prints"></i>
+          </div>
+          <div class="font-bold text-xs text-white">Pasillo / Galería</div>
+          <div class="text-[10px] text-slate-400">Zona de circulación o patio abierto.</div>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: AYUDA Y CONTROLES -->
+  <div id="modal-help" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="glass w-full max-w-lg p-6 rounded-3xl shadow-2xl border border-slate-700 space-y-4">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+            <i class="fa-solid fa-gamepad"></i>
+          </div>
+          <h3 class="font-bold text-base text-white">Guía de Controles y Funcionalidades</h3>
+        </div>
+        <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300">
+        
+        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 space-y-2">
+          <div class="font-bold text-white flex items-center space-x-1.5">
+            <span class="text-base">🎮</span>
+            <span>Modo Videojuego en Primera Persona (Walkthrough)</span>
+          </div>
+          <ul class="space-y-1 pl-4 list-disc text-slate-400">
+            <li><b class="text-white">W, A, S, D</b>: Caminar por los pasillos y entrar a las aulas.</li>
+            <li><b class="text-white">Shift</b>: Correr a mayor velocidad.</li>
+            <li><b class="text-white">Ratón</b>: Mirar en 360 grados (haz clic en la pantalla para capturar el cursor).</li>
+            <li><b class="text-white">Espacio</b>: Salto / Elevarse.</li>
+            <li><b class="text-white">F</b>: Encender / apagar linterna.</li>
+            <li><b class="text-white">Esc / Tab</b>: Salir al modo orbital con cursor libre.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 space-y-2">
+          <div class="font-bold text-white flex items-center space-x-1.5">
+            <span class="text-base">🛠️</span>
+            <span>Modo Editor Sandbox 3D</span>
+          </div>
+          <ul class="space-y-1 pl-4 list-disc text-slate-400">
+            <li><b class="text-white">Seleccionar</b>: Haz clic sobre cualquier aula o equipo para abrir el panel de propiedades lateral.</li>
+            <li><b class="text-white">Modificar</b>: Cambia nombres, turnos, categorías de carrera, dimensiones o posiciones en tiempo real.</li>
+            <li><b class="text-white">Añadir</b>: Usa el botón <b class="text-emerald-400">+ Añadir</b> para incorporar nuevas aulas, APs o racks.</li>
+            <li><b class="text-white">Eliminar</b>: Selecciona un aula y pulsa <b class="text-rose-400">Eliminar</b> o la tecla <b class="text-white">Supr</b>.</li>
+            <li><b class="text-white">Exportar / Cargar</b>: Guarda tu maqueta en un archivo JSON o toma capturas HD para imprimir.</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- THREE.JS LOGIC & SCENE SETUP -->
+  <script>
+    // -------------------------------------------------------------
+    // 1. DATA MODEL (PRELOADED FROM OFFICIAL LAYOUT)
+    // -------------------------------------------------------------
+    const CATEGORIES = {
+      "Tecnología": { color: 0x6366f1, hex: "#6366f1", icon: "💻", name: "Tecnología" },
+      "Salud": { color: 0xf43f5e, hex: "#f43f5e", icon: "🏥", name: "Salud" },
+      "Seguridad": { color: 0xf59e0b, hex: "#f59e0b", icon: "🦺", name: "Higiene y Seguridad" },
+      "Sociales": { color: 0xa855f7, hex: "#a855f7", icon: "⚖️", name: "Sociales / Jurídica" },
+      "Gastronomía": { color: 0xf97316, hex: "#f97316", icon: "🍳", name: "Gastronomía" },
+      "Deportes": { color: 0x22c55e, hex: "#22c55e", icon: "🏃", name: "Deportes" },
+      "Financiera": { color: 0x06b6d4, hex: "#06b6d4", icon: "💼", name: "Finanzas" },
+      "Administración": { color: 0x475569, hex: "#475569", icon: "🏛️", name: "Administración" },
+      "Servicios": { color: 0x64748b, hex: "#64748b", icon: "🔧", name: "Servicios" },
+      "Pasillos": { color: 0x94a3b8, hex: "#94a3b8", icon: "🚶", name: "Pasillos" },
+      "Libre": { color: 0xe2e8f0, hex: "#e2e8f0", icon: "✨", name: "Libre" }
+    };
+
+    // Default Rooms translated to 3D world (Center at 0,0,0)
+    // 1 unit in 3D = 1 meter. 2D scale: 10 pixels = 1 meter.
+    // Center offset: X0 = 625, Z0 = 335.
+    const to3DX = (x, w) => ((x + w/2) - 625) * 0.1;
+    const to3DZ = (y, h) => ((y + h/2) - 335) * 0.1;
+    const to3DW = (w) => w * 0.1;
+    const to3DD = (h) => h * 0.1;
+
+    let initialRoomsData = [
+      // ALA NORTE
+      { id: "admin_deposito", num: "Depósito", x: 35, y: 28, w: 115, h: 147, cat: "Servicios", icon: "📦", m: "Depósito Gral.", t: "Depósito Gral.", n: "Depósito Gral." },
+      { id: "admin_cocina_inst", num: "Cocina", x: 150, y: 28, w: 165, h: 147, cat: "Gastronomía", icon: "🍳", m: "Cocina y Buffet", t: "Cocina y Buffet", n: "Cocina y Buffet" },
+      { id: "aula_21", num: "Aula 21", x: 315, y: 28, w: 105, h: 147, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 2°", t: "Hig. y Seg. 2°", n: "Hig. y Seg. 2°" },
+      { id: "aula_22", num: "Aula 22", x: 420, y: 28, w: 105, h: 147, cat: "Libre", icon: "✨", m: "Disponible", t: "Disponible", n: "Disponible" },
+      { id: "aula_23", num: "Aula 23", x: 525, y: 28, w: 105, h: 147, cat: "Deportes", icon: "🏃", m: "Prep. Física 2°", t: "Prep. Física 2°", n: "Prep. Física 2°" },
+      { id: "admin_taller", num: "Taller Prácticas", x: 630, y: 28, w: 230, h: 147, cat: "Tecnología", icon: "⚙️", m: "Lab. Informática", t: "Lab. Informática", n: "Lab. Informática" },
+      { id: "aula_10", num: "Aula 10", x: 860, y: 28, w: 130, h: 147, cat: "Salud", icon: "🏥", m: "Enfermería 3°", t: "Enfermería 3°", n: "Enfermería 3°" },
+      { id: "aula_9", num: "Aula 9", x: 990, y: 28, w: 175, h: 147, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 1° C", t: "Hig. y Seg. 1° C", n: "Hig. y Seg. 1° C" },
+
+      // ALA OESTE
+      { id: "aula_17", num: "Aula 17", x: 35, y: 175, w: 115, h: 155, cat: "Salud", icon: "🏥", m: "Enfermería 2°", t: "Enfermería 2°", n: "Enfermería 2°" },
+      { id: "aula_18", num: "Aula 18", x: 35, y: 330, w: 115, h: 150, cat: "Sociales", icon: "⚖️", m: "Jurídica 1°", t: "Jurídica 1°", n: "Jurídica 1°" },
+      { id: "aula_19", num: "Aula 19", x: 35, y: 480, w: 115, h: 160, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 2°", t: "Hig. y Seg. 2°", n: "Hig. y Seg. 2°" },
+
+      // AULAS INTERIORES OESTE
+      { id: "aula_16", num: "Aula 16", x: 205, y: 175, w: 115, h: 145, cat: "Tecnología", icon: "💻", m: "Disponible", t: "Software 1°", n: "Software 1°" },
+      { id: "aula_15", num: "Aula 15", x: 205, y: 320, w: 115, h: 145, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 3°", t: "Hig. y Seg. 3°", n: "Hig. y Seg. 3°" },
+
+      // BLOQUE CENTRAL SUR
+      { id: "admin_banos_oeste", num: "Baños Oeste", x: 320, y: 360, w: 85, h: 105, cat: "Servicios", icon: "🚻", m: "Sanitarios", t: "Sanitarios", n: "Sanitarios" },
+      { id: "admin_direccion", num: "Rectoría", x: 405, y: 360, w: 130, h: 105, cat: "Administración", icon: "🏛️", m: "Dirección Gral.", t: "Dirección Gral.", n: "Dirección Gral." },
+      { id: "admin_profesores", num: "Sala Profesores", x: 585, y: 360, w: 135, h: 105, cat: "Administración", icon: "👥", m: "Sala Docentes", t: "Sala Docentes", n: "Sala Docentes" },
+      { id: "aula_12", num: "Aula 12", x: 720, y: 360, w: 215, h: 105, cat: "Gastronomía", icon: "🍳", m: "Cocina 1°", t: "Cocina 1°", n: "Cocina 1°" },
+
+      // ALA ESTE
+      { id: "aula_11", num: "Aula 11", x: 870, y: 175, w: 120, h: 185, cat: "Gastronomía", icon: "🍳", m: "Cocina 2°", t: "Cocina 2°", n: "Cocina 2°" },
+      { id: "aula_8", num: "Aula 8", x: 1045, y: 175, w: 120, h: 75, cat: "Sociales", icon: "⚖️", m: "Jurídica 3°", t: "Jurídica 3°", n: "Jurídica 3°" },
+      { id: "aula_7", num: "Aula 7", x: 1045, y: 255, w: 120, h: 80, cat: "Tecnología", icon: "💻", m: "Pedagogía 7", t: "Pedagogía 7", n: "Pedagogía 7" },
+      { id: "aula_6", num: "Aula 6", x: 1045, y: 340, w: 120, h: 80, cat: "Deportes", icon: "🏃", m: "Prep. Física 3°", t: "Prep. Física 3°", n: "Prep. Física 3°" },
+      { id: "aula_5", num: "Aula 5", x: 1045, y: 425, w: 120, h: 80, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 1° B", t: "Hig. y Seg. 1° B", n: "Hig. y Seg. 1° B" },
+
+      // FILA SUR
+      { id: "aula_20", num: "Aula 20", x: 150, y: 510, w: 180, h: 130, cat: "Deportes", icon: "🏃", m: "Prep. Física 1°", t: "Prep. Física 1°", n: "Prep. Física 1°" },
+      { id: "admin_banos_sur", num: "Baños Sur", x: 330, y: 510, w: 95, h: 130, cat: "Servicios", icon: "🚻", m: "Sanitarios", t: "Sanitarios", n: "Sanitarios" },
+      { id: "admin_preceptoria", num: "Preceptoría", x: 425, y: 510, w: 120, h: 130, cat: "Administración", icon: "📋", m: "Preceptoría Gral.", t: "Preceptoría Gral.", n: "Preceptoría Gral." },
+      { id: "admin_kiosco", num: "Kiosco", x: 590, y: 510, w: 70, h: 130, cat: "Servicios", icon: "☕", m: "Buffet Central", t: "Buffet Central", n: "Buffet Central" },
+      { id: "aula_1", num: "Aula 1", x: 660, y: 510, w: 110, h: 130, cat: "Gastronomía", icon: "🍳", m: "Cocina 3°", t: "Cocina 3°", n: "Cocina 3°" },
+      { id: "aula_2", num: "Aula 2", x: 770, y: 510, w: 110, h: 130, cat: "Sociales", icon: "⚖️", m: "Jurídica 2°", t: "Jurídica 2°", n: "Jurídica 2°" },
+      { id: "aula_3", num: "Aula 3", x: 880, y: 510, w: 110, h: 130, cat: "Sociales", icon: "⚖️", m: "Periodismo 1°", t: "Periodismo 1°", n: "Periodismo 1°" },
+      { id: "aula_4", num: "Aula 4", x: 990, y: 510, w: 175, h: 130, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 1° A", t: "Hig. y Seg. 1° A", n: "Hig. y Seg. 1° A" },
+
+      // PATIO CENTRAL
+      { id: "patio_central", num: "Patio Central", x: 315, y: 220, w: 545, h: 120, cat: "Libre", icon: "🌳", isPatio: true }
+    ];
+
+    let initialAPsData = [
+      { id: "AP1", name: "AP1", room: "Aula 1", x: 705, y: 555, ip: "192.168.100.11", port: "Sw POE P1" },
+      { id: "AP2", name: "AP2", room: "Aula 2", x: 820, y: 555, ip: "192.168.100.12", port: "Sw POE P2" },
+      { id: "AP3", name: "AP3", room: "Aula 4", x: 1050, y: 560, ip: "192.168.100.13", port: "Sw POE P3" },
+      { id: "AP4", name: "AP4", room: "Aula 6", x: 1045, y: 380, ip: "192.168.100.14", port: "Sw POE P4" },
+      { id: "AP5", name: "AP5", room: "Aula 8", x: 1045, y: 215, ip: "192.168.100.15", port: "Sw POE P5" },
+      { id: "AP6", name: "AP6", room: "Aula 9", x: 990, y: 115, ip: "192.168.100.16", port: "Sw POE P6" },
+      { id: "AP7", name: "AP7", room: "Aula 11", x: 930, y: 285, ip: "192.168.100.17", port: "Sw POE P7" },
+      { id: "AP8", name: "AP8", room: "Aula 12", x: 860, y: 415, ip: "192.168.100.18", port: "Sw POE P8" },
+      { id: "AP9", name: "AP9", room: "Taller Prácticas", x: 745, y: 80, ip: "192.168.100.19", port: "Sw POE P9" },
+      { id: "AP10", name: "AP10", room: "Rectoría", x: 485, y: 375, ip: "192.168.100.20", port: "Sw P16 P10" },
+      { id: "AP11", name: "AP11", room: "Aula 16", x: 240, y: 275, ip: "192.168.100.21", port: "Sw P16 P11" },
+      { id: "AP12", name: "AP12", room: "Cocina", x: 150, y: 85, ip: "192.168.100.22", port: "Sw P16 P12" },
+      { id: "AP13", name: "AP13", room: "Aula 17", x: 140, y: 245, ip: "192.168.100.23", port: "Sw P16 P13" },
+      { id: "AP14", name: "AP14", room: "Aula 20", x: 150, y: 550, ip: "192.168.100.24", port: "Sw POE P14" },
+      { id: "AP15", name: "AP15", room: "Pasillo Sur", x: 365, y: 487, ip: "192.168.100.25", port: "Sw POE P15" },
+      { id: "AP16", name: "AP16", room: "Preceptoría", x: 535, y: 575, ip: "192.168.100.26", port: "Sw P8 P16" }
+    ];
+
+    // Cable segments from official Anexo 1
+    const RED_CABLES = [
+      [(605, 520), (605, 485), (990, 485)],
+      [(705, 485), (705, 555)],
+      [(820, 485), (820, 555)],
+      [(990, 485), (1050, 485), (1050, 560)],
+      [(990, 485), (990, 175)],
+      [(990, 380), (1045, 380)],
+      [(990, 215), (1045, 215)],
+      [(990, 285), (930, 285)],
+      [(990, 175), (990, 115)],
+      [(990, 175), (745, 175), (745, 80)],
+      [(860, 485), (860, 415)],
+      [(605, 485), (150, 485)],
+      [(535, 485), (535, 375), (485, 375)],
+      [(365, 485), (365, 487)],
+      [(535, 485), (535, 575)],
+      [(150, 485), (150, 550)],
+      [(150, 485), (150, 85)],
+      [(150, 245), (140, 245)],
+      [(150, 275), (240, 275)],
+      [(150, 85), (150, 85)]
+    ];
+
+    const BLUE_CABLES = [
+      [(465, 365), (560, 365), (560, 510), (605, 510), (605, 520)],
+      [(560, 510), (480, 510), (480, 540)],
+      [(560, 350), (840, 350)]
+    ];
+
+    // State Management
+    let currentRooms = JSON.parse(localStorage.getItem('saved_school_rooms_3d')) || initialRoomsData;
+    let currentAPs = JSON.parse(localStorage.getItem('saved_school_aps_3d')) || initialAPsData;
+
+    let selectedObject = null;
+    let currentCameraMode = 'orbit'; // 'orbit' or 'fps'
+    let currentLayerMode = 'hybrid'; // 'aulas', 'redes', 'hybrid'
+    let showWifiSignals = true;
+    let showRoofs = false;
+
+    // -------------------------------------------------------------
+    // 2. THREE.JS ENGINE SETUP
+    // -------------------------------------------------------------
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0f172a);
+    scene.fog = new THREE.FogExp2(0x0f172a, 0.005);
+
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 75, 75);
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+      container.appendChild(renderer.domElement);
+    } catch(err) {
+      document.body.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#0f172a; color:#f8fafc; font-family:system-ui,sans-serif; text-align:center; padding:24px;">
+          <div style="font-size:48px; margin-bottom:12px;">🎮</div>
+          <h1 style="font-size:22px; font-weight:bold; color:#f43f5e; margin-bottom:8px;">Aceleración Gráfica 3D (WebGL) Requerida</h1>
+          <p style="max-width:540px; color:#94a3b8; font-size:14px; line-height:1.6;">Tu navegador no pudo iniciar el motor WebGL 3D. Para activarlo fácilmente en Google Chrome o Edge:</p>
+          <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; padding:16px; margin:20px 0; text-align:left; max-width:480px;">
+            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">1. Abre <b>Configuración</b> en tu navegador.</p>
+            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">2. Busca <b>"hardware"</b> o entra en <b>Sistema y rendimiento</b>.</p>
+            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">3. Activa <b>"Usar aceleración de hardware cuando esté disponible"</b>.</p>
+            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">4. Cierra y vuelve a abrir el navegador.</p>
+          </div>
+        </div>
+      `;
+      throw err;
+    }
+
+    // Orbit Controls
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.05;
+    orbitControls.maxPolarAngle = Math.PI / 2 - 0.05;
+    orbitControls.minDistance = 5;
+    orbitControls.maxDistance = 250;
+    orbitControls.target.set(0, 0, 0);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfffaed, 0.9);
+    sunLight.position.set(40, 80, 50);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 10;
+    sunLight.shadow.camera.far = 250;
+    const shadowD = 75;
+    sunLight.shadow.camera.left = -shadowD;
+    sunLight.shadow.camera.right = shadowD;
+    sunLight.shadow.camera.top = shadowD;
+    sunLight.shadow.camera.bottom = -shadowD;
+    sunLight.shadow.bias = -0.0005;
+    scene.add(sunLight);
+
+    // Flashlight for player
+    const playerLight = new THREE.SpotLight(0xffffff, 0, 25, Math.PI / 6, 0.4, 1);
+    camera.add(playerLight);
+    playerLight.position.set(0, 0, 0);
+    playerLight.target = camera;
+    scene.add(camera);
+
+    // Ground Plane & Outdoor Grid
+    const groundGeo = new THREE.PlaneGeometry(300, 300);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.9, metalness: 0.1 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.05;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const gridHelper = new THREE.GridHelper(200, 40, 0x1e293b, 0x0f172a);
+    gridHelper.position.y = 0.01;
+    scene.add(gridHelper);
+
+    // Groups
+    const schoolGroup = new THREE.Group();
+    scene.add(schoolGroup);
+
+    const telecomGroup = new THREE.Group();
+    scene.add(telecomGroup);
+
+    const labelsGroup = new THREE.Group();
+    scene.add(labelsGroup);
+
+    // -------------------------------------------------------------
+    // 3. HIGH-RES CANVAS TEXTURE GENERATOR FOR 3D ROOM SIGNS
+    // -------------------------------------------------------------
+    function createSignTexture(text, icon, category, w = 512, h = 256) {
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+
+      // Rounded dark navy background
+      ctx.fillStyle = '#0f172a';
+      ctx.roundRect(0, 0, w, h, 28);
+      ctx.fill();
+
+      // Border with category color
+      ctx.strokeStyle = CATEGORIES[category]?.hex || '#38bdf8';
+      ctx.lineWidth = 14;
+      ctx.roundRect(7, 7, w - 14, h - 14, 22);
+      ctx.stroke();
+
+      // Icon & Room Name
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 64px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${icon} ${text}`, w / 2, h / 2 - 24);
+
+      // Category Subtitle Pill
+      ctx.fillStyle = CATEGORIES[category]?.hex || '#38bdf8';
+      ctx.font = 'bold 36px system-ui, sans-serif';
+      ctx.fillText(category.toUpperCase(), w / 2, h / 2 + 48);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.anisotropy = 8;
+      return texture;
+    }
+
+    // -------------------------------------------------------------
+    // 4. BUILD 3D ARCHITECTURE & ROOMS
+    // -------------------------------------------------------------
+    const roomMeshes = [];
+    const apMeshes = [];
+
+    function rebuildScene() {
+      // Clear old meshes
+      while (schoolGroup.children.length > 0) {
+        const obj = schoolGroup.children[0];
+        schoolGroup.remove(obj);
+      }
+      while (telecomGroup.children.length > 0) {
+        const obj = telecomGroup.children[0];
+        telecomGroup.remove(obj);
+      }
+      while (labelsGroup.children.length > 0) {
+        const obj = labelsGroup.children[0];
+        labelsGroup.remove(obj);
+      }
+      roomMeshes.length = 0;
+      apMeshes.length = 0;
+
+      // Outer School Perimeter Floor
+      const baseFloorGeo = new THREE.BoxGeometry(122, 0.4, 68);
+      const baseFloorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+      const baseFloor = new THREE.Mesh(baseFloorGeo, baseFloorMat);
+      baseFloor.position.set(0, -0.2, 0);
+      baseFloor.receiveShadow = true;
+      schoolGroup.add(baseFloor);
+
+      // Classrooms & Corridors
+      currentRooms.forEach((r, idx) => {
+        const w = to3DW(r.w);
+        const d = to3DD(r.h);
+        const h = r.h_val || 3.4;
+        const posX = to3DX(r.x, r.w);
+        const posZ = to3DZ(r.y, r.h);
+
+        const roomNode = new THREE.Group();
+        roomNode.position.set(posX, 0, posZ);
+        roomNode.userData = { isRoom: true, data: r, index: idx };
+
+        // 1. Floor
+        const isPatio = r.isPatio;
+        const catColor = CATEGORIES[r.cat]?.color || 0x475569;
+        
+        let floorColor = isPatio ? 0x15803d : 0x0f172a;
+        if (!isPatio && r.cat === "Pasillos") floorColor = 0x1e293b;
+
+        const floorGeo = new THREE.BoxGeometry(w - 0.2, 0.1, d - 0.2);
+        const floorMat = new THREE.MeshStandardMaterial({
+          color: floorColor,
+          roughness: isPatio ? 0.9 : 0.4,
+          metalness: 0.1
+        });
+        const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+        floorMesh.position.y = 0.05;
+        floorMesh.receiveShadow = true;
+        roomNode.add(floorMesh);
+
+        // Patio Fountain & Trees if Patio Central
+        if (isPatio) {
+          const fountainGeo = new THREE.CylinderGeometry(4, 4.5, 0.6, 24);
+          const fountainMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.2, metalness: 0.8 });
+          const fountain = new THREE.Mesh(fountainGeo, fountainMat);
+          fountain.position.set(0, 0.3, 0);
+          roomNode.add(fountain);
+
+          // Water surface
+          const waterGeo = new THREE.CylinderGeometry(3.6, 3.6, 0.1, 24);
+          const waterMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.8 });
+          const water = new THREE.Mesh(waterGeo, waterMat);
+          water.position.set(0, 0.65, 0);
+          roomNode.add(water);
+
+          // Trees / Planters
+          [-14, -7, 7, 14].forEach(tx => {
+            const potGeo = new THREE.CylinderGeometry(1.2, 0.9, 0.8, 12);
+            const potMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+            const pot = new THREE.Mesh(potGeo, potMat);
+            pot.position.set(tx, 0.4, 0);
+            roomNode.add(pot);
+
+            const foliageGeo = new THREE.DodecahedronGeometry(1.5, 1);
+            const foliageMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, roughness: 0.9 });
+            const foliage = new THREE.Mesh(foliageGeo, foliageMat);
+            foliage.position.set(tx, 1.8, 0);
+            roomNode.add(foliage);
+          });
+        }
+
+        // 2. Walls
+        if (!isPatio) {
+          const wallThick = 0.25;
+          const wallMat = new THREE.MeshStandardMaterial({
+            color: 0x334155,
+            roughness: 0.7,
+            metalness: 0.1
+          });
+
+          const trimMat = new THREE.MeshStandardMaterial({
+            color: catColor,
+            roughness: 0.5,
+            metalness: 0.2
+          });
+
+          // North Wall
+          const wNorth = new THREE.Mesh(new THREE.BoxGeometry(w, h, wallThick), wallMat);
+          wNorth.position.set(0, h/2, -d/2);
+          wNorth.castShadow = true; wNorth.receiveShadow = true;
+          roomNode.add(wNorth);
+
+          // South Wall with Door cutout
+          const doorW = 1.4;
+          const leftW = Math.max((w - doorW) / 2, 0.5);
+          const wSouthL = new THREE.Mesh(new THREE.BoxGeometry(leftW, h, wallThick), wallMat);
+          wSouthL.position.set(-w/2 + leftW/2, h/2, d/2);
+          wSouthL.castShadow = true; wSouthL.receiveShadow = true;
+          roomNode.add(wSouthL);
+
+          const wSouthR = new THREE.Mesh(new THREE.BoxGeometry(leftW, h, wallThick), wallMat);
+          wSouthR.position.set(w/2 - leftW/2, h/2, d/2);
+          wSouthR.castShadow = true; wSouthR.receiveShadow = true;
+          roomNode.add(wSouthR);
+
+          // Door lintel
+          const wDoorLintel = new THREE.Mesh(new THREE.BoxGeometry(doorW, h - 2.2, wallThick), wallMat);
+          wDoorLintel.position.set(0, 2.2 + (h - 2.2)/2, d/2);
+          roomNode.add(wDoorLintel);
+
+          // West Wall
+          const wWest = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h, d), wallMat);
+          wWest.position.set(-w/2, h/2, 0);
+          wWest.castShadow = true; wWest.receiveShadow = true;
+          roomNode.add(wWest);
+
+          // East Wall
+          const wEast = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h, d), wallMat);
+          wEast.position.set(w/2, h/2, 0);
+          wEast.castShadow = true; wEast.receiveShadow = true;
+          roomNode.add(wEast);
+
+          // Top Accent Trim Border
+          const trimGeo = new THREE.BoxGeometry(w + 0.1, 0.15, d + 0.1);
+          const trimMesh = new THREE.Mesh(trimGeo, trimMat);
+          trimMesh.position.set(0, h + 0.05, 0);
+          roomNode.add(trimMesh);
+
+          // 3. Furniture
+          if (w > 4 && d > 4) {
+            // Whiteboard on North Wall
+            const boardGeo = new THREE.BoxGeometry(Math.min(w * 0.5, 5), 1.4, 0.08);
+            const boardMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+            const board = new THREE.Mesh(boardGeo, boardMat);
+            board.position.set(0, 1.8, -d/2 + 0.1);
+            roomNode.add(board);
+
+            // Teacher Desk
+            const tDeskGeo = new THREE.BoxGeometry(1.6, 0.8, 0.8);
+            const tDeskMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.6 });
+            const tDesk = new THREE.Mesh(tDeskGeo, tDeskMat);
+            tDesk.position.set(w * 0.25, 0.4, -d/2 + 1.2);
+            tDesk.castShadow = true;
+            roomNode.add(tDesk);
+
+            // Student Desks Grid
+            const rows = Math.min(Math.floor(d / 2.5), 3);
+            const cols = Math.min(Math.floor(w / 2.5), 4);
+            const sDeskGeo = new THREE.BoxGeometry(1.1, 0.7, 0.6);
+            const sDeskMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.7 });
+
+            for (let rIdx = 0; rIdx < rows; rIdx++) {
+              for (let cIdx = 0; cIdx < cols; cIdx++) {
+                const sDesk = new THREE.Mesh(sDeskGeo, sDeskMat);
+                const dx = -w/3 + (cIdx / Math.max(cols - 1, 1)) * (w * 0.66);
+                const dz = -d/4 + (rIdx / Math.max(rows - 1, 1)) * (d * 0.5);
+                sDesk.position.set(dx, 0.35, dz + 0.8);
+                sDesk.castShadow = true;
+                roomNode.add(sDesk);
+              }
+            }
+          }
+
+          // 4. Ultra-crisp 3D Billboard Sign
+          const signTex = createSignTexture(r.num, r.icon, r.cat);
+          const signMat = new THREE.MeshBasicMaterial({ map: signTex, transparent: true });
+          const signGeo = new THREE.PlaneGeometry(5.2, 2.6);
+          const signMesh = new THREE.Mesh(signGeo, signMat);
+          signMesh.position.set(0, h + 1.9, 0);
+          signMesh.userData = { isBillboard: true };
+          roomNode.add(signMesh);
+        }
+
+        schoolGroup.add(roomNode);
+        roomMeshes.push(roomNode);
+      });
+
+      // -------------------------------------------------------------
+      // 5. BUILD TELECOM & NETWORKING LAYER (16 APs & CONDUITS)
+      // -------------------------------------------------------------
+      currentAPs.forEach((ap, idx) => {
+        const posX = to3DX(ap.x, 18);
+        const posZ = to3DZ(ap.y, 18);
+        const apY = 3.2;
+
+        const apNode = new THREE.Group();
+        apNode.position.set(posX, apY, posZ);
+        apNode.userData = { isAP: true, data: ap, index: idx };
+
+        // AP Dome body
+        const domeGeo = new THREE.CylinderGeometry(0.7, 0.9, 0.25, 24);
+        const domeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.1 });
+        const dome = new THREE.Mesh(domeGeo, domeMat);
+        apNode.add(dome);
+
+        // Blinking LED ring
+        const ledGeo = new THREE.RingGeometry(0.35, 0.5, 24);
+        const ledMat = new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide });
+        const led = new THREE.Mesh(ledGeo, ledMat);
+        led.rotation.x = Math.PI / 2;
+        led.position.y = -0.13;
+        apNode.add(led);
+
+        // Pulsing Pointlight
+        const apLight = new THREE.PointLight(0x22c55e, 0.8, 8);
+        apLight.position.set(0, -0.2, 0);
+        apNode.add(apLight);
+
+        // Wi-Fi Coverage Cone / Hemisphere
+        const wifiGeo = new THREE.SphereGeometry(9, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+        const wifiMat = new THREE.MeshBasicMaterial({
+          color: 0x10b981,
+          transparent: true,
+          opacity: 0.12,
+          wireframe: true
+        });
+        const wifiCone = new THREE.Mesh(wifiGeo, wifiMat);
+        wifiCone.rotation.x = Math.PI;
+        wifiCone.userData = { isWifiSignal: true };
+        apNode.add(wifiCone);
+
+        // High-res 3D Badge for AP
+        const apBadgeCanvas = document.createElement('canvas');
+        apBadgeCanvas.width = 256;
+        apBadgeCanvas.height = 128;
+        const bCtx = apBadgeCanvas.getContext('2d');
+        bCtx.fillStyle = '#ffffff';
+        bCtx.roundRect(6, 6, 244, 116, 20);
+        bCtx.fill();
+        bCtx.strokeStyle = '#16a34a';
+        bCtx.lineWidth = 10;
+        bCtx.roundRect(6, 6, 244, 116, 20);
+        bCtx.stroke();
+        bCtx.fillStyle = '#0f172a';
+        bCtx.font = 'bold 56px system-ui, sans-serif';
+        bCtx.textAlign = 'center';
+        bCtx.textBaseline = 'middle';
+        bCtx.fillText(ap.name, 128, 64);
+
+        const apTex = new THREE.CanvasTexture(apBadgeCanvas);
+        const apBadgeMat = new THREE.MeshBasicMaterial({ map: apTex, transparent: true });
+        const apBadge = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.0), apBadgeMat);
+        apBadge.position.set(0, 1.0, 0);
+        apBadge.userData = { isBillboard: true };
+        apNode.add(apBadge);
+
+        telecomGroup.add(apNode);
+        apMeshes.push(apNode);
+      });
+
+      // 3D Server Rack Cabinet inside Kiosco
+      const rackGroup = new THREE.Group();
+      rackGroup.position.set(to3DX(605, 26), 0, to3DZ(525, 24));
+      
+      const rackFrameGeo = new THREE.BoxGeometry(1.6, 2.8, 1.4);
+      const rackFrameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.8 });
+      const rackFrame = new THREE.Mesh(rackFrameGeo, rackFrameMat);
+      rackFrame.position.y = 1.4;
+      rackGroup.add(rackFrame);
+
+      // Glass door with blue glow
+      const glassGeo = new THREE.BoxGeometry(1.4, 2.5, 0.05);
+      const glassMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.4, metalness: 0.9 });
+      const glass = new THREE.Mesh(glassGeo, glassMat);
+      glass.position.set(0, 1.4, 0.72);
+      rackGroup.add(glass);
+
+      const rackLight = new THREE.PointLight(0x38bdf8, 1.2, 5);
+      rackLight.position.set(0, 1.4, 0.5);
+      rackGroup.add(rackLight);
+
+      telecomGroup.add(rackGroup);
+
+      // 3D Cable Conduits
+      RED_CABLES.forEach(seg => {
+        for (let i = 0; i < seg.length - 1; i++) {
+          const p1 = seg[i];
+          const p2 = seg[i+1];
+          const x1 = to3DX(p1[0], 0), z1 = to3DZ(p1[1], 0);
+          const x2 = to3DX(p2[0], 0), z2 = to3DZ(p2[1], 0);
+          
+          const dx = x2 - x1;
+          const dz = z2 - z1;
+          const len = Math.sqrt(dx*dx + dz*dz);
+          if (len < 0.05) continue;
+
+          const cableGeo = new THREE.CylinderGeometry(0.08, 0.08, len, 8);
+          const cableMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3 });
+          const cable = new THREE.Mesh(cableGeo, cableMat);
+
+          cable.position.set((x1 + x2)/2, 3.25, (z1 + z2)/2);
+          cable.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, 0, dz).normalize());
+          telecomGroup.add(cable);
+        }
+      });
+
+      BLUE_CABLES.forEach(seg => {
+        for (let i = 0; i < seg.length - 1; i++) {
+          const p1 = seg[i];
+          const p2 = seg[i+1];
+          const x1 = to3DX(p1[0], 0), z1 = to3DZ(p1[1], 0);
+          const x2 = to3DX(p2[0], 0), z2 = to3DZ(p2[1], 0);
+          
+          const dx = x2 - x1;
+          const dz = z2 - z1;
+          const len = Math.sqrt(dx*dx + dz*dz);
+          if (len < 0.05) continue;
+
+          const cableGeo = new THREE.CylinderGeometry(0.12, 0.12, len, 8);
+          const cableMat = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.3 });
+          const cable = new THREE.Mesh(cableGeo, cableMat);
+
+          cable.position.set((x1 + x2)/2, 3.32, (z1 + z2)/2);
+          cable.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, 0, dz).normalize());
+          telecomGroup.add(cable);
+        }
+      });
+
+      applyLayerVisibility();
+      drawMinimap();
+    }
+
+    // -------------------------------------------------------------
+    // 6. LAYER MANAGEMENT
+    // -------------------------------------------------------------
+    function setLayerMode(mode) {
+      currentLayerMode = mode;
+      
+      document.getElementById('layer-btn-aulas').className = mode === 'aulas' 
+        ? "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-rose-600/40 text-rose-200 border border-rose-500/40 shadow"
+        : "px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white";
+
+      document.getElementById('layer-btn-redes').className = mode === 'redes' 
+        ? "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-emerald-600/40 text-emerald-200 border border-emerald-500/40 shadow"
+        : "px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white";
+
+      document.getElementById('layer-btn-hybrid').className = mode === 'hybrid' 
+        ? "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-cyan-600/40 text-cyan-200 border border-cyan-500/40 shadow"
+        : "px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white";
+
+      applyLayerVisibility();
+    }
+
+    function applyLayerVisibility() {
+      if (currentLayerMode === 'aulas') {
+        schoolGroup.visible = true;
+        telecomGroup.visible = false;
+      } else if (currentLayerMode === 'redes') {
+        schoolGroup.visible = true;
+        telecomGroup.visible = true;
+        schoolGroup.traverse(child => {
+          if (child.isMesh && child.material && !child.userData.isBillboard) {
+            child.material.transparent = true;
+            child.material.opacity = 0.45;
+          }
+        });
+      } else {
+        schoolGroup.visible = true;
+        telecomGroup.visible = true;
+        schoolGroup.traverse(child => {
+          if (child.isMesh && child.material) {
+            child.material.transparent = false;
+            child.material.opacity = 1.0;
+          }
+        });
+      }
+    }
+
+    function toggleWifiSignals() {
+      showWifiSignals = !showWifiSignals;
+      telecomGroup.traverse(child => {
+        if (child.userData.isWifiSignal) {
+          child.visible = showWifiSignals;
+        }
+      });
+      document.getElementById('btn-toggle-wifi').classList.toggle('bg-emerald-600/30');
+      document.getElementById('btn-toggle-wifi').classList.toggle('bg-slate-800/90');
+    }
+
+    function toggleRoofs() {
+      showRoofs = !showRoofs;
+      document.getElementById('btn-toggle-roof').classList.toggle('bg-blue-600/40');
+    }
+
+    // -------------------------------------------------------------
+    // 7. FPS VIDEO GAME WALKTHROUGH CONTROLS
+    // -------------------------------------------------------------
+    const keys = { KeyW: false, KeyA: false, KeyS: false, KeyD: false, ShiftLeft: false, Space: false };
+    let fpsPitch = 0;
+    let fpsYaw = 0;
+    let isPointerLocked = false;
+    let playerVelocity = new THREE.Vector3();
+    const playerSpeed = 12;
+    const playerSprintSpeed = 22;
+    let playerY = 1.7;
+
+    function setCameraMode(mode) {
+      currentCameraMode = mode;
+      
+      const btnOrbit = document.getElementById('btn-mode-orbit');
+      const btnFps = document.getElementById('btn-mode-fps');
+      const fpsHud = document.getElementById('fps-hud');
+      const crosshair = document.getElementById('fps-crosshair');
+
+      if (mode === 'fps') {
+        btnOrbit.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800";
+        btnFps.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-blue-600 text-white shadow";
+        
+        orbitControls.enabled = false;
+        fpsHud.classList.remove('hidden');
+        crosshair.classList.remove('hidden');
+
+        camera.position.set(0, playerY, 15);
+        camera.rotation.set(0, 0, 0);
+        fpsPitch = 0;
+        fpsYaw = 0;
+
+        container.requestPointerLock = container.requestPointerLock || container.mozRequestPointerLock;
+        container.requestPointerLock();
+      } else {
+        btnOrbit.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-blue-600 text-white shadow";
+        btnFps.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800";
+        
+        orbitControls.enabled = true;
+        fpsHud.classList.add('hidden');
+        crosshair.classList.add('hidden');
+
+        if (document.exitPointerLock) document.exitPointerLock();
+
+        camera.position.set(0, 65, 75);
+        orbitControls.target.set(0, 0, 0);
+      }
+    }
+
+    document.addEventListener('pointerlockchange', () => {
+      isPointerLocked = (document.pointerLockElement === container);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
+      if (e.code === 'KeyF' && currentCameraMode === 'fps') {
+        playerLight.intensity = playerLight.intensity === 0 ? 1.5 : 0;
+      }
+      if (e.code === 'KeyE' && currentCameraMode === 'fps') {
+        inspectForwardObject();
+      }
+      if (e.code === 'Tab') {
+        e.preventDefault();
+        setCameraMode(currentCameraMode === 'fps' ? 'orbit' : 'fps');
+      }
+      if (e.code === 'Delete') {
+        deleteSelectedObject();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (currentCameraMode === 'fps' && isPointerLocked) {
+        const sens = 0.0022;
+        fpsYaw -= e.movementX * sens;
+        fpsPitch -= e.movementY * sens;
+        fpsPitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, fpsPitch));
+
+        camera.rotation.order = 'YXZ';
+        camera.rotation.y = fpsYaw;
+        camera.rotation.x = fpsPitch;
+      } else if (currentCameraMode === 'orbit') {
+        checkRaycastHover(e);
+      }
+    });
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const tooltip = document.getElementById('hover-tooltip');
+
+    function checkRaycastHover(e) {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects([...roomMeshes, ...apMeshes], true);
+
+      if (intersects.length > 0) {
+        let topObj = intersects[0].object;
+        while (topObj.parent && !topObj.userData.isRoom && !topObj.userData.isAP) {
+          topObj = topObj.parent;
+        }
+
+        if (topObj.userData.isRoom) {
+          const d = topObj.userData.data;
+          document.getElementById('tooltip-icon').innerText = d.icon || '🏛️';
+          document.getElementById('tooltip-title').innerText = d.num;
+          document.getElementById('tooltip-sub').innerText = `${d.cat} | M: ${d.m || 'S/D'}`;
+          tooltip.style.left = `${e.clientX + 15}px`;
+          tooltip.style.top = `${e.clientY + 15}px`;
+          tooltip.classList.remove('hidden');
+          document.body.style.cursor = 'pointer';
+          return;
+        } else if (topObj.userData.isAP) {
+          const a = topObj.userData.data;
+          document.getElementById('tooltip-icon').innerText = '📡';
+          document.getElementById('tooltip-title').innerText = `${a.name} (${a.room})`;
+          document.getElementById('tooltip-sub').innerText = `IP: ${a.ip} | ${a.port}`;
+          tooltip.style.left = `${e.clientX + 15}px`;
+          tooltip.style.top = `${e.clientY + 15}px`;
+          tooltip.classList.remove('hidden');
+          document.body.style.cursor = 'pointer';
+          return;
+        }
+      }
+
+      tooltip.classList.add('hidden');
+      document.body.style.cursor = 'default';
+    }
+
+    window.addEventListener('click', (e) => {
+      if (currentCameraMode !== 'orbit') return;
+      if (e.target.closest('header') || e.target.closest('aside') || e.target.closest('.fixed')) return;
+
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects([...roomMeshes, ...apMeshes], true);
+
+      if (intersects.length > 0) {
+        let topObj = intersects[0].object;
+        while (topObj.parent && !topObj.userData.isRoom && !topObj.userData.isAP) {
+          topObj = topObj.parent;
+        }
+        selectObject(topObj);
+      } else {
+        deselectObject();
+      }
+    });
+
+    function inspectForwardObject() {
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const intersects = raycaster.intersectObjects([...roomMeshes, ...apMeshes], true);
+      if (intersects.length > 0) {
+        let topObj = intersects[0].object;
+        while (topObj.parent && !topObj.userData.isRoom && !topObj.userData.isAP) {
+          topObj = topObj.parent;
+        }
+        selectObject(topObj);
+        setCameraMode('orbit');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 8. INSPECTOR & SANDBOX EDITOR ACTIONS
+    // -------------------------------------------------------------
+    function selectObject(obj) {
+      deselectObject();
+      selectedObject = obj;
+
+      const inspector = document.getElementById('inspector-panel');
+      inspector.classList.remove('hidden');
+
+      if (obj.userData.isRoom) {
+        const d = obj.userData.data;
+        document.getElementById('insp-header-title').innerText = d.num;
+        document.getElementById('insp-badge-icon').innerText = d.icon || '🏛️';
+        document.getElementById('insp-type-badge').innerText = 'Aula / Espacio Físico';
+        document.getElementById('insp-name').value = d.num;
+        document.getElementById('insp-category').value = d.cat || 'Tecnología';
+        document.getElementById('insp-category-group').classList.remove('hidden');
+        document.getElementById('insp-shifts-group').classList.remove('hidden');
+        document.getElementById('insp-net-group').classList.add('hidden');
+
+        document.getElementById('insp-dim-w').value = (d.w * 0.1).toFixed(1);
+        document.getElementById('insp-dim-d').value = (d.h * 0.1).toFixed(1);
+        document.getElementById('insp-dim-h').value = (d.h_val || 3.4).toFixed(1);
+
+        document.getElementById('insp-pos-x').value = to3DX(d.x, d.w).toFixed(1);
+        document.getElementById('insp-pos-z').value = to3DZ(d.y, d.h).toFixed(1);
+
+        document.getElementById('insp-shift-m').value = d.m || '';
+        document.getElementById('insp-shift-t').value = d.t || '';
+        document.getElementById('insp-shift-n').value = d.n || '';
+
+        obj.traverse(child => {
+          if (child.isMesh && child.material && !child.userData.isBillboard) {
+            child.material.emissive = new THREE.Color(0x1e3a8a);
+          }
+        });
+      } else if (obj.userData.isAP) {
+        const a = obj.userData.data;
+        document.getElementById('insp-header-title').innerText = a.name;
+        document.getElementById('insp-badge-icon').innerText = '📡';
+        document.getElementById('insp-type-badge').innerText = 'Punto de Acceso Wi-Fi (AP)';
+        document.getElementById('insp-name').value = a.name;
+        document.getElementById('insp-category-group').classList.add('hidden');
+        document.getElementById('insp-shifts-group').classList.add('hidden');
+        document.getElementById('insp-net-group').classList.remove('hidden');
+
+        document.getElementById('insp-dim-w').value = '1.2';
+        document.getElementById('insp-dim-d').value = '1.2';
+        document.getElementById('insp-dim-h').value = '0.5';
+
+        document.getElementById('insp-pos-x').value = to3DX(a.x, 18).toFixed(1);
+        document.getElementById('insp-pos-z').value = to3DZ(a.y, 18).toFixed(1);
+
+        document.getElementById('insp-net-ip').value = a.ip;
+        document.getElementById('insp-net-port').value = a.port;
+      }
+    }
+
+    function deselectObject() {
+      if (selectedObject) {
+        selectedObject.traverse(child => {
+          if (child.isMesh && child.material) {
+            child.material.emissive = new THREE.Color(0x000000);
+          }
+        });
+        selectedObject = null;
+      }
+      document.getElementById('inspector-panel').classList.add('hidden');
+    }
+
+    function updateSelectedObject() {
+      if (!selectedObject) return;
+      const newName = document.getElementById('insp-name').value;
+      if (selectedObject.userData.isRoom) {
+        selectedObject.userData.data.num = newName;
+      } else if (selectedObject.userData.isAP) {
+        selectedObject.userData.data.name = newName;
+      }
+      saveState();
+      rebuildScene();
+    }
+
+    function changeCategoryColor() {
+      if (!selectedObject || !selectedObject.userData.isRoom) return;
+      selectedObject.userData.data.cat = document.getElementById('insp-category').value;
+      selectedObject.userData.data.icon = CATEGORIES[selectedObject.userData.data.cat]?.icon || '🏛️';
+      saveState();
+      rebuildScene();
+    }
+
+    function updateSelectedDimensions() {
+      if (!selectedObject || !selectedObject.userData.isRoom) return;
+      const wMeters = parseFloat(document.getElementById('insp-dim-w').value) || 5;
+      const dMeters = parseFloat(document.getElementById('insp-dim-d').value) || 5;
+      const hMeters = parseFloat(document.getElementById('insp-dim-h').value) || 3.4;
+
+      selectedObject.userData.data.w = wMeters * 10;
+      selectedObject.userData.data.h = dMeters * 10;
+      selectedObject.userData.data.h_val = hMeters;
+      saveState();
+      rebuildScene();
+    }
+
+    function updateSelectedPosition() {
+      if (!selectedObject) return;
+      const px = parseFloat(document.getElementById('insp-pos-x').value) || 0;
+      const pz = parseFloat(document.getElementById('insp-pos-z').value) || 0;
+
+      if (selectedObject.userData.isRoom) {
+        selectedObject.userData.data.x = (px * 10 + 625) - selectedObject.userData.data.w / 2;
+        selectedObject.userData.data.y = (pz * 10 + 335) - selectedObject.userData.data.h / 2;
+      } else if (selectedObject.userData.isAP) {
+        selectedObject.userData.data.x = (px * 10 + 625) - 9;
+        selectedObject.userData.data.y = (pz * 10 + 335) - 9;
+      }
+      saveState();
+      rebuildScene();
+    }
+
+    function updateSelectedShifts() {
+      if (!selectedObject || !selectedObject.userData.isRoom) return;
+      selectedObject.userData.data.m = document.getElementById('insp-shift-m').value;
+      selectedObject.userData.data.t = document.getElementById('insp-shift-t').value;
+      selectedObject.userData.data.n = document.getElementById('insp-shift-n').value;
+      saveState();
+    }
+
+    function updateSelectedNet() {
+      if (!selectedObject || !selectedObject.userData.isAP) return;
+      selectedObject.userData.data.ip = document.getElementById('insp-net-ip').value;
+      selectedObject.userData.data.port = document.getElementById('insp-net-port').value;
+      saveState();
+    }
+
+    function duplicateSelectedObject() {
+      if (!selectedObject) return;
+      if (selectedObject.userData.isRoom) {
+        const clone = JSON.parse(JSON.stringify(selectedObject.userData.data));
+        clone.id = `aula_${Date.now()}`;
+        clone.num = `${clone.num} (Copia)`;
+        clone.x += 30;
+        clone.y += 30;
+        currentRooms.push(clone);
+      } else if (selectedObject.userData.isAP) {
+        const clone = JSON.parse(JSON.stringify(selectedObject.userData.data));
+        clone.id = `AP${currentAPs.length + 1}`;
+        clone.name = `AP${currentAPs.length + 1}`;
+        clone.x += 20;
+        clone.y += 20;
+        currentAPs.push(clone);
+      }
+      saveState();
+      rebuildScene();
+      deselectObject();
+    }
+
+    function deleteSelectedObject() {
+      if (!selectedObject) return;
+      if (selectedObject.userData.isRoom) {
+        const idx = selectedObject.userData.index;
+        currentRooms.splice(idx, 1);
+      } else if (selectedObject.userData.isAP) {
+        const idx = selectedObject.userData.index;
+        currentAPs.splice(idx, 1);
+      }
+      saveState();
+      deselectObject();
+      rebuildScene();
+    }
+
+    // -------------------------------------------------------------
+    // 9. ADD ELEMENT MODALS & ACTIONS
+    // -------------------------------------------------------------
+    function toggleAddModal() {
+      document.getElementById('modal-add').classList.toggle('hidden');
+    }
+
+    function toggleHelpModal() {
+      document.getElementById('modal-help').classList.toggle('hidden');
+    }
+
+    function addNewClassroom() {
+      toggleAddModal();
+      const newRoom = {
+        id: `aula_nueva_${Date.now()}`,
+        num: `Aula ${currentRooms.length + 1}`,
+        x: 550, y: 300, w: 120, h: 100,
+        cat: "Tecnología", icon: "💻",
+        m: "Asignatura Mañana", t: "Asignatura Tarde", n: "Asignatura Noche"
+      };
+      currentRooms.push(newRoom);
+      saveState();
+      rebuildScene();
+      setTimeout(() => {
+        const created = roomMeshes[roomMeshes.length - 1];
+        if (created) selectObject(created);
+      }, 50);
+    }
+
+    function addNewAP() {
+      toggleAddModal();
+      const numAP = currentAPs.length + 1;
+      const newAP = {
+        id: `AP${numAP}`,
+        name: `AP${numAP}`,
+        room: "Nueva Ubicación",
+        x: 580, y: 320,
+        ip: `192.168.100.${20 + numAP}`,
+        port: `Sw POE P${numAP}`
+      };
+      currentAPs.push(newAP);
+      saveState();
+      rebuildScene();
+    }
+
+    function addNewRack() {
+      toggleAddModal();
+      const newRoom = {
+        id: `rack_sala_${Date.now()}`,
+        num: "Centro Telecom",
+        x: 520, y: 320, w: 60, h: 50,
+        cat: "Administración", icon: "🗄️",
+        m: "Sala Servidores", t: "Sala Servidores", n: "Sala Servidores"
+      };
+      currentRooms.push(newRoom);
+      saveState();
+      rebuildScene();
+    }
+
+    function addNewCorridor() {
+      toggleAddModal();
+      const newRoom = {
+        id: `pasillo_${Date.now()}`,
+        num: "Nuevo Pasillo",
+        x: 500, y: 300, w: 150, h: 40,
+        cat: "Pasillos", icon: "🚶",
+        m: "Circulación", t: "Circulación", n: "Circulación"
+      };
+      currentRooms.push(newRoom);
+      saveState();
+      rebuildScene();
+    }
+
+    // -------------------------------------------------------------
+    // 10. LIGHTING & ENVIRONMENT
+    // -------------------------------------------------------------
+    function setLighting(preset) {
+      if (preset === 'day') {
+        scene.background.set(0x0f172a);
+        ambientLight.color.set(0xffffff);
+        ambientLight.intensity = 0.55;
+        sunLight.color.set(0xfffaed);
+        sunLight.intensity = 0.9;
+        sunLight.position.set(40, 80, 50);
+      } else if (preset === 'sunset') {
+        scene.background.set(0x1a0f1e);
+        ambientLight.color.set(0xfbcfe8);
+        ambientLight.intensity = 0.4;
+        sunLight.color.set(0xf97316);
+        sunLight.intensity = 1.1;
+        sunLight.position.set(70, 30, 20);
+      } else if (preset === 'night') {
+        scene.background.set(0x020617);
+        ambientLight.color.set(0x38bdf8);
+        ambientLight.intensity = 0.15;
+        sunLight.color.set(0x1e3a8a);
+        sunLight.intensity = 0.25;
+        sunLight.position.set(-20, 50, -30);
+      }
+    }
+
+    function resetCameraView() {
+      camera.position.set(0, 65, 75);
+      orbitControls.target.set(0, 0, 0);
+      orbitControls.update();
+    }
+
+    function toggleTopDownView() {
+      camera.position.set(0, 110, 0.001);
+      orbitControls.target.set(0, 0, 0);
+      orbitControls.update();
+    }
+
+    // -------------------------------------------------------------
+    // 11. 2D RADAR MINIMAP
+    // -------------------------------------------------------------
+    const minimapCanvas = document.getElementById('minimap');
+    const mCtx = minimapCanvas.getContext('2d');
+
+    function drawMinimap() {
+      const mw = minimapCanvas.width;
+      const mh = minimapCanvas.height;
+
+      mCtx.fillStyle = '#0f172a';
+      mCtx.fillRect(0, 0, mw, mh);
+
+      const sx = mw / 1250;
+      const sy = mh / 670;
+
+      // Draw Classrooms
+      currentRooms.forEach(r => {
+        mCtx.fillStyle = CATEGORIES[r.cat]?.hex || '#475569';
+        mCtx.fillRect(r.x * sx, r.y * sy, r.w * sx, r.h * sy);
+        mCtx.strokeStyle = '#020617';
+        mCtx.lineWidth = 1;
+        mCtx.strokeRect(r.x * sx, r.y * sy, r.w * sx, r.h * sy);
+      });
+
+      // Draw APs
+      if (currentLayerMode !== 'aulas') {
+        currentAPs.forEach(a => {
+          mCtx.fillStyle = '#22c55e';
+          mCtx.beginPath();
+          mCtx.arc(a.x * sx, a.y * sy, 2.5, 0, Math.PI * 2);
+          mCtx.fill();
+        });
+      }
+
+      // Draw Camera / Player
+      const px = (camera.position.x * 10 + 625) * sx;
+      const py = (camera.position.z * 10 + 335) * sy;
+
+      mCtx.fillStyle = '#38bdf8';
+      mCtx.beginPath();
+      mCtx.arc(px, py, 4, 0, Math.PI * 2);
+      mCtx.fill();
+      mCtx.strokeStyle = '#ffffff';
+      mCtx.lineWidth = 1.5;
+      mCtx.stroke();
+
+      const dir = new THREE.Vector3();
+      camera.getWorldDirection(dir);
+      mCtx.strokeStyle = '#facc15';
+      mCtx.lineWidth = 2;
+      mCtx.beginPath();
+      mCtx.moveTo(px, py);
+      mCtx.lineTo(px + dir.x * 12, py + dir.z * 12);
+      mCtx.stroke();
+    }
+
+    // -------------------------------------------------------------
+    // 12. EXPORT, IMPORT & SCREENSHOTS
+    // -------------------------------------------------------------
+    function saveState() {
+      localStorage.setItem('saved_school_rooms_3d', JSON.stringify(currentRooms));
+      localStorage.setItem('saved_school_aps_3d', JSON.stringify(currentAPs));
+    }
+
+    function exportProjectJSON() {
+      const data = {
+        title: "Proyecto 3D Institucional",
+        version: "2.0",
+        timestamp: new Date().toISOString(),
+        rooms: currentRooms,
+        accessPoints: currentAPs
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `plano_institucional_3d_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importProjectJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.rooms && parsed.accessPoints) {
+            currentRooms = parsed.rooms;
+            currentAPs = parsed.accessPoints;
+            saveState();
+            rebuildScene();
+            alert("¡Proyecto 3D cargado exitosamente!");
+          }
+        } catch (err) {
+          alert("Error al leer el archivo JSON.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function takeScreenshot() {
+      renderer.render(scene, camera);
+      const dataURL = renderer.domElement.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataURL;
+      a.download = `captura_3d_escuela_${Date.now()}.png`;
+      a.click();
+    }
+
+    function undoAction() {
+      if (confirm("¿Deseas restaurar la distribución arquitectónica original oficial?")) {
+        currentRooms = JSON.parse(JSON.stringify(initialRoomsData));
+        currentAPs = JSON.parse(JSON.stringify(initialAPsData));
+        saveState();
+        rebuildScene();
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 13. MAIN ANIMATION LOOP
+    // -------------------------------------------------------------
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
+
+      // Video Game FPS Movement
+      if (currentCameraMode === 'fps') {
+        const speed = keys.ShiftLeft ? playerSprintSpeed : playerSpeed;
+        const moveVector = new THREE.Vector3();
+
+        if (keys.KeyW) moveVector.z -= 1;
+        if (keys.KeyS) moveVector.z += 1;
+        if (keys.KeyA) moveVector.x -= 1;
+        if (keys.KeyD) moveVector.x += 1;
+
+        moveVector.normalize();
+        moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), fpsYaw);
+
+        camera.position.x += moveVector.x * speed * delta;
+        camera.position.z += moveVector.z * speed * delta;
+
+        // Keep inside bounds
+        camera.position.x = Math.max(-60, Math.min(60, camera.position.x));
+        camera.position.z = Math.max(-33, Math.min(33, camera.position.z));
+        camera.position.y = playerY;
+
+        drawMinimap();
+      } else {
+        orbitControls.update();
+      }
+
+      // Billboard orientation
+      schoolGroup.traverse(child => {
+        if (child.userData && child.userData.isBillboard) {
+          child.quaternion.copy(camera.quaternion);
+        }
+      });
+      telecomGroup.traverse(child => {
+        if (child.userData && child.userData.isBillboard) {
+          child.quaternion.copy(camera.quaternion);
+        }
+      });
+
+      // Subtle AP signal pulsing
+      if (showWifiSignals && currentLayerMode !== 'aulas') {
+        const scale = 1.0 + Math.sin(time * 3) * 0.05;
+        telecomGroup.traverse(child => {
+          if (child.userData && child.userData.isWifiSignal) {
+            child.scale.set(scale, scale, scale);
+          }
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      drawMinimap();
+    });
+
+    // Start Scene
+    rebuildScene();
+    animate();
+  </script>
+
+</body>
+</html>

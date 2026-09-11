@@ -1,0 +1,20 @@
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Temporary Office Lock files (PowerPoint temp locks)
+~$*.pptx
+~$*.ppt
+
+# Temporary and Cache files
+*.tmp
+*.log
+__pycache__/
+*.pyc
+
+# Local IDE & editors
+.vscode/
+.idea/

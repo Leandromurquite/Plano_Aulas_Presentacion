@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1250 670" width="1250" height="670" style="background:#ffffff; font-family:system-ui,-apple-system,sans-serif;">
+<defs>
+  <pattern id="patioPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+    <path d="M 24 0 L 0 24 M 0 0 L 24 24" fill="none" stroke="#e2e8f0" stroke-width="0.75"/>
+  </pattern>
+</defs>
+<rect x="20" y="16" width="1175" height="635" rx="12" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+<rect x="15" y="11" width="1185" height="645" rx="16" fill="none" stroke="#94a3b8" stroke-width="1.2" opacity="0.6"/>
+<g id="patio">
+  <rect x="320" y="220" width="540" height="140" fill="url(#patioPattern)" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="590" y="295" text-anchor="middle" fill="#94a3b8" font-size="13" font-weight="bold" letter-spacing="2">PATIO CENTRAL</text>
+</g>
+<rect x="320" y="175" width="500" height="45" rx="2" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="570.0" y="197.5" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-size="10" font-weight="bold" letter-spacing="1.5">PASILLO NORTE</text>
+<rect x="150" y="175" width="55" height="335" rx="2" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="177.5" y="342.5" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-size="10" font-weight="bold" letter-spacing="1.5" transform="rotate(-90 177.5 342.5)">PASILLO OESTE</text>
+<rect x="935" y="175" width="55" height="335" rx="2" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="962.5" y="342.5" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-size="10" font-weight="bold" letter-spacing="1.5" transform="rotate(-90 962.5 342.5)">PASILLO ESTE</text>
+<rect x="205" y="465" width="785" height="45" rx="2" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="597.5" y="487.5" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-size="10" font-weight="bold" letter-spacing="1.5">CIRCULACION SUR</text>
+<rect x="535" y="360" width="50" height="280" rx="2" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="560.0" y="500.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-size="10" font-weight="bold" letter-spacing="1.5" transform="rotate(-90 560.0 500.0)">CONECTOR SUR</text>
+<rect x="405" y="360" width="130" height="105" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="413" y="378" fill="#64748b" font-size="10.5" font-weight="bold">Rectoria</text>
+<rect x="585" y="360" width="125" height="105" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="593" y="378" fill="#64748b" font-size="10.5" font-weight="bold">Sala Profesores</text>
+<rect x="710" y="360" width="150" height="105" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="718" y="378" fill="#64748b" font-size="10.5" font-weight="bold">Aula 12</text>
+<rect x="405" y="510" width="130" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="413" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Preceptoria</text>
+<rect x="585" y="510" width="95" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="593" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Kiosco</text>
+<rect x="320" y="360" width="85" height="105" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="328" y="378" fill="#64748b" font-size="10.5" font-weight="bold">Banos Oeste</text>
+<rect x="330" y="510" width="75" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="338" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Banos Sur</text>
+<rect x="680" y="510" width="95" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="688" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Aula 1</text>
+<rect x="775" y="510" width="95" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="783" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Aula 2</text>
+<rect x="870" y="510" width="95" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="878" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Aula 3</text>
+<rect x="965" y="510" width="200" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="973" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Aula 4</text>
+<rect x="1030" y="425" width="135" height="85" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1038" y="443" fill="#64748b" font-size="10.5" font-weight="bold">Aula 5</text>
+<rect x="1030" y="340" width="135" height="85" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1038" y="358" fill="#64748b" font-size="10.5" font-weight="bold">Aula 6</text>
+<rect x="1030" y="255" width="135" height="85" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1038" y="273" fill="#64748b" font-size="10.5" font-weight="bold">Aula 7</text>
+<rect x="1030" y="175" width="135" height="80" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1038" y="193" fill="#64748b" font-size="10.5" font-weight="bold">Aula 8</text>
+<rect x="990" y="28" width="175" height="147" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="998" y="46" fill="#64748b" font-size="10.5" font-weight="bold">Aula 9</text>
+<rect x="820" y="28" width="170" height="147" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="828" y="46" fill="#64748b" font-size="10.5" font-weight="bold">Aula 10</text>
+<rect x="845" y="175" width="145" height="185" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="853" y="193" fill="#64748b" font-size="10.5" font-weight="bold">Aula 11</text>
+<rect x="585" y="28" width="235" height="147" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="593" y="46" fill="#64748b" font-size="10.5" font-weight="bold">Taller / Computacion</text>
+<rect x="35" y="28" width="285" height="147" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="43" y="46" fill="#64748b" font-size="10.5" font-weight="bold">Cocina / Deposito</text>
+<rect x="205" y="175" width="115" height="145" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="213" y="193" fill="#64748b" font-size="10.5" font-weight="bold">Aula 16</text>
+<rect x="205" y="320" width="115" height="145" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="213" y="338" fill="#64748b" font-size="10.5" font-weight="bold">Aula 15</text>
+<rect x="35" y="175" width="115" height="155" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="43" y="193" fill="#64748b" font-size="10.5" font-weight="bold">Aula 17</text>
+<rect x="35" y="330" width="115" height="150" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="43" y="348" fill="#64748b" font-size="10.5" font-weight="bold">Aula 18</text>
+<rect x="35" y="480" width="115" height="160" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="43" y="498" fill="#64748b" font-size="10.5" font-weight="bold">Aula 19</text>
+<rect x="150" y="510" width="180" height="130" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="158" y="528" fill="#64748b" font-size="10.5" font-weight="bold">Aula 20</text>
+<polyline points="420,365 525,365 860,365" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="560,365 560,510" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="560,510 600,510 600,525" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="560,510 525,510 525,575" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="405,635 525,635 525,575" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="600,520 690,520 690,555" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="600,485 980,485" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="860,485 860,555" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="725,485 725,425" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="980,485 1005,485 1005,530" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="980,485 980,175" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="980,355 1035,355" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="980,260 895,260" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="980,245 1075,245" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="980,175 995,175 995,145" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="980,175 745,175 745,95" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="600,485 150,485" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="535,485 535,370 525,370" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="365,485 365,498" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="150,485 155,485 155,535" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="150,485 150,105" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="150,245 142,245" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="150,175 270,175 270,310" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="150,105 145,105" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="690" y="555" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="699.0" y1="564.0" x2="665" y2="541" stroke="#000000" stroke-width="1.2"/>
+<rect x="640" y="530" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="665" y="545" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP1</text>
+<rect x="860" y="555" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="869.0" y1="564.0" x2="835" y2="541" stroke="#000000" stroke-width="1.2"/>
+<rect x="810" y="530" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="835" y="545" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP2</text>
+<rect x="985" y="530" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="994.0" y1="539.0" x2="955" y2="511" stroke="#000000" stroke-width="1.2"/>
+<rect x="930" y="500" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="955" y="515" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP3</text>
+<rect x="1035" y="355" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="1044.0" y1="364.0" x2="990" y2="371" stroke="#000000" stroke-width="1.2"/>
+<rect x="965" y="360" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="990" y="375" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP4</text>
+<rect x="1075" y="245" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="1084.0" y1="254.0" x2="1030" y2="216" stroke="#000000" stroke-width="1.2"/>
+<rect x="1005" y="205" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="1030" y="220" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP5</text>
+<rect x="995" y="145" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="1004.0" y1="154.0" x2="1065" y2="161" stroke="#000000" stroke-width="1.2"/>
+<rect x="1040" y="150" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="1065" y="165" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP6</text>
+<rect x="895" y="260" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="904.0" y1="269.0" x2="915" y2="316" stroke="#000000" stroke-width="1.2"/>
+<rect x="890" y="305" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="915" y="320" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP7</text>
+<rect x="725" y="425" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="734.0" y1="434.0" x2="760" y2="341" stroke="#000000" stroke-width="1.2"/>
+<rect x="735" y="330" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="760" y="345" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP8</text>
+<rect x="745" y="95" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="754.0" y1="104.0" x2="755" y2="36" stroke="#000000" stroke-width="1.2"/>
+<rect x="730" y="25" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="755" y="40" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP9</text>
+<rect x="525" y="370" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="534.0" y1="379.0" x2="560" y2="321" stroke="#000000" stroke-width="1.2"/>
+<rect x="535" y="310" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="560" y="325" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP10</text>
+<rect x="270" y="310" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="279.0" y1="319.0" x2="265" y2="376" stroke="#000000" stroke-width="1.2"/>
+<rect x="240" y="365" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="265" y="380" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP11</text>
+<rect x="145" y="105" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="154.0" y1="114.0" x2="200" y2="86" stroke="#000000" stroke-width="1.2"/>
+<rect x="175" y="75" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="200" y="90" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP12</text>
+<rect x="142" y="245" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="151.0" y1="254.0" x2="100" y2="246" stroke="#000000" stroke-width="1.2"/>
+<rect x="75" y="235" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="100" y="250" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP13</text>
+<rect x="155" y="535" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="164.0" y1="544.0" x2="100" y2="561" stroke="#000000" stroke-width="1.2"/>
+<rect x="75" y="550" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="100" y="565" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP14</text>
+<rect x="365" y="498" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="374.0" y1="507.0" x2="345" y2="451" stroke="#000000" stroke-width="1.2"/>
+<rect x="320" y="440" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="345" y="455" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP15</text>
+<rect x="525" y="575" width="18" height="18" rx="3" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="534.0" y1="584.0" x2="600" y2="626" stroke="#000000" stroke-width="1.2"/>
+<rect x="575" y="615" width="50" height="22" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.5"/>
+<text x="600" y="630" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">AP16</text>
+<line x1="520" y1="375" x2="435" y2="305" stroke="#000000" stroke-width="1.2"/>
+<rect x="350" y="240" width="135" height="70" rx="5" fill="#ffffff" stroke="#22c55e" stroke-width="1.8"/>
+<text x="417" y="258" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="bold">Modem (ISP)</text>
+<text x="417" y="278" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="bold">Router (DHCP)</text>
+<text x="417" y="298" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="bold">Switch (P16)</text>
+<line x1="610" y1="535" x2="650" y2="580" stroke="#000000" stroke-width="1.2"/>
+<rect x="580" y="580" width="135" height="52" rx="5" fill="#ffffff" stroke="#22c55e" stroke-width="1.8"/>
+<text x="647" y="600" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="bold">FireWall</text>
+<text x="647" y="620" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="bold">Switch POE (P16)</text>
+<rect x="600" y="520" width="22" height="22" rx="2" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+<text x="611" y="534" text-anchor="middle" fill="#475569" font-size="7" font-weight="bold">Rack</text>
+<line x1="515" y1="575" x2="430" y2="520" stroke="#000000" stroke-width="1.2"/>
+<rect x="360" y="505" width="100" height="25" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.8"/>
+<text x="410" y="522" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">Switch (P 8)</text>
+<line x1="240" y1="175" x2="270" y2="125" stroke="#000000" stroke-width="1.2"/>
+<rect x="220" y="105" width="105" height="26" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.8"/>
+<text x="272" y="122" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">Switch (P16)</text>
+<line x1="780" y1="380" x2="745" y2="340" stroke="#000000" stroke-width="1.2"/>
+<rect x="690" y="325" width="105" height="26" rx="4" fill="#ffffff" stroke="#22c55e" stroke-width="1.8"/>
+<text x="742" y="342" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="bold">Router (wifi)</text>
+</svg>

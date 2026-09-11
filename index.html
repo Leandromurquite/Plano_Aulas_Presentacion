@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma Institucional, Arquitectónica y de Telecomunicaciones</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .card-hover { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+    .card-hover:hover { transform: translateY(-4px); border-color: rgba(56, 189, 248, 0.6); box-shadow: 0 16px 32px -8px rgba(2, 132, 199, 0.35); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-full flex flex-col antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- Header Banner -->
+  <header class="glass sticky top-0 z-30 border-b border-slate-800 shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xl shadow-md">
+          🏛️
+        </div>
+        <div>
+          <h1 class="font-bold text-base sm:text-lg text-white leading-tight">Plataforma Institucional & Telecomunicaciones</h1>
+          <p class="text-xs text-slate-400">Relevamiento Arquitectónico y Red Wi-Fi de Alta Densidad (AP1 - AP16)</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <a href="https://github.com" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 flex items-center space-x-1.5 transition border border-slate-700">
+          <i class="fa-brands fa-github text-sm"></i>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    
+    <div class="text-center max-w-3xl mx-auto space-y-3">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+        <span>✨ Ciclo Lectivo Oficial • Anexo 1: Plano de Edificio</span>
+      </div>
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+        Entorno Interactivo de Gestión de Aulas y Red Wi-Fi
+      </h2>
+      <p class="text-sm text-slate-400 leading-relaxed">
+        Explora la escuela en 3D interactivo en primera persona (WASD), gestiona la asignación académica de aulas en el plano 2D, inspecciona los 16 Access Points y descarga la presentación oficial en PowerPoint.
+      </p>
+    </div>
+
+    <!-- Main 4 Modules Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Card 1: Simulador 3D y Videojuego -->
+      <a href="simulador_3d_interactivo.html" class="glass card-hover rounded-3xl p-6 flex flex-col justify-between space-y-4 border border-slate-800 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl pointer-events-none group-hover:bg-blue-600/20 transition"></div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-lg">
+              🎮
+            </span>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              WebGL 3D
+            </span>
+          </div>
+          <h3 class="text-xl font-bold text-white group-hover:text-cyan-300 transition">
+            Simulador 3D & Videojuego Sandbox
+          </h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Recorre la escuela en primera persona con controles de videojuego (<b class="text-white">W, A, S, D</b> y ratón) o vista orbital 360°. Incluye editor en tiempo real para añadir, modificar dimensiones, mover y eliminar aulas o equipos Wi-Fi.
+          </p>
+        </div>
+        <div class="rounded-xl overflow-hidden border border-slate-800 shadow-md">
+          <img src="simulador_3d_vista.png" alt="Vista 3D del Simulador" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" />
+        </div>
+        <div class="pt-2 flex items-center justify-between text-xs font-bold text-cyan-400">
+          <span>Abrir Simulador 3D</span>
+          <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+
+      <!-- Card 2: Plano 2D Interactivo -->
+      <a href="plano_institucional_interactivo.html" class="glass card-hover rounded-3xl p-6 flex flex-col justify-between space-y-4 border border-slate-800 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-600/20 transition"></div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center text-2xl shadow-lg">
+              📐
+            </span>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+              Editor 2D
+            </span>
+          </div>
+          <h3 class="text-xl font-bold text-white group-hover:text-emerald-300 transition">
+            Plano Interactivo (Aulas y Redes)
+          </h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Plataforma 2D completa con dos secciones independientes: <b class="text-white">Sección 1: Plano de las Aulas</b> (con horarios multiturno Mañana, Tarde y Noche) y <b class="text-white">Sección 2: Plano de las Redes Oficial</b> (Anexo 1).
+          </p>
+        </div>
+        <div class="rounded-xl overflow-hidden border border-slate-800 shadow-md">
+          <img src="plano_redes_presentacion.png" alt="Plano de Redes Oficial" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300" />
+        </div>
+        <div class="pt-2 flex items-center justify-between text-xs font-bold text-emerald-400">
+          <span>Abrir Plano Interactivo 2D</span>
+          <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+
+      <!-- Card 3: Presentación PowerPoint Oficial -->
+      <a href="distribucion_aulas_editable.pptx" download class="glass card-hover rounded-3xl p-6 flex flex-col justify-between space-y-4 border border-slate-800 group relative overflow-hidden">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-600 to-amber-600 text-white flex items-center justify-center text-2xl shadow-lg">
+              📊
+            </span>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">
+              PowerPoint (.pptx)
+            </span>
+          </div>
+          <h3 class="text-xl font-bold text-white group-hover:text-amber-300 transition">
+            Presentación Ejecutiva 16:9 Editable
+          </h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Diapositivas oficiales en formato panorámico 16:9 con formas 100% nativas y desbloqueadas. Incluye la Diapositiva 6 con el plano oficial de telecomunicaciones y los 16 APs listos para proyectar y editar.
+          </p>
+        </div>
+        <div class="pt-2 flex items-center justify-between text-xs font-bold text-orange-400">
+          <span>Descargar Archivo .pptx</span>
+          <i class="fa-solid fa-download group-hover:translate-y-0.5 transition"></i>
+        </div>
+      </a>
+
+      <!-- Card 4: Planos Vectoriales y Gráficos HD -->
+      <div class="glass rounded-3xl p-6 flex flex-col justify-between space-y-4 border border-slate-800">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 text-white flex items-center justify-center text-2xl shadow-lg">
+              🖼️
+            </span>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+              Vectores & PNG
+            </span>
+          </div>
+          <h3 class="text-xl font-bold text-white">
+            Planos Gráficos de Alta Definición
+          </h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Archivos vectoriales SVG limpios y renderizados en imagen PNG listos para imprimir en lámina o adjuntar en informes técnicos.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <a href="plano_redes_presentacion.png" target="_blank" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 flex items-center justify-between text-slate-300 hover:text-white transition">
+            <span>Redes HD (.png)</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+          <a href="plano_redes_telecomunicaciones.svg" target="_blank" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 flex items-center justify-between text-slate-300 hover:text-white transition">
+            <span>Redes Vector (.svg)</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+          <a href="plano_presentacion.png" target="_blank" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 flex items-center justify-between text-slate-300 hover:text-white transition">
+            <span>Aulas HD (.png)</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+          <a href="plano_arquitectonico_limpio.svg" target="_blank" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 flex items-center justify-between text-slate-300 hover:text-white transition">
+            <span>Aulas Vector (.svg)</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="glass border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    Proyecto Oficial • Anexo 1: Plano de Edificio y Telecomunicaciones • 100% Autónomo sin servidores
+  </footer>
+
+</body>
+</html>

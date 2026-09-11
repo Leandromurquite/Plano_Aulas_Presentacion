@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano Institucional y de Telecomunicaciones - Editor Interactivo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; color: black !important; padding: 0 !important; }
+      .print-container { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; }
+      @page { size: landscape; margin: 0.8cm; }
+    }
+    .room-transition {
+      transition: fill 0.15s ease, stroke 0.15s ease, filter 0.15s ease;
+    }
+    .room-hover:hover {
+      filter: brightness(1.05) drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+      cursor: grab;
+    }
+    .corridor-hover:hover {
+      filter: brightness(0.96);
+      cursor: grab;
+    }
+    .ap-hover:hover {
+      filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)) brightness(1.2) !important;
+      cursor: pointer;
+    }
+    .hw-hover:hover {
+      filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.8)) brightness(1.1) !important;
+      cursor: pointer;
+    }
+    .room-dragging {
+      cursor: grabbing !important;
+      opacity: 0.85;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)) !important;
+    }
+    .active-room {
+      stroke: #2563eb !important;
+      stroke-width: 3.5px !important;
+      filter: drop-shadow(0 0 10px rgba(37, 99, 235, 0.45));
+    }
+    .active-net-device {
+      stroke: #facc15 !important;
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.85)) !important;
+    }
+    .dimmed-element {
+      opacity: 0.18 !important;
+      filter: grayscale(90%);
+    }
+    .resize-handle {
+      cursor: nwse-resize;
+      transition: transform 0.1s;
+    }
+    .resize-handle:hover {
+      transform: scale(1.35);
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+    ::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.3); border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-full flex flex-col font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- BARRA DE NAVEGACIÓN PRINCIPAL (CONMUTADOR DE LAS 2 SECCIONES) -->
+  <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md no-print border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Logotipo e Institución -->
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          🏛️
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-sm sm:text-base font-bold text-white leading-tight">Plataforma Institucional y de Telecomunicaciones</h1>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Autónomo
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400">Anexo Oficial: Gestión de Aulas y Red Wi-Fi (AP1 - AP16)</p>
+        </div>
+      </div>
+
+      <!-- CONMUTADOR CENTRAL DE LAS 2 SECCIONES -->
+      <div class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700 shadow-inner">
+        <button onclick="switchMainSection('aulas')" id="tab-btn-aulas" 
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-blue-600 text-white shadow-sm">
+          <span class="text-sm">🏛️</span>
+          <span>Sección 1: Plano de las Aulas</span>
+        </button>
+        <button onclick="switchMainSection('redes')" id="tab-btn-redes" 
+          class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60">
+          <span class="text-sm">🔌</span>
+          <span>Sección 2: Plano de las Redes (Oficial)</span>
+        </button>
+      </div>
+
+      <!-- BOTONERA SUPERIOR DE ACCIONES Y DESCARGA -->
+      <div class="flex items-center space-x-2">
+        <a href="simulador_3d_interactivo.html" target="_blank" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-sm">
+          <span class="text-sm">🎮</span>
+          <span>Simulador 3D / Videojuego</span>
+        </a>
+        <button onclick="toggleTableModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          <span id="btnModalLabel">Planilla e Inventario</span>
+        </button>
+
+        <div class="relative inline-block text-left" id="downloadDropdownContainer">
+          <button onclick="toggleDownloadMenu()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            <span>Descargar</span>
+            <svg class="w-3 h-3 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+
+          <div id="downloadMenu" class="hidden absolute right-0 mt-2 w-64 rounded-xl shadow-xl bg-white border border-slate-200 z-50 py-2 text-slate-800">
+            <a href="simulador_3d_interactivo.html" target="_blank" class="flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-purple-600 transition">
+              <span class="text-base mr-2.5">🎮</span>
+              <div>
+                <p class="font-bold text-slate-900">Abrir Simulador 3D & Videojuego</p>
+                <p class="text-[11px] text-slate-500">Recorrido en 1ra persona y editor</p>
+              </div>
+            </a>
+            <a href="distribucion_aulas_editable.pptx" download class="flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
+              <span class="text-base mr-2.5">📊</span>
+              <div>
+                <p class="font-bold text-slate-900">Presentación PowerPoint (.pptx)</p>
+                <p class="text-[11px] text-slate-500">Con los 16 APs y diapositivas editables</p>
+              </div>
+            </a>
+            <button onclick="downloadSelfContainedHtml()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
+              <span class="text-base mr-2.5">🌐</span>
+              <div>
+                <p class="font-bold text-slate-900">Guardar Web Actualizada (.html)</p>
+                <p class="text-[11px] text-slate-500">Guarda todas las modificaciones</p>
+              </div>
+            </button>
+            <button onclick="downloadPngImage()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
+              <span class="text-base mr-2.5">🖼️</span>
+              <div>
+                <p class="font-bold text-slate-900">Exportar Imagen HD (.png)</p>
+                <p class="text-[11px] text-slate-500" id="downloadPngDesc">Exporta el plano activo</p>
+              </div>
+            </button>
+            <button onclick="downloadSvgVector()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
+              <span class="text-base mr-2.5">📐</span>
+              <div>
+                <p class="font-bold text-slate-900">Vector SVG Nítido (.svg)</p>
+                <p class="text-[11px] text-slate-500">Formato vectorial escalable</p>
+              </div>
+            </button>
+            <button onclick="window.print()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
+              <span class="text-base mr-2.5">🖨️</span>
+              <div>
+                <p class="font-bold text-slate-900">Imprimir o Guardar PDF</p>
+                <p class="text-[11px] text-slate-500">Hoja A4 horizontal</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- SUB-BARRA DE HERRAMIENTAS DINÁMICAS (SECCIÓN AULAS) -->
+  <div id="toolbar-aulas" class="bg-white border-b border-slate-200 no-print py-2.5 px-4 sm:px-6 lg:px-8 shadow-2xs">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      
+      <div class="flex items-center space-x-2">
+        <div class="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 border border-slate-200">
+          <button onclick="setShift('manana')" id="btn-manana" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition bg-white text-blue-700 shadow-xs flex items-center space-x-1">
+            <span>🌅</span><span>Mañana</span>
+          </button>
+          <button onclick="setShift('tarde')" id="btn-tarde" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+            <span>☀️</span><span>Tarde</span>
+          </button>
+          <button onclick="setShift('noche')" id="btn-noche" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+            <span>🌙</span><span>Noche</span>
+          </button>
+          <button onclick="setShift('todos')" id="btn-todos" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+            <span>📑</span><span>Completo</span>
+          </button>
+        </div>
+
+        <button onclick="addNewRoomQuick()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow-xs transition">
+          <span>+ Aula</span>
+        </button>
+        <button onclick="addNewCorridorQuick()" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow-xs transition">
+          <span>+ Pasillo</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
+        <span class="text-slate-400 font-medium whitespace-nowrap mr-1">Filtrar:</span>
+        <button onclick="filterCategory('all')" id="cat-all" class="cat-pill px-2.5 py-1 rounded-md font-semibold bg-slate-800 text-white transition">Todas</button>
+        <button onclick="filterCategory('Salud')" id="cat-Salud" class="cat-pill px-2 py-1 rounded-md font-medium bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition">🏥 Salud</button>
+        <button onclick="filterCategory('Seguridad')" id="cat-Seguridad" class="cat-pill px-2 py-1 rounded-md font-medium bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition">🦺 Seguridad</button>
+        <button onclick="filterCategory('Tecnología')" id="cat-Tecnología" class="cat-pill px-2 py-1 rounded-md font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition">💻 Software</button>
+        <button onclick="filterCategory('Sociales')" id="cat-Sociales" class="cat-pill px-2 py-1 rounded-md font-medium bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition">⚖️ Jurídica</button>
+        <button onclick="filterCategory('Gastronomía')" id="cat-Gastronomía" class="cat-pill px-2 py-1 rounded-md font-medium bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 transition">🍳 Cocina</button>
+        <button onclick="filterCategory('Pasillos')" id="cat-Pasillos" class="cat-pill px-2 py-1 rounded-md font-medium bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 transition">🚶 Pasillos</button>
+        <button onclick="filterCategory('Libre')" id="cat-Libre" class="cat-pill px-2 py-1 rounded-md font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition">✨ Libres</button>
+      </div>
+
+      <div class="relative min-w-[200px]">
+        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Buscar aula o materia..." 
+          class="w-full pl-8 pr-3 py-1 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 text-slate-800 placeholder-slate-400">
+        <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUB-BARRA DE HERRAMIENTAS DINÁMICAS (SECCIÓN REDES) -->
+  <div id="toolbar-redes" class="hidden bg-slate-800 text-white border-b border-slate-700 no-print py-2.5 px-4 sm:px-6 lg:px-8 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      
+      <!-- Filtros de Equipamiento Oficial -->
+      <div class="flex items-center gap-1.5 overflow-x-auto text-xs pb-1 md:pb-0">
+        <span class="text-slate-400 font-medium whitespace-nowrap mr-1">Filtrar Red:</span>
+        <button onclick="filterNetworkType('all')" id="net-filter-all" class="net-pill px-2.5 py-1 rounded-md font-bold bg-blue-600 text-white transition">Todos (25)</button>
+        <button onclick="filterNetworkType('ap')" id="net-filter-ap" class="net-pill px-2.5 py-1 rounded-md font-medium bg-slate-700 hover:bg-slate-600 text-rose-300 border border-slate-600 transition">📡 Access Points AP (16)</button>
+        <button onclick="filterNetworkType('switch')" id="net-filter-switch" class="net-pill px-2.5 py-1 rounded-md font-medium bg-slate-700 hover:bg-slate-600 text-emerald-300 border border-slate-600 transition">🗄️ Switches y Racks (5)</button>
+        <button onclick="filterNetworkType('router')" id="net-filter-router" class="net-pill px-2.5 py-1 rounded-md font-medium bg-slate-700 hover:bg-slate-600 text-sky-300 border border-slate-600 transition">🌐 Routers y Firewall (4)</button>
+      </div>
+
+      <!-- Acciones de Red -->
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleClassroomBackdrop()" id="btn-toggle-backdrop" class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
+          <span>👁️</span>
+          <span id="backdropToggleLabel">Atenuar Aulas</span>
+        </button>
+        <button onclick="addNewApQuick()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow-xs transition">
+          <span>+ Agregar AP</span>
+        </button>
+      </div>
+
+      <!-- Buscador de Redes -->
+      <div class="relative min-w-[200px]">
+        <input type="text" id="searchNetworkInput" oninput="handleNetworkSearch()" placeholder="Buscar AP, Switch, IP o aula..." 
+          class="w-full pl-8 pr-3 py-1 text-xs bg-slate-900 border border-slate-700 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-sky-400 text-white placeholder-slate-400">
+        <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ESTADÍSTICAS SUPERIORES -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1 w-full flex flex-wrap items-center justify-between gap-3 text-xs">
+    
+    <div id="stats-container-aulas" class="flex items-center space-x-3 sm:space-x-4">
+      <div class="flex items-center space-x-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+        <span class="font-bold text-slate-700" id="currentShiftLabel">Turno Mañana</span>
+      </div>
+      <div class="text-slate-500"><span class="font-bold text-slate-800" id="statOccupied">18</span> aulas ocupadas</div>
+      <div class="text-slate-300">•</div>
+      <div class="text-slate-500"><span class="font-bold text-emerald-600" id="statFree">3</span> libres</div>
+      <div class="text-slate-300">•</div>
+      <div class="text-slate-500"><span class="font-bold text-slate-700" id="statCorridors">5</span> pasillos activos</div>
+    </div>
+
+    <div id="stats-container-redes" class="hidden flex items-center space-x-3 sm:space-x-4 text-slate-700">
+      <div class="flex items-center space-x-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+        <span class="font-bold text-slate-800">Infraestructura Oficial de Redes (Anexo 1)</span>
+      </div>
+      <div class="text-slate-600"><span class="font-bold text-rose-600" id="statAps">16</span> Access Points (AP1-AP16)</div>
+      <div class="text-slate-300">•</div>
+      <div class="text-slate-600"><span class="font-bold text-emerald-600" id="statSwitches">4</span> Switches + 1 Rack</div>
+      <div class="text-slate-300">•</div>
+      <div class="text-slate-600"><span class="font-bold text-sky-600" id="statRouters">4</span> Modems / Routers / FW</div>
+    </div>
+
+    <div class="flex items-center space-x-3 text-slate-400">
+      <span id="savedIndicator" class="text-emerald-600 font-medium flex items-center space-x-1 opacity-0 transition-opacity">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span>Guardado</span>
+      </span>
+      <button onclick="confirmResetDefaults()" class="hover:text-rose-600 transition text-[11px] underline">Restablecer valores originales</button>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL: PLANO SVG + PANEL LATERAL DINÁMICO -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex-1 w-full flex flex-col lg:flex-row gap-5 items-start">
+    
+    <!-- CANVAS DEL PLANO SVG -->
+    <div class="flex-1 w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 overflow-hidden relative print-container">
+      
+      <div class="hidden print:block mb-3 border-b pb-2">
+        <h2 class="text-xl font-bold text-slate-900" id="printMainTitle">Plano Oficial de Infraestructura Institucional</h2>
+        <p class="text-xs text-slate-600" id="printSubheader">Sección 2: Infraestructura y Telecomunicaciones de Red</p>
+      </div>
+
+      <!-- SVG 1250x670 -->
+      <div class="w-full overflow-x-auto relative pr-2 pb-2">
+        <svg id="campusSvg" viewBox="0 0 1250 670" class="w-full h-auto select-none transition-all duration-300" style="min-width: 860px;"
+             onmousemove="handleSvgMouseMove(event)" onmouseup="handleSvgMouseUp(event)" onmouseleave="handleSvgMouseUp(event)">
+          <defs>
+            <pattern id="patioPattern" width="24" height="24" patternUnits="userSpaceOnUse">
+              <path d="M 24 0 L 0 24 M 0 0 L 24 24" fill="none" stroke="#e2e8f0" stroke-width="0.75"/>
+            </pattern>
+            <linearGradient id="corridorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f8fafc"/>
+              <stop offset="100%" stop-color="#edf2f7"/>
+            </linearGradient>
+            <filter id="cardShadow" x="-4%" y="-4%" width="108%" height="108%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.08"/>
+            </filter>
+          </defs>
+
+          <!-- MUROS EXTERIORES BASE -->
+          <rect id="outerWallBg" x="20" y="16" width="1175" height="635" rx="14" fill="#ffffff" stroke="#334155" stroke-width="3.5"/>
+          <rect x="15" y="11" width="1185" height="645" rx="18" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity="0.6"/>
+
+          <!-- PATIO CENTRAL -->
+          <g id="patio-central">
+            <rect x="320" y="220" width="540" height="140" fill="url(#patioPattern)" stroke="#cbd5e1" stroke-width="1.5"/>
+            <circle cx="590" cy="290" r="28" fill="#dcfce7" stroke="#86efac" stroke-width="2"/>
+            <circle cx="590" cy="290" r="12" fill="#22c55e" opacity="0.4"/>
+            <text x="590" y="332" text-anchor="middle" fill="#64748b" font-size="13" font-weight="bold" letter-spacing="2">PATIO CENTRAL</text>
+          </g>
+
+          <!-- CAPA 1: PASILLOS DINÁMICOS -->
+          <g id="dynamic-corridors-group"></g>
+
+          <!-- CAPA 2: AULAS DINÁMICAS -->
+          <g id="dynamic-rooms-group"></g>
+
+          <!-- CAPA 3: REDES Y TELECOMUNICACIONES (ANEXO 1 OFICIAL) -->
+          <g id="dynamic-networks-group"></g>
+
+        </svg>
+      </div>
+
+      <!-- Pie Informativo -->
+      <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 no-print">
+        <div id="footer-tip-aulas" class="flex items-center space-x-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
+          <span><b>Modo Aulas:</b> Haz clic en cualquier aula o pasillo para moverlo o cambiar asignaciones.</span>
+        </div>
+        <div id="footer-tip-redes" class="hidden flex items-center space-x-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-rose-500"></span>
+          <span><b>Modo Redes Oficial:</b> Haz clic en cualquier AP (AP1 a AP16) o equipo para ver y editar su boca de Switch o IP.</span>
+        </div>
+        <div class="text-[11px] text-slate-400">
+          Resolución SVG: 1250 x 670 px • Escala 100%
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL LATERAL DERECHO -->
+    <aside class="w-full lg:w-96 flex flex-col no-print">
+      
+      <!-- INSPECTOR DE AULA O PASILLO (SECCIÓN 1) -->
+      <div id="card-inspector-aula" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
+        <div class="flex items-start justify-between border-b border-slate-100 pb-3 mb-3">
+          <div class="flex-1 mr-2">
+            <span id="selectedTypeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 inline-block mb-1">
+              Aula / Espacio
+            </span>
+            <input type="text" id="directNumInput" oninput="updateCurrentRoomField('num', this.value)" 
+              class="text-lg font-bold text-slate-900 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 w-full focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
+          </div>
+          <button onclick="confirmDeleteCurrentRoom()" title="Eliminar este elemento" class="text-rose-500 hover:text-rose-700 p-2 rounded-lg hover:bg-rose-50 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+
+        <!-- Coordenadas y Dimensiones -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 mb-3 text-xs space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-700">📐 Posición y Tamaño</span>
+            <span class="text-[11px] text-slate-500 font-mono" id="coordsIndicator">(0, 0) • 0x0</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex items-center space-x-1 bg-white p-1 rounded-lg border border-slate-200 justify-center">
+              <span class="text-[11px] text-slate-500 font-semibold mr-1">Mover:</span>
+              <button onclick="nudgeRoom(-15, 0)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">⬅️</button>
+              <button onclick="nudgeRoom(15, 0)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">➡️</button>
+              <button onclick="nudgeRoom(0, -15)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">⬆️</button>
+              <button onclick="nudgeRoom(0, 15)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">⬇️</button>
+            </div>
+            <div class="flex items-center space-x-1 bg-white p-1 rounded-lg border border-slate-200 justify-center">
+              <span class="text-[11px] text-slate-500 font-semibold mr-1">Dim:</span>
+              <button onclick="resizeRoom(15, 0)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">W+</button>
+              <button onclick="resizeRoom(-15, 0)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">W-</button>
+              <button onclick="resizeRoom(0, 15)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">H+</button>
+              <button onclick="resizeRoom(0, -15)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">H-</button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between bg-white p-1.5 rounded-lg border border-slate-200">
+            <span class="text-[11px] text-slate-600 font-semibold">🔤 Tamaño Letras:</span>
+            <div class="flex items-center space-x-1">
+              <button onclick="adjustFontSize(-0.15)" class="px-2.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded font-bold text-slate-700 text-xs">A-</button>
+              <button onclick="resetFontSize()" class="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded font-semibold text-slate-600 text-[11px]">Auto</button>
+              <button onclick="adjustFontSize(0.15)" class="px-2.5 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded font-bold text-xs">A+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Asignaciones de Turnos -->
+        <div class="space-y-2.5 flex-1 text-xs">
+          <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-700">🌅 Turno Mañana</label>
+              <select id="directCatM" onchange="updateCurrentShiftCat('manana', this.value)" class="text-[11px] px-1.5 py-0.5 border border-slate-200 rounded bg-slate-50 font-semibold">
+                <option value="Salud">Salud</option>
+                <option value="Seguridad">Seguridad</option>
+                <option value="Tecnología">Software / IA</option>
+                <option value="Sociales">Jurídica / Soc.</option>
+                <option value="Gastronomía">Gastronomía</option>
+                <option value="Deportes">Prep. Física</option>
+                <option value="Financiera">Financiera</option>
+                <option value="Administración">Administración</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Pasillos">Pasillo / Circulación</option>
+                <option value="Técnica">Técnica</option>
+                <option value="Libre">Libre</option>
+              </select>
+            </div>
+            <input type="text" id="directTextM" oninput="updateCurrentShiftText('manana', this.value)" 
+              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg font-bold text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
+          </div>
+
+          <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-700">☀️ Turno Tarde</label>
+              <select id="directCatT" onchange="updateCurrentShiftCat('tarde', this.value)" class="text-[11px] px-1.5 py-0.5 border border-slate-200 rounded bg-slate-50 font-semibold">
+                <option value="Salud">Salud</option>
+                <option value="Seguridad">Seguridad</option>
+                <option value="Tecnología">Software / IA</option>
+                <option value="Sociales">Jurídica / Soc.</option>
+                <option value="Gastronomía">Gastronomía</option>
+                <option value="Deportes">Prep. Física</option>
+                <option value="Financiera">Financiera</option>
+                <option value="Administración">Administración</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Pasillos">Pasillo / Circulación</option>
+                <option value="Técnica">Técnica</option>
+                <option value="Libre">Libre</option>
+              </select>
+            </div>
+            <input type="text" id="directTextT" oninput="updateCurrentShiftText('tarde', this.value)" 
+              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg font-bold text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
+          </div>
+
+          <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-700">🌙 Turno Noche</label>
+              <select id="directCatN" onchange="updateCurrentShiftCat('noche', this.value)" class="text-[11px] px-1.5 py-0.5 border border-slate-200 rounded bg-slate-50 font-semibold">
+                <option value="Salud">Salud</option>
+                <option value="Seguridad">Seguridad</option>
+                <option value="Tecnología">Software / IA</option>
+                <option value="Sociales">Jurídica / Soc.</option>
+                <option value="Gastronomía">Gastronomía</option>
+                <option value="Deportes">Prep. Física</option>
+                <option value="Financiera">Financiera</option>
+                <option value="Administración">Administración</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Pasillos">Pasillo / Circulación</option>
+                <option value="Técnica">Técnica</option>
+                <option value="Libre">Libre</option>
+              </select>
+            </div>
+            <input type="text" id="directTextN" oninput="updateCurrentShiftText('noche', this.value)" 
+              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg font-bold text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
+          </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-100 flex items-center space-x-2">
+          <button onclick="duplicateCurrentRoom()" class="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+            <span>📋 Duplicar</span>
+          </button>
+          <button onclick="confirmDeleteCurrentRoom()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition">
+            <span>Quitar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- INSPECTOR DE EQUIPO DE RED (SECCIÓN 2 - OFICIAL) -->
+      <div id="card-inspector-red" class="hidden bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-xl p-5 flex flex-col">
+        <div class="flex items-start justify-between border-b border-slate-800 pb-3 mb-3">
+          <div class="flex-1 mr-2">
+            <span id="netTypeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 inline-block mb-1">
+              Punto de Acceso Wi-Fi
+            </span>
+            <input type="text" id="netNameInput" oninput="updateCurrentNetField('name', this.value)" 
+              class="text-lg font-bold text-white bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 w-full focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 focus:outline-hidden">
+          </div>
+          <button onclick="confirmDeleteCurrentNetDevice()" title="Eliminar equipo" class="text-rose-400 hover:text-rose-300 p-2 rounded-lg hover:bg-rose-950/40 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+
+        <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/80 mb-3 text-xs space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-300">📍 Posición en Plano</span>
+            <span class="text-[11px] text-sky-400 font-mono" id="netCoordsIndicator">(0, 0)</span>
+          </div>
+
+          <div class="flex items-center space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-700 justify-center">
+            <span class="text-[11px] text-slate-400 font-semibold mr-1">Mover:</span>
+            <button onclick="nudgeNetDevice(-10, 0)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">⬅️</button>
+            <button onclick="nudgeNetDevice(10, 0)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">➡️</button>
+            <button onclick="nudgeNetDevice(0, -10)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">⬆️</button>
+            <button onclick="nudgeNetDevice(0, 10)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">⬇️</button>
+          </div>
+        </div>
+
+        <div class="space-y-2.5 flex-1 text-xs">
+          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
+            <label class="font-bold text-slate-300">Ubicación / Aula</label>
+            <input type="text" id="netRoomInput" oninput="updateCurrentNetField('room', this.value)" 
+              class="w-full px-2.5 py-1 border border-slate-700 rounded-lg text-white bg-slate-900 focus:ring-2 focus:ring-sky-400 font-semibold">
+          </div>
+
+          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
+            <label class="font-bold text-slate-300">Puerto de Switch / Boca PoE</label>
+            <input type="text" id="netPortInput" oninput="updateCurrentNetField('port', this.value)" 
+              class="w-full px-2.5 py-1 border border-slate-700 rounded-lg text-emerald-300 bg-slate-900 focus:ring-2 focus:ring-sky-400 font-mono text-[11px]">
+          </div>
+
+          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
+            <label class="font-bold text-slate-300">Dirección IP y VLAN</label>
+            <input type="text" id="netIpInput" oninput="updateCurrentNetField('ip', this.value)" 
+              class="w-full px-2.5 py-1 border border-slate-700 rounded-lg text-sky-300 bg-slate-900 focus:ring-2 focus:ring-sky-400 font-mono text-[11px]">
+          </div>
+
+          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-300">Estado de Conexión</label>
+              <select id="netStatusSelect" onchange="updateCurrentNetField('status', this.value)" class="text-xs px-2 py-0.5 border border-slate-700 rounded bg-slate-900 text-white font-semibold">
+                <option value="online">🟢 Activo / En Servicio</option>
+                <option value="testing">🟡 En Verificación</option>
+                <option value="offline">🔴 Desconectado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-800 flex items-center space-x-2">
+          <button onclick="duplicateCurrentNetDevice()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition">
+            <span>📋 Duplicar</span>
+          </button>
+          <button onclick="confirmDeleteCurrentNetDevice()" class="px-3 py-1.5 bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-800 rounded-xl text-xs font-bold transition">
+            <span>Quitar</span>
+          </button>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- MODAL: PLANILLA DE AULAS E INVENTARIO TÉCNICO -->
+  <div id="tableModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      
+      <div class="px-6 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Planilla Integral e Inventario Técnico</h3>
+          <p class="text-xs text-slate-500">Datos consolidados de asignación de espacios y red Wi-Fi / PoE</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="bg-slate-200 p-1 rounded-xl flex items-center space-x-1 text-xs">
+            <button onclick="switchModalTab('aulas')" id="modalTabBtnAulas" class="px-3 py-1 rounded-lg font-bold bg-white text-blue-700 shadow-xs">
+              🏛️ Aulas y Pasillos
+            </button>
+            <button onclick="switchModalTab('redes')" id="modalTabBtnRedes" class="px-3 py-1 rounded-lg font-bold text-slate-600 hover:text-slate-900">
+              🔌 Inventario de Redes (Oficial)
+            </button>
+          </div>
+          <button onclick="toggleTableModal()" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="modalViewAulas" class="p-6 overflow-y-auto flex-1">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+              <th class="py-2.5 px-3">Espacio / Pasillo</th>
+              <th class="py-2.5 px-3">Tipo</th>
+              <th class="py-2.5 px-3">Turno Mañana</th>
+              <th class="py-2.5 px-3">Turno Tarde</th>
+              <th class="py-2.5 px-3">Turno Noche</th>
+              <th class="py-2.5 px-3 text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+        </table>
+      </div>
+
+      <div id="modalViewRedes" class="p-6 overflow-y-auto flex-1 hidden">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-900 text-white font-bold border-b border-slate-800">
+              <th class="py-2.5 px-3">Dispositivo</th>
+              <th class="py-2.5 px-3">Tipo</th>
+              <th class="py-2.5 px-3">Ubicación / Aula</th>
+              <th class="py-2.5 px-3">Boca Switch / Conexión</th>
+              <th class="py-2.5 px-3">Dirección IP</th>
+              <th class="py-2.5 px-3">Estado</th>
+              <th class="py-2.5 px-3 text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="networkTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+        </table>
+      </div>
+
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
+        <span id="modalFooterTotal">Total de registros cargados</span>
+        <button onclick="window.print()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-xs">
+          Imprimir Planilla
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT CON TODA LA LÓGICA DE LAS 2 SECCIONES INTERACTIVAS -->
+  <script>
+    // BASE DE DATOS DE AULAS
+    const DEFAULT_ROOMS = [{"id": "pasillo_norte", "num": "PASILLO NORTE", "isCorridor": true, "x": 320, "y": 175, "w": 500, "h": 45, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_oeste", "num": "PASILLO OESTE", "isCorridor": true, "x": 150, "y": 175, "w": 55, "h": 335, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_este", "num": "PASILLO ESTE", "isCorridor": true, "x": 935, "y": 175, "w": 55, "h": 335, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_sur", "num": "CIRCULACION SUR", "isCorridor": true, "x": 205, "y": 465, "w": 785, "h": 45, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_conector_sur", "num": "CONECTOR SUR", "isCorridor": true, "x": 535, "y": 360, "w": 50, "h": 280, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "admin_rectoria", "num": "Rectoria", "isCorridor": false, "x": 405, "y": 360, "w": 130, "h": 105, "manana": {"text": "Equipo Directivo", "category": "Administración", "isFree": false}}, {"id": "admin_profesores", "num": "Sala Profesores", "isCorridor": false, "x": 585, "y": 360, "w": 125, "h": 105, "manana": {"text": "Sala de Reuniones", "category": "Administración", "isFree": false}}, {"id": "aula_12", "num": "Aula 12", "isCorridor": false, "x": 710, "y": 360, "w": 150, "h": 105, "manana": {"text": "Cocina 1°", "category": "Gastronomía", "isFree": false}}, {"id": "admin_preceptoria", "num": "Preceptoria", "isCorridor": false, "x": 405, "y": 510, "w": 130, "h": 130, "manana": {"text": "Preceptoría", "category": "Administración", "isFree": false}}, {"id": "admin_kiosco", "num": "Kiosco", "isCorridor": false, "x": 585, "y": 510, "w": 95, "h": 130, "manana": {"text": "Kiosco / Buffet", "category": "Servicios", "isFree": false}}, {"id": "admin_banos_oeste", "num": "Banos Oeste", "isCorridor": false, "x": 320, "y": 360, "w": 85, "h": 105, "manana": {"text": "Sanitarios", "category": "Servicios", "isFree": false}}, {"id": "admin_banos_sur", "num": "Banos Sur", "isCorridor": false, "x": 330, "y": 510, "w": 75, "h": 130, "manana": {"text": "Sanitarios", "category": "Servicios", "isFree": false}}, {"id": "aula_1", "num": "Aula 1", "isCorridor": false, "x": 680, "y": 510, "w": 95, "h": 130, "manana": {"text": "Cocina 3°", "category": "Gastronomía", "isFree": false}}, {"id": "aula_2", "num": "Aula 2", "isCorridor": false, "x": 775, "y": 510, "w": 95, "h": 130, "manana": {"text": "Jurídica 2°", "category": "Sociales", "isFree": false}}, {"id": "aula_3", "num": "Aula 3", "isCorridor": false, "x": 870, "y": 510, "w": 95, "h": 130, "manana": {"text": "Periodismo 1°", "category": "Sociales", "isFree": false}}, {"id": "aula_4", "num": "Aula 4", "isCorridor": false, "x": 965, "y": 510, "w": 200, "h": 130, "manana": {"text": "Hig. y Seg. 1° A", "category": "Seguridad", "isFree": false}}, {"id": "aula_5", "num": "Aula 5", "isCorridor": false, "x": 1030, "y": 425, "w": 135, "h": 85, "manana": {"text": "Hig. y Seg. 1° B", "category": "Seguridad", "isFree": false}}, {"id": "aula_6", "num": "Aula 6", "isCorridor": false, "x": 1030, "y": 340, "w": 135, "h": 85, "manana": {"text": "Prep. Física 3°", "category": "Deportes", "isFree": false}}, {"id": "aula_7", "num": "Aula 7", "isCorridor": false, "x": 1030, "y": 255, "w": 135, "h": 85, "manana": {"text": "Pedagogía 7", "category": "Tecnología", "isFree": true}}, {"id": "aula_8", "num": "Aula 8", "isCorridor": false, "x": 1030, "y": 175, "w": 135, "h": 80, "manana": {"text": "Jurídica 3°", "category": "Sociales", "isFree": false}}, {"id": "aula_9", "num": "Aula 9", "isCorridor": false, "x": 990, "y": 28, "w": 175, "h": 147, "manana": {"text": "Hig. y Seg. 1° C", "category": "Seguridad", "isFree": false}}, {"id": "aula_10", "num": "Aula 10", "isCorridor": false, "x": 820, "y": 28, "w": 170, "h": 147, "manana": {"text": "Enfermería 3°", "category": "Salud", "isFree": false}}, {"id": "aula_11", "num": "Aula 11", "isCorridor": false, "x": 845, "y": 175, "w": 145, "h": 185, "manana": {"text": "Cocina 2°", "category": "Gastronomía", "isFree": false}}, {"id": "admin_taller", "num": "Taller / Computacion", "isCorridor": false, "x": 585, "y": 28, "w": 235, "h": 147, "manana": {"text": "Informática", "category": "Tecnología", "isFree": false}}, {"id": "admin_cocina_inst", "num": "Cocina / Deposito", "isCorridor": false, "x": 35, "y": 28, "w": 285, "h": 147, "manana": {"text": "Cocina", "category": "Gastronomía", "isFree": false}}, {"id": "aula_16", "num": "Aula 16", "isCorridor": false, "x": 205, "y": 175, "w": 115, "h": 145, "manana": {"text": "Software 1°", "category": "Tecnología", "isFree": false}}, {"id": "aula_15", "num": "Aula 15", "isCorridor": false, "x": 205, "y": 320, "w": 115, "h": 145, "manana": {"text": "Hig. y Seg. 3°", "category": "Seguridad", "isFree": false}}, {"id": "aula_17", "num": "Aula 17", "isCorridor": false, "x": 35, "y": 175, "w": 115, "h": 155, "manana": {"text": "Enfermería 2°", "category": "Salud", "isFree": false}}, {"id": "aula_18", "num": "Aula 18", "isCorridor": false, "x": 35, "y": 330, "w": 115, "h": 150, "manana": {"text": "Jurídica 1°", "category": "Sociales", "isFree": false}}, {"id": "aula_19", "num": "Aula 19", "isCorridor": false, "x": 35, "y": 480, "w": 115, "h": 160, "manana": {"text": "Hig. y Seg. 2°", "category": "Seguridad", "isFree": false}}, {"id": "aula_20", "num": "Aula 20", "isCorridor": false, "x": 150, "y": 510, "w": 180, "h": 130, "manana": {"text": "Prep. Física 1°", "category": "Deportes", "isFree": false}}];
+
+    // BASE DE DATOS DE REDES (16 APs + EQUIPAMIENTO CORE)
+    const DEFAULT_APS = [{"id": "AP1", "name": "AP1", "room": "Aula 1", "x": 690, "y": 555, "w": 18, "h": 18, "ip": "192.168.100.11", "port": "Switch POE (P1)", "vlan": "VLAN 50 Wi-Fi", "bx": 640, "by": 530}, {"id": "AP2", "name": "AP2", "room": "Aula 2", "x": 860, "y": 555, "w": 18, "h": 18, "ip": "192.168.100.12", "port": "Switch POE (P2)", "vlan": "VLAN 50 Wi-Fi", "bx": 810, "by": 530}, {"id": "AP3", "name": "AP3", "room": "Aula 4", "x": 985, "y": 530, "w": 18, "h": 18, "ip": "192.168.100.13", "port": "Switch POE (P3)", "vlan": "VLAN 50 Wi-Fi", "bx": 930, "by": 500}, {"id": "AP4", "name": "AP4", "room": "Aula 6", "x": 1035, "y": 355, "w": 18, "h": 18, "ip": "192.168.100.14", "port": "Switch POE (P4)", "vlan": "VLAN 50 Wi-Fi", "bx": 965, "by": 360}, {"id": "AP5", "name": "AP5", "room": "Aula 8", "x": 1075, "y": 245, "w": 18, "h": 18, "ip": "192.168.100.15", "port": "Switch POE (P5)", "vlan": "VLAN 50 Wi-Fi", "bx": 1005, "by": 205}, {"id": "AP6", "name": "AP6", "room": "Aula 9", "x": 995, "y": 145, "w": 18, "h": 18, "ip": "192.168.100.16", "port": "Switch POE (P6)", "vlan": "VLAN 50 Wi-Fi", "bx": 1040, "by": 150}, {"id": "AP7", "name": "AP7", "room": "Aula 11", "x": 895, "y": 260, "w": 18, "h": 18, "ip": "192.168.100.17", "port": "Switch POE (P7)", "vlan": "VLAN 50 Wi-Fi", "bx": 890, "by": 305}, {"id": "AP8", "name": "AP8", "room": "Aula 12", "x": 725, "y": 425, "w": 18, "h": 18, "ip": "192.168.100.18", "port": "Switch POE (P8)", "vlan": "VLAN 50 Wi-Fi", "bx": 735, "by": 330}, {"id": "AP9", "name": "AP9", "room": "Taller / Computacion", "x": 745, "y": 95, "w": 18, "h": 18, "ip": "192.168.100.19", "port": "Switch POE (P9)", "vlan": "VLAN 50 Wi-Fi", "bx": 730, "by": 25}, {"id": "AP10", "name": "AP10", "room": "Rectoria", "x": 525, "y": 370, "w": 18, "h": 18, "ip": "192.168.100.20", "port": "Switch P16 Rectoría (P10)", "vlan": "VLAN 10 Gestión", "bx": 535, "by": 310}, {"id": "AP11", "name": "AP11", "room": "Aula 16", "x": 270, "y": 310, "w": 18, "h": 18, "ip": "192.168.100.21", "port": "Switch P16 Oeste (P11)", "vlan": "VLAN 50 Wi-Fi", "bx": 240, "by": 365}, {"id": "AP12", "name": "AP12", "room": "Cocina / Deposito", "x": 145, "y": 105, "w": 18, "h": 18, "ip": "192.168.100.22", "port": "Switch P16 Oeste (P12)", "vlan": "VLAN 50 Wi-Fi", "bx": 175, "by": 75}, {"id": "AP13", "name": "AP13", "room": "Aula 17", "x": 142, "y": 245, "w": 18, "h": 18, "ip": "192.168.100.23", "port": "Switch P16 Oeste (P13)", "vlan": "VLAN 50 Wi-Fi", "bx": 75, "by": 235}, {"id": "AP14", "name": "AP14", "room": "Aula 20", "x": 155, "y": 535, "w": 18, "h": 18, "ip": "192.168.100.24", "port": "Switch POE (P14)", "vlan": "VLAN 50 Wi-Fi", "bx": 75, "by": 550}, {"id": "AP15", "name": "AP15", "room": "Pasillo Sur (Banos)", "x": 365, "y": 498, "w": 18, "h": 18, "ip": "192.168.100.25", "port": "Switch POE (P15)", "vlan": "VLAN 50 Wi-Fi", "bx": 320, "by": 440}, {"id": "AP16", "name": "AP16", "room": "Preceptoria", "x": 525, "y": 575, "w": 18, "h": 18, "ip": "192.168.100.26", "port": "Switch P8 Preceptoría (P8)", "vlan": "VLAN 10 Gestión", "bx": 575, "by": 615}];
+
+    const DEFAULT_HARDWARE = [
+      { id: "modem_isp", name: "Modem (ISP)", room: "Rectoria", x: 420, y: 370, w: 26, h: 18, type: "router", ip: "WAN Proveedor", port: "Fibra Óptica ISP", status: "online" },
+      { id: "router_dhcp", name: "Router (DHCP)", room: "Rectoria", x: 450, y: 370, w: 26, h: 18, type: "router", ip: "192.168.1.1 (GW)", port: "WAN Modem -> LAN", status: "online" },
+      { id: "switch_p16_rec", name: "Switch (P16)", room: "Rectoria", x: 480, y: 370, w: 26, h: 18, type: "switch", ip: "192.168.1.2", port: "Switch 16p Gigabit", status: "online" },
+      { id: "rack_kiosco", name: "Rack Central", room: "Kiosco", x: 600, y: 520, w: 22, h: 22, type: "switch", ip: "Gabinete Mural", port: "Punto Centralizado", status: "online" },
+      { id: "firewall_kiosco", name: "FireWall", room: "Kiosco", x: 600, y: 550, w: 26, h: 18, type: "router", ip: "192.168.1.254", port: "Seguridad Perimetral", status: "online" },
+      { id: "switch_poe_kiosco", name: "Switch POE (P16)", room: "Kiosco", x: 600, y: 575, w: 26, h: 18, type: "switch", ip: "192.168.1.3", port: "16 Puertos PoE+ (APs)", status: "online" },
+      { id: "switch_p8_prec", name: "Switch (P 8)", room: "Preceptoria", x: 505, y: 570, w: 24, h: 16, type: "switch", ip: "192.168.1.4", port: "8 Puertos Preceptoría", status: "online" },
+      { id: "switch_p16_oeste", name: "Switch (P16)", room: "Sector Oeste", x: 230, y: 175, w: 26, h: 16, type: "switch", ip: "192.168.1.5", port: "16 Puertos Ala Oeste", status: "online" },
+      { id: "router_wifi_a12", name: "Router (wifi)", room: "Aula 12", x: 780, y: 380, w: 26, h: 18, type: "router", ip: "192.168.12.1", port: "Enlace Switch POE", status: "online" }
+    ];
+
+    const STORAGE_ROOMS_KEY = 'inst_aulas_v9';
+    const STORAGE_APS_KEY = 'inst_aps_v9';
+    const STORAGE_HW_KEY = 'inst_hw_v9';
+
+    let roomsData = [];
+    let apsData = [];
+    let hwData = [];
+
+    try {
+      const sR = localStorage.getItem(STORAGE_ROOMS_KEY);
+      roomsData = sR ? JSON.parse(sR) : JSON.parse(JSON.stringify(DEFAULT_ROOMS));
+    } catch(e) { roomsData = JSON.parse(JSON.stringify(DEFAULT_ROOMS)); }
+
+    try {
+      const sA = localStorage.getItem(STORAGE_APS_KEY);
+      apsData = sA ? JSON.parse(sA) : JSON.parse(JSON.stringify(DEFAULT_APS));
+    } catch(e) { apsData = JSON.parse(JSON.stringify(DEFAULT_APS)); }
+
+    try {
+      const sH = localStorage.getItem(STORAGE_HW_KEY);
+      hwData = sH ? JSON.parse(sH) : JSON.parse(JSON.stringify(DEFAULT_HARDWARE));
+    } catch(e) { hwData = JSON.parse(JSON.stringify(DEFAULT_HARDWARE)); }
+
+    function saveToStorage() {
+      try {
+        localStorage.setItem(STORAGE_ROOMS_KEY, JSON.stringify(roomsData));
+        localStorage.setItem(STORAGE_APS_KEY, JSON.stringify(apsData));
+        localStorage.setItem(STORAGE_HW_KEY, JSON.stringify(hwData));
+        const ind = document.getElementById('savedIndicator');
+        if (ind) {
+          ind.classList.remove('opacity-0');
+          setTimeout(() => ind.classList.add('opacity-0'), 1800);
+        }
+      } catch(e) {}
+    }
+
+    const categoryStyles = {
+      "Salud": { fill: "#ffe4e6", stroke: "#f43f5e", text: "#9f1239", icon: "🏥" },
+      "Seguridad": { fill: "#fef3c7", stroke: "#f59e0b", text: "#92400e", icon: "🦺" },
+      "Tecnología": { fill: "#e0e7ff", stroke: "#6366f1", text: "#3730a3", icon: "💻" },
+      "Sociales": { fill: "#f3e8ff", stroke: "#a855f7", text: "#6b21a8", icon: "⚖️" },
+      "Gastronomía": { fill: "#ffedd5", stroke: "#f97316", text: "#9a3412", icon: "🍳" },
+      "Deportes": { fill: "#dcfce7", stroke: "#22c55e", text: "#166534", icon: "🏃" },
+      "Financiera": { fill: "#cffafe", stroke: "#06b6d4", text: "#155e75", icon: "💼" },
+      "Administración": { fill: "#f8fafc", stroke: "#475569", text: "#0f172a", icon: "🏛️" },
+      "Servicios": { fill: "#f1f5f9", stroke: "#64748b", text: "#334155", icon: "🔧" },
+      "Pasillos": { fill: "url(#corridorGrad)", stroke: "#94a3b8", text: "#475569", icon: "🚶" },
+      "Libre": { fill: "#ffffff", stroke: "#94a3b8", text: "#64748b", icon: "✨" }
+    };
+
+    let currentMainSection = 'redes'; // Default to Redes since user is reviewing networks
+    let currentShift = 'manana';
+    let currentCategoryFilter = 'all';
+    let currentNetworkFilter = 'all';
+    let selectedRoomId = 'admin_rectoria';
+    let selectedNetId = 'AP1';
+    let searchQuery = '';
+    let searchNetQuery = '';
+    let dimClassroomsInNetworks = false;
+
+    // Arrastre
+    let isDragging = false;
+    let dragType = null; // 'room' o 'ap'
+    let dragItemId = null;
+    let dragStartX = 0, dragStartY = 0;
+    let itemOrigX = 0, itemOrigY = 0;
+
+    // Cable segments
+    const redCableSegments = [[[600, 520], [690, 520], [690, 555]], [[600, 485], [980, 485]], [[860, 485], [860, 555]], [[725, 485], [725, 425]], [[980, 485], [1005, 485], [1005, 530]], [[980, 485], [980, 175]], [[980, 355], [1035, 355]], [[980, 260], [895, 260]], [[980, 245], [1075, 245]], [[980, 175], [995, 175], [995, 145]], [[980, 175], [745, 175], [745, 95]], [[600, 485], [150, 485]], [[535, 485], [535, 370], [525, 370]], [[365, 485], [365, 498]], [[150, 485], [155, 485], [155, 535]], [[150, 485], [150, 105]], [[150, 245], [142, 245]], [[150, 175], [270, 175], [270, 310]], [[150, 105], [145, 105]]];
+    const blueCableSegments = [[[420, 365], [525, 365], [860, 365]], [[560, 365], [560, 510]], [[560, 510], [600, 510], [600, 525]], [[560, 510], [525, 510], [525, 575]], [[405, 635], [525, 635], [525, 575]]];
+
+    function switchMainSection(section) {
+      currentMainSection = section;
+      const btnAulas = document.getElementById('tab-btn-aulas');
+      const btnRedes = document.getElementById('tab-btn-redes');
+      const toolbarAulas = document.getElementById('toolbar-aulas');
+      const toolbarRedes = document.getElementById('toolbar-redes');
+      const statsAulas = document.getElementById('stats-container-aulas');
+      const statsRedes = document.getElementById('stats-container-redes');
+      const tipAulas = document.getElementById('footer-tip-aulas');
+      const tipRedes = document.getElementById('footer-tip-redes');
+      const inspectorAula = document.getElementById('card-inspector-aula');
+      const inspectorRed = document.getElementById('card-inspector-red');
+      const outerWall = document.getElementById('outerWallBg');
+      const printSub = document.getElementById('printSubheader');
+
+      if (section === 'aulas') {
+        btnAulas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-blue-600 text-white shadow-sm";
+        btnRedes.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60";
+        toolbarAulas.classList.remove('hidden');
+        toolbarRedes.classList.add('hidden');
+        statsAulas.classList.remove('hidden');
+        statsRedes.classList.add('hidden');
+        tipAulas.classList.remove('hidden');
+        tipRedes.classList.add('hidden');
+        inspectorAula.classList.remove('hidden');
+        inspectorRed.classList.add('hidden');
+        outerWall.setAttribute('fill', '#ffffff');
+        printSub.textContent = "Sección 1: Distribución Académica de Aulas y Espacios";
+        document.getElementById('downloadPngDesc').textContent = "Exporta el plano de aulas y turnos";
+      } else {
+        btnRedes.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-rose-600 text-white shadow-sm";
+        btnAulas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60";
+        toolbarAulas.classList.add('hidden');
+        toolbarRedes.classList.remove('hidden');
+        statsAulas.classList.add('hidden');
+        statsRedes.classList.remove('hidden');
+        tipAulas.classList.add('hidden');
+        tipRedes.classList.remove('hidden');
+        inspectorAula.classList.add('hidden');
+        inspectorRed.classList.remove('hidden');
+        outerWall.setAttribute('fill', '#ffffff');
+        printSub.textContent = "Sección 2: Infraestructura y Telecomunicaciones de Red (Anexo 1)";
+        document.getElementById('downloadPngDesc').textContent = "Exporta el plano de redes oficial";
+      }
+
+      renderSvgAll();
+      if (section === 'aulas' && selectedRoomId) selectRoom(selectedRoomId);
+      if (section === 'redes' && selectedNetId) selectNetDevice(selectedNetId);
+    }
+
+    function getSvgCoordinates(evt) {
+      const svg = document.getElementById('campusSvg');
+      const pt = svg.createSVGPoint();
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+      return pt.matrixTransform(svg.getScreenCTM().inverse());
+    }
+
+    function handleRoomMouseDown(evt, roomId) {
+      if (evt.button !== 0 || currentMainSection !== 'aulas') return;
+      isDragging = true;
+      dragType = 'room';
+      dragItemId = roomId;
+      selectRoom(roomId);
+      const svgPt = getSvgCoordinates(evt);
+      dragStartX = svgPt.x;
+      dragStartY = svgPt.y;
+      const room = roomsData.find(r => r.id === roomId);
+      if (room) { itemOrigX = room.x; itemOrigY = room.y; }
+      const g = document.getElementById(`svg-room-${roomId}`);
+      if (g) g.classList.add('room-dragging');
+    }
+
+    function handleNetMouseDown(evt, netId) {
+      if (evt.button !== 0) return;
+      evt.stopPropagation();
+      isDragging = true;
+      dragType = 'ap';
+      dragItemId = netId;
+      selectNetDevice(netId);
+      const svgPt = getSvgCoordinates(evt);
+      dragStartX = svgPt.x;
+      dragStartY = svgPt.y;
+      const ap = apsData.find(a => a.id === netId) || hwData.find(h => h.id === netId);
+      if (ap) { itemOrigX = ap.x; itemOrigY = ap.y; }
+      const g = document.getElementById(`svg-net-${netId}`);
+      if (g) g.classList.add('room-dragging');
+    }
+
+    function handleSvgMouseMove(evt) {
+      if (!isDragging || !dragItemId) return;
+      const svgPt = getSvgCoordinates(evt);
+      const dx = svgPt.x - dragStartX;
+      const dy = svgPt.y - dragStartY;
+
+      if (dragType === 'room') {
+        const room = roomsData.find(r => r.id === dragItemId);
+        if (room) {
+          room.x = Math.round((itemOrigX + dx) / 5) * 5;
+          room.y = Math.round((itemOrigY + dy) / 5) * 5;
+          renderSvgAll();
+          updateRoomCoordsDisplay(room);
+        }
+      } else if (dragType === 'ap') {
+        const dev = apsData.find(a => a.id === dragItemId) || hwData.find(h => h.id === dragItemId);
+        if (dev) {
+          dev.x = Math.round((itemOrigX + dx) / 5) * 5;
+          dev.y = Math.round((itemOrigY + dy) / 5) * 5;
+          if (dev.bx) {
+            dev.bx = Math.round((dev.bx + dx / 5)) * 5;
+            dev.by = Math.round((dev.by + dy / 5)) * 5;
+          }
+          renderSvgAll();
+          updateNetCoordsDisplay(dev);
+        }
+      }
+    }
+
+    function handleSvgMouseUp(evt) {
+      if (isDragging) {
+        if (dragType === 'room') {
+          const g = document.getElementById(`svg-room-${dragItemId}`);
+          if (g) g.classList.remove('room-dragging');
+        } else if (dragType === 'ap') {
+          const g = document.getElementById(`svg-net-${dragItemId}`);
+          if (g) g.classList.remove('room-dragging');
+        }
+        isDragging = false;
+        dragItemId = null;
+        dragType = null;
+        saveToStorage();
+      }
+    }
+
+    function renderSvgAll() {
+      renderCorridorsAndRooms();
+      renderNetworksLayer();
+      updateStats();
+    }
+
+    function renderCorridorsAndRooms() {
+      const corridorsGroup = document.getElementById('dynamic-corridors-group');
+      const roomsGroup = document.getElementById('dynamic-rooms-group');
+      corridorsGroup.innerHTML = '';
+      roomsGroup.innerHTML = '';
+      const isNetworksMode = (currentMainSection === 'redes');
+
+      roomsData.forEach(item => {
+        const isCorridor = item.isCorridor === true;
+        const targetGroup = isCorridor ? corridorsGroup : roomsGroup;
+        const shiftData = currentShift === 'todos' ? item.manana : item[currentShift];
+        const style = categoryStyles[shiftData.category] || (isCorridor ? categoryStyles['Pasillos'] : categoryStyles['Libre']);
+
+        let isDimmed = false;
+        if (!isNetworksMode) {
+          const matchesCategory = currentCategoryFilter === 'all' || 
+            (currentCategoryFilter === 'Pasillos' ? isCorridor : 
+              (currentCategoryFilter === 'Libre' ? shiftData.isFree : shiftData.category === currentCategoryFilter));
+          const matchesSearch = searchQuery === '' || 
+            item.num.toLowerCase().includes(searchQuery) ||
+            item.manana.text.toLowerCase().includes(searchQuery);
+          isDimmed = !(matchesCategory && matchesSearch);
+        } else {
+          isDimmed = dimClassroomsInNetworks;
+        }
+
+        const isSelected = (!isNetworksMode && item.id === selectedRoomId);
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", `room-transition ${isCorridor ? 'corridor-hover' : 'room-hover'} ${isSelected ? 'active-room' : ''} ${isDimmed ? 'dimmed-element' : ''}`);
+        g.setAttribute("id", `svg-room-${item.id}`);
+        g.setAttribute("onmousedown", `handleRoomMouseDown(event, '${item.id}')`);
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", item.x);
+        rect.setAttribute("y", item.y);
+        rect.setAttribute("width", item.w);
+        rect.setAttribute("height", item.h);
+        rect.setAttribute("rx", isCorridor ? "2" : "4");
+
+        rect.setAttribute("fill", isCorridor ? "url(#corridorGrad)" : style.fill);
+        rect.setAttribute("stroke", isSelected ? "#2563eb" : (isCorridor ? "#94a3b8" : style.stroke));
+        rect.setAttribute("stroke-width", isSelected ? "3.5" : "1.5");
+        if (isCorridor) rect.setAttribute("stroke-dasharray", isSelected ? "none" : "4 2");
+        else rect.setAttribute("filter", "url(#cardShadow)");
+        g.appendChild(rect);
+
+        // Text
+        const textTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        if (isCorridor) {
+          const isVertical = item.h > item.w * 1.6;
+          const cx = item.x + item.w / 2;
+          const cy = item.y + item.h / 2;
+          textTitle.setAttribute("x", cx);
+          textTitle.setAttribute("y", cy);
+          textTitle.setAttribute("text-anchor", "middle");
+          textTitle.setAttribute("dominant-baseline", "middle");
+          textTitle.setAttribute("fill", isSelected ? "#1d4ed8" : "#94a3b8");
+          textTitle.setAttribute("font-size", "10");
+          textTitle.setAttribute("font-weight", "bold");
+          textTitle.setAttribute("letter-spacing", "1.5");
+          if (isVertical) textTitle.setAttribute("transform", `rotate(-90 ${cx} ${cy})`);
+          textTitle.textContent = item.num;
+        } else {
+          textTitle.setAttribute("x", item.x + 8);
+          textTitle.setAttribute("y", item.y + 18);
+          textTitle.setAttribute("fill", "#0f172a");
+          textTitle.setAttribute("font-size", "10.5");
+          textTitle.setAttribute("font-weight", "bold");
+          textTitle.textContent = `${style.icon ? style.icon + ' ' : ''}${item.num}`;
+        }
+        g.appendChild(textTitle);
+
+        if (isSelected) {
+          const handle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          handle.setAttribute("class", "resize-handle");
+          handle.setAttribute("x", item.x + item.w - 11);
+          handle.setAttribute("y", item.y + item.h - 11);
+          handle.setAttribute("width", "11");
+          handle.setAttribute("height", "11");
+          handle.setAttribute("fill", "#2563eb");
+          handle.setAttribute("stroke", "#ffffff");
+          g.appendChild(handle);
+        }
+
+        targetGroup.appendChild(g);
+      });
+    }
+
+    function renderNetworksLayer() {
+      const netGroup = document.getElementById('dynamic-networks-group');
+      netGroup.innerHTML = '';
+      if (currentMainSection !== 'redes') return;
+
+      // 1. Blue Cable (Backbone)
+      blueCableSegments.forEach(seg => {
+        const polyGlow = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        polyGlow.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
+        polyGlow.setAttribute("fill", "none");
+        polyGlow.setAttribute("stroke", "#1d4ed8");
+        polyGlow.setAttribute("stroke-width", "7");
+        polyGlow.setAttribute("stroke-linecap", "round");
+        polyGlow.setAttribute("stroke-linejoin", "round");
+        polyGlow.setAttribute("opacity", "0.25");
+        netGroup.appendChild(polyGlow);
+
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        poly.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
+        poly.setAttribute("fill", "none");
+        poly.setAttribute("stroke", "#2563eb");
+        poly.setAttribute("stroke-width", "4");
+        poly.setAttribute("stroke-linecap", "round");
+        poly.setAttribute("stroke-linejoin", "round");
+        netGroup.appendChild(poly);
+      });
+
+      // 2. Red Cable (PoE APs)
+      redCableSegments.forEach(seg => {
+        const polyGlow = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        polyGlow.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
+        polyGlow.setAttribute("fill", "none");
+        polyGlow.setAttribute("stroke", "#dc2626");
+        polyGlow.setAttribute("stroke-width", "5");
+        polyGlow.setAttribute("stroke-linecap", "round");
+        polyGlow.setAttribute("stroke-linejoin", "round");
+        polyGlow.setAttribute("opacity", "0.2");
+        netGroup.appendChild(polyGlow);
+
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        poly.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
+        poly.setAttribute("fill", "none");
+        poly.setAttribute("stroke", "#ef4444");
+        poly.setAttribute("stroke-width", "3");
+        poly.setAttribute("stroke-linecap", "round");
+        poly.setAttribute("stroke-linejoin", "round");
+        netGroup.appendChild(poly);
+      });
+
+      // 3. 16 APs
+      apsData.forEach(ap => {
+        const matchesFilter = (currentNetworkFilter === 'all' || currentNetworkFilter === 'ap');
+        const matchesSearch = searchNetQuery === '' || ap.name.toLowerCase().includes(searchNetQuery) || ap.room.toLowerCase().includes(searchNetQuery);
+        const isDimmed = !(matchesFilter && matchesSearch);
+        const isSelected = (ap.id === selectedNetId);
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("id", `svg-net-${ap.id}`);
+        g.setAttribute("class", `ap-hover ${isDimmed ? 'dimmed-element' : ''} ${isSelected ? 'active-net-device' : ''}`);
+        g.setAttribute("onmousedown", `handleNetMouseDown(event, '${ap.id}')`);
+
+        // Dome circle AP
+        const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circ.setAttribute("cx", ap.x);
+        circ.setAttribute("cy", ap.y);
+        circ.setAttribute("r", "10");
+        circ.setAttribute("fill", "#0f172a");
+        circ.setAttribute("stroke", isSelected ? "#facc15" : "#ef4444");
+        circ.setAttribute("stroke-width", isSelected ? "2.5" : "2");
+        circ.setAttribute("filter", "url(#apGlow)");
+        g.appendChild(circ);
+
+        // Wi-Fi waves
+        const wave1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        wave1.setAttribute("d", `M ${ap.x-5.5} ${ap.y-2.5} A 5.5 5.5 0 0 1 ${ap.x+5.5} ${ap.y-2.5}`);
+        wave1.setAttribute("fill", "none");
+        wave1.setAttribute("stroke", "#ffffff");
+        wave1.setAttribute("stroke-width", "1.4");
+        wave1.setAttribute("stroke-linecap", "round");
+        g.appendChild(wave1);
+
+        const wave2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        wave2.setAttribute("d", `M ${ap.x-3} ${ap.y-0.2} A 3 3 0 0 1 ${ap.x+3} ${ap.y-0.2}`);
+        wave2.setAttribute("fill", "none");
+        wave2.setAttribute("stroke", "#ffffff");
+        wave2.setAttribute("stroke-width", "1.4");
+        wave2.setAttribute("stroke-linecap", "round");
+        g.appendChild(wave2);
+
+        // PoE LED
+        const led = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        led.setAttribute("cx", ap.x);
+        led.setAttribute("cy", ap.y + 3.5);
+        led.setAttribute("r", "1.8");
+        led.setAttribute("fill", "#22c55e");
+        g.appendChild(led);
+
+        // Bubble Callout
+        const bx = ap.bx || (ap.x + 20);
+        const by = ap.by || (ap.y - 20);
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", ap.x);
+        line.setAttribute("y1", ap.y);
+        line.setAttribute("x2", bx + 23);
+        line.setAttribute("y2", by + 9);
+        line.setAttribute("stroke", "#b91c1c");
+        line.setAttribute("stroke-width", "1.2");
+        line.setAttribute("stroke-dasharray", "2 2");
+        g.appendChild(line);
+
+        const bBox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        bBox.setAttribute("x", bx);
+        bBox.setAttribute("y", by);
+        bBox.setAttribute("width", "46");
+        bBox.setAttribute("height", "18");
+        bBox.setAttribute("rx", "4");
+        bBox.setAttribute("fill", "#0f172a");
+        bBox.setAttribute("stroke", isSelected ? "#facc15" : "#22c55e");
+        bBox.setAttribute("stroke-width", isSelected ? "2" : "1.4");
+        g.appendChild(bBox);
+
+        const bBadge = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        bBadge.setAttribute("x", bx);
+        bBadge.setAttribute("y", by);
+        bBadge.setAttribute("width", "14");
+        bBadge.setAttribute("height", "18");
+        bBadge.setAttribute("rx", "4");
+        bBadge.setAttribute("fill", "#dc2626");
+        g.appendChild(bBadge);
+
+        const bIcon = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        bIcon.setAttribute("x", bx + 7);
+        bIcon.setAttribute("y", by + 12.5);
+        bIcon.setAttribute("text-anchor", "middle");
+        bIcon.setAttribute("fill", "#ffffff");
+        bIcon.setAttribute("font-size", "7");
+        bIcon.setAttribute("font-weight", "900");
+        bIcon.textContent = "📡";
+        g.appendChild(bIcon);
+
+        const bText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        bText.setAttribute("x", bx + 29);
+        bText.setAttribute("y", by + 13);
+        bText.setAttribute("text-anchor", "middle");
+        bText.setAttribute("fill", "#ffffff");
+        bText.setAttribute("font-size", "8");
+        bText.setAttribute("font-weight", "bold");
+        bText.textContent = ap.name;
+        g.appendChild(bText);
+
+        netGroup.appendChild(g);
+      });
+
+      // 4. Hardware Devices Callouts
+      // Rectoría (Patio Izquierdo)
+      const gRec = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gRec.setAttribute("class", "hw-hover");
+      gRec.setAttribute("onmousedown", "handleNetMouseDown(event, 'modem_isp')");
+      gRec.innerHTML = `
+        <line x1="420" y1="335" x2="420" y2="360" stroke="#2563eb" stroke-width="2"/>
+        <rect x="330" y="228" width="180" height="106" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8"/>
+        <rect x="330" y="228" width="180" height="22" rx="6" fill="#0284c7"/>
+        <text x="420" y="243" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="bold" letter-spacing="0.5">NODO CENTRAL (RECTORÍA)</text>
+        <circle cx="348" cy="264" r="7" fill="#0284c7"/>
+        <text x="348" y="267" text-anchor="middle" fill="#ffffff" font-size="8">🌐</text>
+        <text x="362" y="267" fill="#f8fafc" font-size="9" font-weight="bold">Modem Fibra (ISP)</text>
+        <circle cx="348" cy="286" r="7" fill="#6366f1"/>
+        <text x="348" y="289" text-anchor="middle" fill="#ffffff" font-size="8">🔀</text>
+        <text x="362" y="289" fill="#f8fafc" font-size="9" font-weight="bold">Router Gateway (DHCP)</text>
+        <circle cx="348" cy="308" r="7" fill="#10b981"/>
+        <text x="348" y="311" text-anchor="middle" fill="#ffffff" font-size="8">⚡</text>
+        <text x="362" y="311" fill="#f8fafc" font-size="9" font-weight="bold">Switch 16P (Gestión)</text>
+      `;
+      netGroup.appendChild(gRec);
+
+      // Simbología Patio Derecho
+      const gSim = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gSim.innerHTML = `
+        <rect x="655" y="228" width="195" height="114" rx="6" fill="#0f172a" stroke="#22c55e" stroke-width="1.8"/>
+        <rect x="655" y="228" width="195" height="22" rx="6" fill="#166534"/>
+        <text x="752" y="243" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="bold" letter-spacing="0.5">SIMBOLOGÍA OFICIAL (ANEXO 1)</text>
+        <circle cx="672" cy="263" r="6" fill="#0f172a" stroke="#ef4444" stroke-width="1.5"/>
+        <circle cx="672" cy="263" r="2" fill="#22c55e"/>
+        <text x="686" y="266" fill="#f8fafc" font-size="8.5">Puntos de Acceso (AP1 - AP16)</text>
+        <rect x="667" y="275" width="11" height="8" rx="2" fill="#0f172a" stroke="#22c55e" stroke-width="1"/>
+        <text x="686" y="282" fill="#f8fafc" font-size="8.5">Switch POE 16P (Alimentación)</text>
+        <rect x="667" y="291" width="11" height="10" rx="1.5" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+        <text x="686" y="299" fill="#f8fafc" font-size="8.5">Rack 42U / Firewall UTM</text>
+        <line x1="666" y1="315" x2="678" y2="315" stroke="#ef4444" stroke-width="3.5"/>
+        <text x="686" y="318" fill="#fca5a5" font-size="8.5" font-weight="bold">Línea Roja: Tendido PoE UTP</text>
+        <line x1="666" y1="329" x2="678" y2="329" stroke="#2563eb" stroke-width="3.5"/>
+        <text x="686" y="332" fill="#93c5fd" font-size="8.5" font-weight="bold">Línea Azul: Troncal Backbone / ISP</text>
+      `;
+      netGroup.appendChild(gSim);
+
+      // Kiosco
+      const gKio = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gKio.setAttribute("class", "hw-hover");
+      gKio.setAttribute("onmousedown", "handleNetMouseDown(event, 'switch_poe_kiosco')");
+      gKio.innerHTML = `
+        <rect x="596" y="535" width="58" height="42" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="600" y1="544" x2="650" y2="544" stroke="#475569" stroke-width="1"/>
+        <line x1="600" y1="552" x2="650" y2="552" stroke="#475569" stroke-width="1"/>
+        <circle cx="604" cy="540" r="1.5" fill="#22c55e"/>
+        <circle cx="609" cy="540" r="1.5" fill="#38bdf8"/>
+        <circle cx="614" cy="540" r="1.5" fill="#ef4444"/>
+        <text x="625" y="565" text-anchor="middle" fill="#38bdf8" font-size="6.5" font-weight="bold">RACK 42U</text>
+        <rect x="594" y="582" width="62" height="17" rx="3" fill="#0f172a" stroke="#22c55e" stroke-width="1.2"/>
+        <text x="625" y="594" text-anchor="middle" fill="#a7f3d0" font-size="7.5" font-weight="bold">⚡ Sw POE 16P</text>
+        <rect x="594" y="604" width="62" height="17" rx="3" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="625" y="616" text-anchor="middle" fill="#fde68a" font-size="7.5" font-weight="bold">🛡️ Firewall</text>
+      `;
+      netGroup.appendChild(gKio);
+
+      // Preceptoría
+      const gPrec = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gPrec.setAttribute("class", "hw-hover");
+      gPrec.setAttribute("onmousedown", "handleNetMouseDown(event, 'switch_p8_prec')");
+      gPrec.innerHTML = `
+        <rect x="435" y="585" width="105" height="20" rx="4" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="445" y="598" fill="#22c55e" font-size="8.5">🔀</text>
+        <text x="457" y="599" fill="#ffffff" font-size="8" font-weight="bold">Switch 8P (Precept.)</text>
+      `;
+      netGroup.appendChild(gPrec);
+
+      // Sector Oeste
+      const gOeste = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gOeste.setAttribute("class", "hw-hover");
+      gOeste.setAttribute("onmousedown", "handleNetMouseDown(event, 'switch_p16_oeste')");
+      gOeste.innerHTML = `
+        <rect x="65" y="178" width="105" height="20" rx="4" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="75" y="191" fill="#38bdf8" font-size="8.5">🔀</text>
+        <text x="87" y="192" fill="#ffffff" font-size="8" font-weight="bold">Switch 16P (Oeste)</text>
+      `;
+      netGroup.appendChild(gOeste);
+
+      // Aula 12
+      const gA12 = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      gA12.setAttribute("class", "hw-hover");
+      gA12.setAttribute("onmousedown", "handleNetMouseDown(event, 'router_wifi_a12')");
+      gA12.innerHTML = `
+        <rect x="835" y="435" width="100" height="20" rx="4" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="843" y="448" fill="#38bdf8" font-size="8.5">📶</text>
+        <text x="856" y="449" fill="#ffffff" font-size="8" font-weight="bold">Router (Wi-Fi 12)</text>
+      `;
+      netGroup.appendChild(gA12);
+    }
+
+    function selectNetDevice(id) {
+      selectedNetId = id;
+      const dev = apsData.find(a => a.id === id) || hwData.find(h => h.id === id);
+      if (!dev) return;
+
+      const isAp = dev.type === 'ap';
+      const badge = document.getElementById('netTypeBadge');
+      badge.textContent = isAp ? "PUNTO DE ACCESO WI-FI (AP)" : "EQUIPO DE RED / CORE";
+      badge.className = isAp 
+        ? "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 inline-block mb-1"
+        : "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 inline-block mb-1";
+
+      document.getElementById('netNameInput').value = dev.name;
+      document.getElementById('netRoomInput').value = dev.room || '';
+      document.getElementById('netPortInput').value = dev.port || '';
+      document.getElementById('netIpInput').value = dev.ip || '';
+      document.getElementById('netStatusSelect').value = dev.status || 'online';
+
+      updateNetCoordsDisplay(dev);
+      renderSvgAll();
+    }
+
+    function updateNetCoordsDisplay(dev) {
+      const el = document.getElementById('netCoordsIndicator');
+      if (el) el.textContent = `(${dev.x}, ${dev.y})`;
+    }
+
+    function updateCurrentNetField(field, val) {
+      const dev = apsData.find(a => a.id === selectedNetId) || hwData.find(h => h.id === selectedNetId);
+      if (!dev) return;
+      dev[field] = val;
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function nudgeNetDevice(dx, dy) {
+      const dev = apsData.find(a => a.id === selectedNetId) || hwData.find(h => h.id === selectedNetId);
+      if (!dev) return;
+      dev.x += dx;
+      dev.y += dy;
+      if (dev.bx) { dev.bx += dx; dev.by += dy; }
+      updateNetCoordsDisplay(dev);
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function addNewApQuick() {
+      const num = apsData.length + 1;
+      const newId = `AP${num}`;
+      const newAp = {
+        id: newId,
+        name: `AP${num}`,
+        room: `Nueva Aula`,
+        x: 600,
+        y: 280,
+        w: 18,
+        h: 18,
+        type: "ap",
+        ip: `192.168.100.${20 + num}`,
+        port: `Switch POE (P${num})`,
+        vlan: "VLAN 50 Wi-Fi",
+        bx: 625,
+        by: 250
+      };
+      apsData.push(newAp);
+      saveToStorage();
+      selectNetDevice(newId);
+    }
+
+    function duplicateCurrentNetDevice() {
+      const dev = apsData.find(a => a.id === selectedNetId);
+      if (!dev) return;
+      const clone = JSON.parse(JSON.stringify(dev));
+      clone.id = `AP${apsData.length + 1}`;
+      clone.name = clone.id;
+      clone.x += 25;
+      clone.y += 25;
+      if (clone.bx) { clone.bx += 25; clone.by += 25; }
+      apsData.push(clone);
+      saveToStorage();
+      selectNetDevice(clone.id);
+    }
+
+    function confirmDeleteCurrentNetDevice() {
+      const dev = apsData.find(a => a.id === selectedNetId);
+      if (!dev) return;
+      if (confirm(`¿Eliminar ${dev.name}?`)) {
+        apsData = apsData.filter(a => a.id !== selectedNetId);
+        saveToStorage();
+        if (apsData.length > 0) selectNetDevice(apsData[0].id);
+        renderSvgAll();
+      }
+    }
+
+    function filterNetworkType(type) {
+      currentNetworkFilter = type;
+      document.querySelectorAll('.net-pill').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('bg-slate-700', 'text-slate-300');
+      });
+      const activeBtn = document.getElementById(`net-filter-${type}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-700', 'text-slate-300');
+        activeBtn.classList.add('bg-blue-600', 'text-white');
+      }
+      renderSvgAll();
+    }
+
+    function handleNetworkSearch() {
+      searchNetQuery = document.getElementById('searchNetworkInput').value.trim().toLowerCase();
+      renderSvgAll();
+    }
+
+    function toggleClassroomBackdrop() {
+      dimClassroomsInNetworks = !dimClassroomsInNetworks;
+      document.getElementById('backdropToggleLabel').textContent = dimClassroomsInNetworks ? "Resaltar Aulas" : "Atenuar Aulas";
+      renderSvgAll();
+    }
+
+    // AULAS FUNCTIONS
+    function selectRoom(id) {
+      selectedRoomId = id;
+      const r = roomsData.find(rm => rm.id === id);
+      if (!r) return;
+      document.getElementById('selectedTypeBadge').textContent = r.isCorridor ? "Pasillo" : "Aula";
+      document.getElementById('directNumInput').value = r.num;
+      document.getElementById('directTextM').value = r.manana.text;
+      document.getElementById('directCatM').value = r.manana.category;
+      document.getElementById('directTextT').value = r.tarde ? r.tarde.text : r.manana.text;
+      document.getElementById('directCatT').value = r.tarde ? r.tarde.category : r.manana.category;
+      document.getElementById('directTextN').value = r.noche ? r.noche.text : r.manana.text;
+      document.getElementById('directCatN').value = r.noche ? r.noche.category : r.manana.category;
+      updateRoomCoordsDisplay(r);
+      renderSvgAll();
+    }
+
+    function updateRoomCoordsDisplay(r) {
+      const el = document.getElementById('coordsIndicator');
+      if (el) el.textContent = `(${r.x}, ${r.y}) • ${r.w}x${r.h}`;
+    }
+
+    function updateCurrentRoomField(field, val) {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r) return;
+      r[field] = val;
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function updateCurrentShiftText(shift, val) {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r || !r[shift]) return;
+      r[shift].text = val;
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function updateCurrentShiftCat(shift, val) {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r || !r[shift]) return;
+      r[shift].category = val;
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function nudgeRoom(dx, dy) {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r) return;
+      r.x += dx;
+      r.y += dy;
+      updateRoomCoordsDisplay(r);
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function resizeRoom(dw, dh) {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r) return;
+      r.w += dw;
+      r.h += dh;
+      updateRoomCoordsDisplay(r);
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function adjustFontSize(delta) {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r) return;
+      r.fontScale = (r.fontScale || 1.0) + delta;
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function resetFontSize() {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r) return;
+      r.fontScale = 1.0;
+      saveToStorage();
+      renderSvgAll();
+    }
+
+    function addNewRoomQuick() {
+      const num = roomsData.filter(r => !r.isCorridor).length + 1;
+      const newRoom = {
+        id: `aula_${Date.now()}`,
+        num: `Aula ${num}`,
+        isCorridor: false,
+        x: 450, y: 240, w: 120, h: 95,
+        manana: { text: "Libre", category: "Libre", isFree: true },
+        tarde: { text: "Libre", category: "Libre", isFree: true },
+        noche: { text: "Libre", category: "Libre", isFree: true }
+      };
+      roomsData.push(newRoom);
+      saveToStorage();
+      selectRoom(newRoom.id);
+    }
+
+    function addNewCorridorQuick() {
+      const newC = {
+        id: `pasillo_${Date.now()}`,
+        num: `PASILLO`,
+        isCorridor: true,
+        x: 400, y: 200, w: 250, h: 45,
+        manana: { text: "Circulación", category: "Pasillos", isFree: true }
+      };
+      roomsData.push(newC);
+      saveToStorage();
+      selectRoom(newC.id);
+    }
+
+    function duplicateCurrentRoom() {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r) return;
+      const clone = JSON.parse(JSON.stringify(r));
+      clone.id = `space_clone_${Date.now()}`;
+      clone.num += " (Copia)";
+      clone.x += 25; clone.y += 25;
+      roomsData.push(clone);
+      saveToStorage();
+      selectRoom(clone.id);
+    }
+
+    function confirmDeleteCurrentRoom() {
+      const r = roomsData.find(rm => rm.id === selectedRoomId);
+      if (!r) return;
+      if (confirm(`¿Eliminar ${r.num}?`)) {
+        roomsData = roomsData.filter(rm => rm.id !== selectedRoomId);
+        saveToStorage();
+        if (roomsData.length > 0) selectRoom(roomsData[0].id);
+        renderSvgAll();
+      }
+    }
+
+    function confirmResetDefaults() {
+      if (confirm("¿Restablecer todo al plano original por defecto?")) {
+        roomsData = JSON.parse(JSON.stringify(DEFAULT_ROOMS));
+        apsData = JSON.parse(JSON.stringify(DEFAULT_APS));
+        hwData = JSON.parse(JSON.stringify(DEFAULT_HARDWARE));
+        localStorage.removeItem(STORAGE_ROOMS_KEY);
+        localStorage.removeItem(STORAGE_APS_KEY);
+        localStorage.removeItem(STORAGE_HW_KEY);
+        saveToStorage();
+        selectRoom('admin_rectoria');
+        selectNetDevice('AP1');
+        renderSvgAll();
+      }
+    }
+
+    function setShift(shift) {
+      currentShift = shift;
+      document.querySelectorAll('.shift-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-blue-700', 'shadow-xs');
+        btn.classList.add('text-slate-600');
+      });
+      const active = document.getElementById(`btn-${shift}`);
+      if (active) {
+        active.classList.add('bg-white', 'text-blue-700', 'shadow-xs');
+        active.classList.remove('text-slate-600');
+      }
+      renderSvgAll();
+    }
+
+    function filterCategory(cat) {
+      currentCategoryFilter = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      const active = document.getElementById(`cat-${cat}`);
+      if (active) {
+        active.classList.remove('bg-slate-100', 'text-slate-700');
+        active.classList.add('bg-slate-800', 'text-white');
+      }
+      renderSvgAll();
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+      renderSvgAll();
+    }
+
+    function updateStats() {
+      const shiftKey = currentShift === 'todos' ? 'manana' : currentShift;
+      let occ = 0, free = 0, corr = 0;
+      roomsData.forEach(r => {
+        if (r.isCorridor) corr++;
+        else {
+          if (r[shiftKey] && r[shiftKey].isFree) free++;
+          else occ++;
+        }
+      });
+      document.getElementById('statOccupied').textContent = occ;
+      document.getElementById('statFree').textContent = free;
+      document.getElementById('statCorridors').textContent = corr;
+      document.getElementById('statAps').textContent = apsData.length;
+    }
+
+    // MODAL PLANILLA
+    function toggleTableModal() {
+      const m = document.getElementById('tableModal');
+      m.classList.toggle('hidden');
+      if (!m.classList.contains('hidden')) {
+        populateSummaryTable();
+        populateNetworkTable();
+      }
+    }
+
+    function switchModalTab(tab) {
+      const vA = document.getElementById('modalViewAulas');
+      const vR = document.getElementById('modalViewRedes');
+      const bA = document.getElementById('modalTabBtnAulas');
+      const bR = document.getElementById('modalTabBtnRedes');
+
+      if (tab === 'aulas') {
+        vA.classList.remove('hidden');
+        vR.classList.add('hidden');
+        bA.className = "px-3 py-1 rounded-lg font-bold bg-white text-blue-700 shadow-xs";
+        bR.className = "px-3 py-1 rounded-lg font-bold text-slate-600 hover:text-slate-900";
+        document.getElementById('modalFooterTotal').textContent = `Total espacios: ${roomsData.length}`;
+      } else {
+        vA.classList.add('hidden');
+        vR.classList.remove('hidden');
+        bR.className = "px-3 py-1 rounded-lg font-bold bg-slate-900 text-white shadow-xs";
+        bA.className = "px-3 py-1 rounded-lg font-bold text-slate-600 hover:text-slate-900";
+        document.getElementById('modalFooterTotal').textContent = `Total red: ${apsData.length} APs + ${hwData.length} equipos core`;
+      }
+    }
+
+    function populateSummaryTable() {
+      const tb = document.getElementById('summaryTableBody');
+      tb.innerHTML = '';
+      roomsData.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900">${r.num}</td>
+          <td class="py-2.5 px-3 text-slate-500">${r.isCorridor ? '🚶 Pasillo' : '🏢 Aula'}</td>
+          <td class="py-2.5 px-3">${r.manana ? r.manana.text : '-'}</td>
+          <td class="py-2.5 px-3">${r.tarde ? r.tarde.text : '-'}</td>
+          <td class="py-2.5 px-3">${r.noche ? r.noche.text : '-'}</td>
+          <td class="py-2.5 px-3 text-right">
+            <button onclick="switchMainSection('aulas'); selectRoom('${r.id}'); toggleTableModal();" class="text-blue-600 font-bold">Ver</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    function populateNetworkTable() {
+      const tb = document.getElementById('networkTableBody');
+      tb.innerHTML = '';
+      apsData.forEach(ap => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900">${ap.name}</td>
+          <td class="py-2.5 px-3 text-rose-600 font-bold text-xs">PUNTO ACCESO WI-FI</td>
+          <td class="py-2.5 px-3 font-medium text-slate-800">${ap.room}</td>
+          <td class="py-2.5 px-3 font-mono text-emerald-700 text-xs">${ap.port}</td>
+          <td class="py-2.5 px-3 font-mono text-sky-700 text-xs">${ap.ip}</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">● ${ap.status || 'online'}</span></td>
+          <td class="py-2.5 px-3 text-right">
+            <button onclick="switchMainSection('redes'); selectNetDevice('${ap.id}'); toggleTableModal();" class="text-sky-600 font-bold">Ver</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+      hwData.forEach(hw => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-slate-900">${hw.name}</td>
+          <td class="py-2.5 px-3 text-emerald-600 font-bold text-xs uppercase">${hw.type}</td>
+          <td class="py-2.5 px-3 font-medium text-slate-800">${hw.room}</td>
+          <td class="py-2.5 px-3 font-mono text-emerald-700 text-xs">${hw.port}</td>
+          <td class="py-2.5 px-3 font-mono text-sky-700 text-xs">${hw.ip}</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">● online</span></td>
+          <td class="py-2.5 px-3 text-right">
+            <button onclick="switchMainSection('redes'); selectNetDevice('${hw.id}'); toggleTableModal();" class="text-sky-600 font-bold">Ver</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    function toggleDownloadMenu() {
+      document.getElementById('downloadMenu').classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const c = document.getElementById('downloadDropdownContainer');
+      if (c && !c.contains(e.target)) document.getElementById('downloadMenu').classList.add('hidden');
+    });
+
+    function downloadSelfContainedHtml() {
+      const htmlContent = document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'plano_institucional_interactivo.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toggleDownloadMenu();
+    }
+
+    function downloadSvgVector() {
+      const svg = document.getElementById('campusSvg');
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svg);
+      source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+      const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `plano_${currentMainSection}_oficial.svg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toggleDownloadMenu();
+    }
+
+    function downloadPngImage() {
+      const svg = document.getElementById('campusSvg');
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      canvas.width = 1650;
+      canvas.height = 900;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = function() {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+
+        canvas.toBlob(function(blob) {
+          const pngUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = pngUrl;
+          a.download = `plano_${currentMainSection}_oficial.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(pngUrl);
+        });
+      };
+      img.src = url;
+      toggleDownloadMenu();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      switchMainSection('redes');
+      selectNetDevice('AP1');
+    });
+  </script>
+</body>
+</html>
