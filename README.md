@@ -61,70 +61,6 @@ Plano_Aulas_Presentacion/
 ├── .gitignore                           # Archivos ignorados por Git
 └── README.md                            # Documentación técnica completa
 ```
-
----
-
-## 🌐 Cómo Subir este Proyecto a GitHub (Paso a Paso)
-
-### Opción A: Mediante la Terminal / Git (Recomendado)
-
-Si tienes **Git** instalado en tu computadora, abre **PowerShell** o la terminal dentro de esta carpeta (`Plano_Aulas_Presentacion`) y ejecuta los siguientes comandos:
-
-```bash
-# 1. Inicializar el repositorio Git local
-git init
-
-# 2. Agregar todos los archivos al seguimiento
-git add .
-
-# 3. Crear el primer commit
-git commit -m "feat: proyecto institucional de aulas, redes y simulador 3D completo"
-
-# 4. Renombrar la rama principal a 'main'
-git branch -M main
-
-# 5. Conectar con tu repositorio remoto de GitHub (reemplaza con tu URL)
-git remote add origin https://github.com/TU-USUARIO/TU-REPOSITORIO.git
-
-# 6. Subir los archivos a GitHub
-git push -u origin main
-```
-
-> 💡 **Nota:** Si tu repositorio en GitHub ya contenía un archivo inicial como una licencia o README previo, puedes sincronizar antes del push con:  
-> `git pull origin main --rebase` y luego `git push -u origin main`.
-
----
-
-### Opción B: Subida Directa desde la Web de GitHub
-
-1. Ingresa a [GitHub.com](https://github.com) e inicia sesión con tu cuenta.
-2. Haz clic en el botón verde **"New"** para crear un nuevo repositorio:
-   - Asigna un nombre (por ejemplo: `plano-institucional-3d`).
-   - Elige si será **Público** o **Privado**.
-   - No marques "Add a README file" (ya lo tenemos creado).
-   - Haz clic en **"Create repository"**.
-3. En la pantalla que aparece, haz clic en el enlace azul **"uploading an existing file"**.
-4. Selecciona o arrastra todos los archivos y carpetas de `Plano_Aulas_Presentacion` a la ventana del navegador.
-5. Abajo en "Commit changes", escribe un mensaje y pulsa **"Commit changes"**.
-
----
-
-## 🌍 Cómo Publicar la Web Gratis en Vivo (GitHub Pages)
-
-Puedes tener tu simulador 3D y plano 2D funcionando online en internet de forma gratuita con una URL pública para que cualquiera lo vea sin descargar nada:
-
-1. En tu repositorio de GitHub, entra en la pestaña **Settings** (Configuración).
-2. En el menú de la izquierda, haz clic en **Pages**.
-3. En la sección **Build and deployment**:
-   - En **Source**, selecciona `Deploy from a branch`.
-   - En **Branch**, selecciona `main` y en la carpeta deja `/ (root)`.
-   - Haz clic en **Save**.
-4. Espera 1 o 2 minutos. GitHub generará un enlace público en la parte superior:  
-   `https://TU-USUARIO.github.io/TU-REPOSITORIO/`
-5. ¡Listo! Al entrar a esa URL, se abrirá el portal `index.html` con el simulador 3D y el plano interactivo funcionando directamente en internet.
-
----
-
 ## 🎮 Guía de Uso del Simulador 3D y Videojuego
 
 ### 1. Modos de Cámara
@@ -169,26 +105,6 @@ Puedes tener tu simulador 3D y plano 2D funcionando online en internet de forma 
 ## 📡 Especificaciones de Telecomunicaciones (Anexo 1 Oficial)
 
 La capa de telecomunicaciones reproduce con precisión milimétrica la infraestructura de red instalada:
-
-### Inventario de los 16 Access Points Wi-Fi
-| ID | Ubicación | IP de Gestión | Puerto / Switch Alimentador | Cobertura |
-| :---: | :--- | :---: | :--- | :---: |
-| **AP1** | Aula 1 (Cocina 3°) | `192.168.100.11` | Switch POE 16P (P1) | 2.4 / 5 GHz |
-| **AP2** | Aula 2 (Jurídica 2°) | `192.168.100.12` | Switch POE 16P (P2) | 2.4 / 5 GHz |
-| **AP3** | Aula 4 (Hig. y Seg. 1° A) | `192.168.100.13` | Switch POE 16P (P3) | 2.4 / 5 GHz |
-| **AP4** | Aula 6 (Prep. Física 3°) | `192.168.100.14` | Switch POE 16P (P4) | 2.4 / 5 GHz |
-| **AP5** | Aula 8 (Jurídica 3°) | `192.168.100.15` | Switch POE 16P (P5) | 2.4 / 5 GHz |
-| **AP6** | Aula 9 (Hig. y Seg. 1° C) | `192.168.100.16` | Switch POE 16P (P6) | 2.4 / 5 GHz |
-| **AP7** | Aula 11 (Cocina 2°) | `192.168.100.17` | Switch POE 16P (P7) | 2.4 / 5 GHz |
-| **AP8** | Aula 12 (Cocina 1°) | `192.168.100.18` | Switch POE 16P (P8) | 2.4 / 5 GHz |
-| **AP9** | Taller Prácticas (Informática) | `192.168.100.19` | Switch POE 16P (P9) | 2.4 / 5 GHz |
-| **AP10** | Rectoría / Dirección | `192.168.100.20` | Switch P16 Rectoría (P10) | VLAN Gestión |
-| **AP11** | Aula 16 (Software 1°) | `192.168.100.21` | Switch P16 Oeste (P11) | 2.4 / 5 GHz |
-| **AP12** | Cocina / Depósito | `192.168.100.22` | Switch P16 Oeste (P12) | 2.4 / 5 GHz |
-| **AP13** | Aula 17 (Enfermería 2°) | `192.168.100.23` | Switch P16 Oeste (P13) | 2.4 / 5 GHz |
-| **AP14** | Aula 20 (Prep. Física 1°) | `192.168.100.24` | Switch POE 16P (P14) | 2.4 / 5 GHz |
-| **AP15** | Pasillo Sur (Baños) | `192.168.100.25` | Switch POE 16P (P15) | Circulación |
-| **AP16** | Preceptoría | `192.168.100.26` | Switch P8 Preceptoría (P16) | VLAN Gestión |
 
 ### Código de Tendido de Cableado Estructurado
 - 🔴 **Línea Roja (Tendido PoE UTP Categoría 6):** Distribución de datos y energía desde el **Switch POE (P16)** en el Kiosco hacia los 16 APs a lo largo de las bandejas técnicas de los pasillos.
