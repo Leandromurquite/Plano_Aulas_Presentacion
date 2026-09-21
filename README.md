@@ -63,39 +63,53 @@ Plano_Aulas_Presentacion/
 ```
 ## 🎮 Guía de Uso del Simulador 3D y Videojuego
 
-### 1. Modos de Cámara
+### 1. Control de Niveles y Modos de Cámara
+- **🏢 Selector de Pisos (Niveles):**
+  - **Ambos Pisos:** Visualiza el edificio institucional completo en dos plantas superpuestas con el patio central abierto al cielo.
+  - **1° Planta Baja:** Vista aislada del primer piso (Aulas 1 a 23, Dirección, Preceptoría con 4 PCs, Kiosco con Rack 42U y AP1 a AP16).
+  - **2° Planta Alta:** Vista enfocada del segundo piso (Gabinete de 16 PCs, Sala de Streaming con 3 PCs, Sala Docente, Aula Oeste, Auditorio y AP17 a AP19).
 - **🏛️ Vista 3D Orbital (Dios / Arquitecto):**
   - **Clic Izquierdo + Arrastrar:** Rotación 360° en torno al edificio.
   - **Clic Derecho + Arrastrar:** Desplazar / Panorámica.
   - **Rueda del Ratón:** Zoom continuo hacia adentro o afuera.
   - **Botón Plano Cenital:** Conmuta a vista superior ortogonal directa (mapa 2D en 3D).
-  - **Botón Centrar:** Restablece la cámara en el centro de la escuela.
+  - **Botones de Enfoque Rápido:** Salto instantáneo a *Gabinete*, *Streaming* o *Auditorio*.
 - **🎮 Modo Videojuego en 1ª Persona (Walkthrough WASD):**
-  - Haz clic en **"Modo Videojuego (WASD)"** arriba al centro.
-  - Haz clic en cualquier parte de la pantalla para bloquear el cursor y tomar el control del avatar.
-  - **`W, A, S, D`**: Caminar por pasillos y cruzar puertas hacia las aulas.
-  - **`Shift`**: Correr a mayor velocidad.
-  - **`Espacio`**: Salto.
-  - **`F`**: Linterna de exploración nocturna.
-  - **`E`**: Inspeccionar el aula o equipo que tengas enfrente.
-  - **`Tab` o `Esc`**: Salir del modo videojuego y liberar el cursor.
+  - Haz clic en **"Videojuego (WASD)"** y haz clic en la pantalla para tomar el control.
+  - **`W, A, S, D`**: Caminar por pasillos y cruzar puertas.
+  - **`Escalera 3D Transitable`**: Sube físicamente por los escalones desde la Planta Baja hasta la Planta Alta sin paredes invisibles.
+  - **`1` y `2`**: Atajos de teclado para teletransportarte de inmediato entre Planta Baja y Planta Alta.
+  - **`Shift`**: Correr.
+  - **`Espacio`**: Saltar.
+  - **`F`**: Linterna nocturna de inspección.
+  - **`E`**: Inspeccionar la computadora, aula o equipo que tengas enfrente.
+  - **`Tab` o `Esc`**: Salir del modo videojuego.
 
-### 2. Catálogo 3D y Colocación Interactiva (Click-to-Place)
+### 2. Espacios del Segundo Piso (Planta Alta)
+- **💻 GABINETE (Laboratorio Principal de Computación):** 8 mesas dobles de trabajo equipadas con 16 computadoras de escritorio (`PC-GAB-01` a `PC-GAB-16`), Switch PoE de distribución de 24 bocas (`SW-PA-GAB`), canaletas de red perimetrales y AP17 en el techo.
+- **🎙️ SALA DE STREAMING:** Estudio de producción audiovisual y podcasting con 3 estaciones de alto rendimiento (`PC-STR-01`, `PC-STR-02`, `PC-STR-03`) con cableado UTP directo al switch.
+- **🧑‍🏫 SALA DE DOCENTE:** Oficina de coordinación y profesores de informática con PC docente.
+- **📐 AULA OESTE:** Aula tradicional de teoría, diseño y arquitectura.
+- **🚪 SALA PREVIA (Foyer):** Hall de acceso y distribución con punto de red.
+- **🚻 BAÑOS:** Batería de sanitarios masculino y femenino.
+- **🎭 AUDITORIO INSTITUCIONAL:** Salón de gran escala con escenario / tarima, luminarias y AP19 para alta densidad de concurrentes.
+
+### 3. Catálogo 3D y Colocación Interactiva (Click-to-Place)
 El botón **Catálogo 3D** despliega un inventario completo clasificado por pestañas:
 - **🪑 Mobiliario Escolar:** Pupitre doble escolar, Silla ergonómica, Escritorio docente, Pizarra interactiva, Proyector de techo.
 - **💻 Tecnología & Cómputo:** Computadora completa (Gabinete + Monitor + Teclado), Impresora departamental, Cámara domo CCTV.
 - **📡 Telecomunicaciones:** Access Point Wi-Fi con domo de cobertura 3D, Switch PoE (8, 16 y 24 puertos), Router Gateway, Rack 42U de piso, Rosetas RJ45 de pared.
 - **🏢 Espacios:** Aulas lectivas completas y pasillos conectores.
 
-### 3. Ficha Técnica por Computadora & Foto de la Vida Real
-Al hacer clic en cualquier PC en el 3D o dentro de la **Sala de Informática**:
-- **Número de Inventario / Service único:** Ej. `PC-INF-01`, `PC-INF-02`.
+### 4. Ficha Técnica por Computadora & Foto de la Vida Real
+Al hacer clic en cualquier PC en el 3D o en el dossier:
+- **Número de Inventario / Service único:** Ej. `PC-GAB-01`, `PC-STR-01`, `PC-PREC-01`.
 - **Modelo de Gabinete:** Torre ATX, Slim SFF, Mini PC, All-in-One.
 - **Sistema Operativo:** Windows 11 Pro, Windows 10 Educativo, Ubuntu Linux, Debian, Dual Boot.
 - **Especificaciones de Hardware:** Procesador (CPU), Memoria RAM, Almacenamiento.
 - **Estado de Mantenimiento:** 🟢 100% Operativo, 🟡 En Mantenimiento / Revisión, 🔴 Fuera de Servicio.
-- **📷 Subir Foto de la Vida Real:** Botón para cargar la fotografía física real tomada con el celular o cámara digital de la PC o rack físico. La foto queda vinculada al equipo y se incorpora a los informes técnicos.
-- **💻 Software y Aplicaciones Instaladas:** Etiquetas dinámicas por equipo (Cisco Packet Tracer, VS Code, AutoCAD, Office 365, Python, etc.) con **Perfiles Rápidos** (Programación, Diseño/CAD, Ofimática).
+- **📷 Subir Foto de la Vida Real:** Botón para cargar la fotografía física real tomada con el celular o cámara digital de la PC física o del rack. La foto queda guardada y se incrusta en los informes oficiales.
+- **💻 Software y Aplicaciones Instaladas:** Etiquetas dinámicas por equipo (Cisco Packet Tracer, VS Code, AutoCAD, Office 365, OBS Studio, Python) con **Perfiles Rápidos** (Programación, Streaming, Diseño/CAD, Ofimática).
 
 ### 4. Generador Automático de Informes Oficiales & Auditoría
 El botón **Informes & Auditoría** genera reportes consolidados en tiempo real:
