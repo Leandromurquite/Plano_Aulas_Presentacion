@@ -77,7 +77,7 @@
             Planta Baja + Alta
           </span>
         </div>
-        <p class="text-[11px] text-slate-400">Gabinete (16 PCs), Streaming (3 PCs), Auditorio & 19 APs</p>
+        <p class="text-[11px] text-slate-400">Gabinete (32 PCs), Streaming (3 PCs), Escalera & 19 APs</p>
       </div>
     </div>
 
@@ -740,8 +740,8 @@
       { 
         id: "pa_gabinete", floor: 2, num: "GABINETE", x: 230, y: 28, w: 300, h: 320, 
         cat: "Tecnología", icon: "💻", 
-        m: "Lab. Programación & Redes (16 PCs)", t: "Lab. Desarrollo de Software", n: "Lab. Sistemas",
-        isGabinete: true, desc: "Laboratorio Principal de Computación (8 mesas dobles, 16 PCs y Switch PoE)"
+        m: "Lab. Programación & Redes (32 PCs)", t: "Lab. Desarrollo de Software", n: "Lab. Sistemas",
+        isGabinete: true, desc: "Laboratorio Principal de Computación (8 mesas dobles, 32 PCs y Switch PoE 48P)"
       },
       // AULA OESTE PLANTA ALTA
       { 
@@ -819,29 +819,40 @@
 
     // INVENTARIO INICIAL DE COMPUTADORAS Y EQUIPOS
     let defaultPlacedObjects = [
-      // 16 PCs en el GABINETE (Planta Alta)
-      { id: "pc_gab_01", floor: 2, type: "pc_desktop", name: "PC Gabinete 01", room: "GABINETE", x: 270, y: 65, rot: 0, tag: "PC-GAB-01", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_02", floor: 2, type: "pc_desktop", name: "PC Gabinete 02", room: "GABINETE", x: 320, y: 65, rot: 0, tag: "PC-GAB-02", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_03", floor: 2, type: "pc_desktop", name: "PC Gabinete 03", room: "GABINETE", x: 410, y: 65, rot: 0, tag: "PC-GAB-03", caseModel: "Slim SFF", os: "Ubuntu Linux", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox"], notes: "Lab Linux.", realPhoto: null },
-      { id: "pc_gab_04", floor: 2, type: "pc_desktop", name: "PC Gabinete 04", room: "GABINETE", x: 460, y: 65, rot: 0, tag: "PC-GAB-04", caseModel: "Slim SFF", os: "Ubuntu Linux", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox"], notes: "Lab Linux.", realPhoto: null },
-      
-      { id: "pc_gab_05", floor: 2, type: "pc_desktop", name: "PC Gabinete 05", room: "GABINETE", x: 270, y: 130, rot: 0, tag: "PC-GAB-05", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Office 365"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_06", floor: 2, type: "pc_desktop", name: "PC Gabinete 06", room: "GABINETE", x: 320, y: 130, rot: 0, tag: "PC-GAB-06", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Office 365"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_07", floor: 2, type: "pc_desktop", name: "PC Gabinete 07", room: "GABINETE", x: 410, y: 130, rot: 0, tag: "PC-GAB-07", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "AutoCAD 2024", "Cisco Packet Tracer", "Office 365"], notes: "Dual Boot.", realPhoto: null },
-      { id: "pc_gab_08", floor: 2, type: "pc_desktop", name: "PC Gabinete 08", room: "GABINETE", x: 460, y: 130, rot: 0, tag: "PC-GAB-08", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "AutoCAD 2024", "Cisco Packet Tracer", "Office 365"], notes: "Dual Boot.", realPhoto: null },
-
-      { id: "pc_gab_09", floor: 2, type: "pc_desktop", name: "PC Gabinete 09", room: "GABINETE", x: 270, y: 195, rot: 0, tag: "PC-GAB-09", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Core i3-10100", ram: "8 GB DDR4", status: "En Mantenimiento", software: ["Office 365", "Acrobat Reader", "Visual Studio Code"], notes: "Falla intermitente de fuente. En revisión técnica.", realPhoto: null },
-      { id: "pc_gab_10", floor: 2, type: "pc_desktop", name: "PC Gabinete 10", room: "GABINETE", x: 320, y: 195, rot: 0, tag: "PC-GAB-10", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Core i3-10100", ram: "8 GB DDR4", status: "Operativo", software: ["Office 365", "Acrobat Reader", "Visual Studio Code"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_11", floor: 2, type: "pc_desktop", name: "PC Gabinete 11", room: "GABINETE", x: 410, y: 195, rot: 0, tag: "PC-GAB-11", caseModel: "Mini PC", os: "Windows 11 Pro", cpu: "Intel Core i5-1135G7", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Packet Tracer"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_12", floor: 2, type: "pc_desktop", name: "PC Gabinete 12", room: "GABINETE", x: 460, y: 195, rot: 0, tag: "PC-GAB-12", caseModel: "Mini PC", os: "Windows 11 Pro", cpu: "Intel Core i5-1135G7", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Packet Tracer"], notes: "Operativa.", realPhoto: null },
-
-      { id: "pc_gab_13", floor: 2, type: "pc_desktop", name: "PC Gabinete 13", room: "GABINETE", x: 270, y: 260, rot: 0, tag: "PC-GAB-13", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Blender", "VS Code", "Office 365"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_14", floor: 2, type: "pc_desktop", name: "PC Gabinete 14", room: "GABINETE", x: 320, y: 260, rot: 0, tag: "PC-GAB-14", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Blender", "VS Code", "Office 365"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_15", floor: 2, type: "pc_desktop", name: "PC Gabinete 15", room: "GABINETE", x: 410, y: 260, rot: 0, tag: "PC-GAB-15", caseModel: "Torre ATX", os: "Ubuntu Linux", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["VS Code", "Python 3.12", "GIMP", "Git"], notes: "Operativa.", realPhoto: null },
-      { id: "pc_gab_16", floor: 2, type: "pc_desktop", name: "PC Gabinete 16", room: "GABINETE", x: 460, y: 260, rot: 0, tag: "PC-GAB-16", caseModel: "Torre ATX", os: "Ubuntu Linux", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["VS Code", "Python 3.12", "GIMP", "Git"], notes: "Operativa.", realPhoto: null },
-
-      // Switch de Red Planta Alta
-      { id: "sw_pa_gabinete", floor: 2, type: "switch_net", name: "Switch Gabinete (24P)", room: "GABINETE", x: 245, y: 310, rot: 0, tag: "SW-PA-GAB", ip: "192.168.100.5", port: "24 Bocas Gigabit PoE", status: "Operativo", notes: "Alimenta las 16 PCs del gabinete, las 3 de Streaming y los APs 17, 18 y 19." },
+      // 32 PCs en el GABINETE (Planta Alta) - 4 Filas x 8 PCs con pasillo central
+      { id: "pc_gab_01", floor: 2, type: "pc_desktop", name: "PC Gabinete 01", room: "GABINETE", x: 270, y: 70, rot: 0, tag: "PC-GAB-01", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_02", floor: 2, type: "pc_desktop", name: "PC Gabinete 02", room: "GABINETE", x: 295, y: 70, rot: 0, tag: "PC-GAB-02", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_03", floor: 2, type: "pc_desktop", name: "PC Gabinete 03", room: "GABINETE", x: 320, y: 70, rot: 0, tag: "PC-GAB-03", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_04", floor: 2, type: "pc_desktop", name: "PC Gabinete 04", room: "GABINETE", x: 345, y: 70, rot: 0, tag: "PC-GAB-04", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_05", floor: 2, type: "pc_desktop", name: "PC Gabinete 05", room: "GABINETE", x: 415, y: 70, rot: 0, tag: "PC-GAB-05", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_06", floor: 2, type: "pc_desktop", name: "PC Gabinete 06", room: "GABINETE", x: 440, y: 70, rot: 0, tag: "PC-GAB-06", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_07", floor: 2, type: "pc_desktop", name: "PC Gabinete 07", room: "GABINETE", x: 465, y: 70, rot: 0, tag: "PC-GAB-07", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_08", floor: 2, type: "pc_desktop", name: "PC Gabinete 08", room: "GABINETE", x: 490, y: 70, rot: 0, tag: "PC-GAB-08", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_09", floor: 2, type: "pc_desktop", name: "PC Gabinete 09", room: "GABINETE", x: 270, y: 135, rot: 0, tag: "PC-GAB-09", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_10", floor: 2, type: "pc_desktop", name: "PC Gabinete 10", room: "GABINETE", x: 295, y: 135, rot: 0, tag: "PC-GAB-10", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_11", floor: 2, type: "pc_desktop", name: "PC Gabinete 11", room: "GABINETE", x: 320, y: 135, rot: 0, tag: "PC-GAB-11", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_12", floor: 2, type: "pc_desktop", name: "PC Gabinete 12", room: "GABINETE", x: 345, y: 135, rot: 0, tag: "PC-GAB-12", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB DDR4", status: "Operativo", software: ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Office 365"], notes: "Operativa. Puesto de desarrollo y redes.", realPhoto: null },
+      { id: "pc_gab_13", floor: 2, type: "pc_desktop", name: "PC Gabinete 13", room: "GABINETE", x: 415, y: 135, rot: 0, tag: "PC-GAB-13", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_14", floor: 2, type: "pc_desktop", name: "PC Gabinete 14", room: "GABINETE", x: 440, y: 135, rot: 0, tag: "PC-GAB-14", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_15", floor: 2, type: "pc_desktop", name: "PC Gabinete 15", room: "GABINETE", x: 465, y: 135, rot: 0, tag: "PC-GAB-15", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_16", floor: 2, type: "pc_desktop", name: "PC Gabinete 16", room: "GABINETE", x: 490, y: 135, rot: 0, tag: "PC-GAB-16", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_17", floor: 2, type: "pc_desktop", name: "PC Gabinete 17", room: "GABINETE", x: 270, y: 200, rot: 0, tag: "PC-GAB-17", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_18", floor: 2, type: "pc_desktop", name: "PC Gabinete 18", room: "GABINETE", x: 295, y: 200, rot: 0, tag: "PC-GAB-18", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_19", floor: 2, type: "pc_desktop", name: "PC Gabinete 19", room: "GABINETE", x: 320, y: 200, rot: 0, tag: "PC-GAB-19", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_20", floor: 2, type: "pc_desktop", name: "PC Gabinete 20", room: "GABINETE", x: 345, y: 200, rot: 0, tag: "PC-GAB-20", caseModel: "Slim SFF", os: "Ubuntu Linux 24.04", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox", "GIMP"], notes: "Laboratorio Linux y programación web.", realPhoto: null },
+      { id: "pc_gab_21", floor: 2, type: "pc_desktop", name: "PC Gabinete 21", room: "GABINETE", x: 415, y: 200, rot: 0, tag: "PC-GAB-21", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Cisco Packet Tracer", "VS Code", "Office 365"], notes: "Puesto dual para diseño y redes.", realPhoto: null },
+      { id: "pc_gab_22", floor: 2, type: "pc_desktop", name: "PC Gabinete 22", room: "GABINETE", x: 440, y: 200, rot: 0, tag: "PC-GAB-22", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Cisco Packet Tracer", "VS Code", "Office 365"], notes: "Puesto dual para diseño y redes.", realPhoto: null },
+      { id: "pc_gab_23", floor: 2, type: "pc_desktop", name: "PC Gabinete 23", room: "GABINETE", x: 465, y: 200, rot: 0, tag: "PC-GAB-23", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Cisco Packet Tracer", "VS Code", "Office 365"], notes: "Puesto dual para diseño y redes.", realPhoto: null },
+      { id: "pc_gab_24", floor: 2, type: "pc_desktop", name: "PC Gabinete 24", room: "GABINETE", x: 490, y: 200, rot: 0, tag: "PC-GAB-24", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Cisco Packet Tracer", "VS Code", "Office 365"], notes: "Puesto dual para diseño y redes.", realPhoto: null },
+      { id: "pc_gab_25", floor: 2, type: "pc_desktop", name: "PC Gabinete 25", room: "GABINETE", x: 270, y: 265, rot: 0, tag: "PC-GAB-25", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Cisco Packet Tracer", "VS Code", "Office 365"], notes: "Puesto dual para diseño y redes.", realPhoto: null },
+      { id: "pc_gab_26", floor: 2, type: "pc_desktop", name: "PC Gabinete 26", room: "GABINETE", x: 295, y: 265, rot: 0, tag: "PC-GAB-26", caseModel: "Slim SFF", os: "Dual Boot (Win + Linux)", cpu: "AMD Ryzen 5 5600G", ram: "16 GB DDR4", status: "Operativo", software: ["AutoCAD 2024", "Cisco Packet Tracer", "VS Code", "Office 365"], notes: "Puesto dual para diseño y redes.", realPhoto: null },
+      { id: "pc_gab_27", floor: 2, type: "pc_desktop", name: "PC Gabinete 27", room: "GABINETE", x: 320, y: 265, rot: 0, tag: "PC-GAB-27", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Core i3-10100", ram: "8 GB DDR4", status: "Operativo", software: ["Office 365", "Acrobat Reader", "Google Chrome", "Packet Tracer"], notes: "Operativa.", realPhoto: null },
+      { id: "pc_gab_28", floor: 2, type: "pc_desktop", name: "PC Gabinete 28", room: "GABINETE", x: 345, y: 265, rot: 0, tag: "PC-GAB-28", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Core i3-10100", ram: "8 GB DDR4", status: "Operativo", software: ["Office 365", "Acrobat Reader", "Google Chrome", "Packet Tracer"], notes: "Operativa.", realPhoto: null },
+      { id: "pc_gab_29", floor: 2, type: "pc_desktop", name: "PC Gabinete 29", room: "GABINETE", x: 415, y: 265, rot: 0, tag: "PC-GAB-29", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Core i3-10100", ram: "8 GB DDR4", status: "En Mantenimiento", software: ["Office 365", "Acrobat Reader", "Google Chrome", "Packet Tracer"], notes: "En revisión preventiva de fuente.", realPhoto: null },
+      { id: "pc_gab_30", floor: 2, type: "pc_desktop", name: "PC Gabinete 30", room: "GABINETE", x: 440, y: 265, rot: 0, tag: "PC-GAB-30", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Core i3-10100", ram: "8 GB DDR4", status: "Operativo", software: ["Office 365", "Acrobat Reader", "Google Chrome", "Packet Tracer"], notes: "Operativa.", realPhoto: null },
+      { id: "pc_gab_31", floor: 2, type: "pc_desktop", name: "PC Gabinete 31", room: "GABINETE", x: 465, y: 265, rot: 0, tag: "PC-GAB-31", caseModel: "Mini PC", os: "Windows 11 Pro", cpu: "Intel Core i5-1135G7", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Packet Tracer"], notes: "Operativa.", realPhoto: null },
+      { id: "pc_gab_32", floor: 2, type: "pc_desktop", name: "PC Gabinete 32", room: "GABINETE", x: 490, y: 265, rot: 0, tag: "PC-GAB-32", caseModel: "Mini PC", os: "Windows 11 Pro", cpu: "Intel Core i5-1135G7", ram: "16 GB DDR4", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "Packet Tracer"], notes: "Operativa.", realPhoto: null },
+      { id: "sw_pa_gabinete", floor: 2, type: "switch_net", name: "Switch Gabinete (48P)", room: "GABINETE", x: 245, y: 310, rot: 0, tag: "SW-PA-GAB-01", ip: "192.168.100.5", port: "48 Puertos Gigabit PoE+", status: "Operativo", notes: "Alimenta las 32 PCs del gabinete, Sala de Streaming y APs 17, 18 y 19." },
 
       // 3 PCs en la SALA DE STREAMING (Planta Alta)
       { id: "pc_str_01", floor: 2, type: "pc_desktop", name: "PC Streaming Principal", room: "SALA DE STREAMING", x: 460, y: 490, rot: 0, tag: "PC-STR-01", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i7-13700K", ram: "32 GB DDR5", status: "Operativo", software: ["OBS Studio", "Adobe Premiere Pro", "DaVinci Resolve", "Audacity", "Photoshop"], notes: "Estación de transmisión y captura 4K con micrófono Rode y placa de captura.", realPhoto: null },
@@ -1003,6 +1014,58 @@
       return c;
     }
 
+    
+    function createWallWithDoor(w, h, thick, hasDoor, doorRatio, mat, isAlongX) {
+      const g = new THREE.Group();
+      const doorW = 1.8;
+      const doorH = 2.2;
+      if (!hasDoor || w <= doorW + 0.6) {
+        const geo = isAlongX ? new THREE.BoxGeometry(w, h, thick) : new THREE.BoxGeometry(thick, h, w);
+        const m = new THREE.Mesh(geo, mat);
+        m.position.y = h / 2;
+        m.castShadow = true; m.receiveShadow = true;
+        g.add(m);
+        return g;
+      }
+      const ratio = doorRatio !== undefined ? doorRatio : 0.5;
+      const leftW = Math.max(0.1, (w * ratio) - doorW / 2);
+      const rightW = Math.max(0.1, w - ((w * ratio) + doorW / 2));
+      const lintelH = h - doorH;
+
+      if (isAlongX) {
+        const lMesh = new THREE.Mesh(new THREE.BoxGeometry(leftW, h, thick), mat);
+        lMesh.position.set(-w/2 + leftW/2, h/2, 0);
+        lMesh.castShadow = true; lMesh.receiveShadow = true;
+        g.add(lMesh);
+
+        const rMesh = new THREE.Mesh(new THREE.BoxGeometry(rightW, h, thick), mat);
+        rMesh.position.set(w/2 - rightW/2, h/2, 0);
+        rMesh.castShadow = true; rMesh.receiveShadow = true;
+        g.add(rMesh);
+
+        const lintel = new THREE.Mesh(new THREE.BoxGeometry(doorW, lintelH, thick), mat);
+        lintel.position.set(-w/2 + (w * ratio), doorH + lintelH/2, 0);
+        lintel.castShadow = true; lintel.receiveShadow = true;
+        g.add(lintel);
+      } else {
+        const lMesh = new THREE.Mesh(new THREE.BoxGeometry(thick, h, leftW), mat);
+        lMesh.position.set(0, h/2, -w/2 + leftW/2);
+        lMesh.castShadow = true; lMesh.receiveShadow = true;
+        g.add(lMesh);
+
+        const rMesh = new THREE.Mesh(new THREE.BoxGeometry(thick, h, rightW), mat);
+        rMesh.position.set(0, h/2, w/2 - rightW/2);
+        rMesh.castShadow = true; rMesh.receiveShadow = true;
+        g.add(rMesh);
+
+        const lintel = new THREE.Mesh(new THREE.BoxGeometry(thick, lintelH, doorW), mat);
+        lintel.position.set(0, doorH + lintelH/2, -w/2 + (w * ratio));
+        lintel.castShadow = true; lintel.receiveShadow = true;
+        g.add(lintel);
+      }
+      return g;
+    }
+
     function buildSchool3D() {
       // Clear previous children
       while(floor1Group.children.length > 0) floor1Group.remove(floor1Group.children[0]);
@@ -1051,26 +1114,28 @@
         roomMeshGroup.add(floorMesh);
 
         if (!r.isPatio) {
-          // Walls
+          // Muros con aberturas de puertas transitables
           const wallThick = 0.25;
-          const wNorth = new THREE.Mesh(new THREE.BoxGeometry(w3D, h3D, wallThick), wallMaterialPB);
-          wNorth.position.set(0, h3D/2, -d3D/2 + wallThick/2);
-          wNorth.castShadow = true; wNorth.receiveShadow = true;
+          // Determinamos qué muro tiene puerta según la ubicación del pasillo
+          const hasDoorSouth = (r.y < 200 || (r.y >= 350 && r.y < 480));
+          const hasDoorNorth = (r.y >= 480);
+          const hasDoorEast = (r.x < 150);
+          const hasDoorWest = (r.x >= 150 && r.x < 300);
+
+          const wNorth = createWallWithDoor(w3D, h3D, wallThick, hasDoorNorth, 0.5, wallMaterialPB, true);
+          wNorth.position.set(0, 0, -d3D/2 + wallThick/2);
           roomMeshGroup.add(wNorth);
 
-          const wSouth = new THREE.Mesh(new THREE.BoxGeometry(w3D, h3D, wallThick), wallMaterialPB);
-          wSouth.position.set(0, h3D/2, d3D/2 - wallThick/2);
-          wSouth.castShadow = true; wSouth.receiveShadow = true;
+          const wSouth = createWallWithDoor(w3D, h3D, wallThick, hasDoorSouth, 0.5, wallMaterialPB, true);
+          wSouth.position.set(0, 0, d3D/2 - wallThick/2);
           roomMeshGroup.add(wSouth);
 
-          const wWest = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h3D, d3D), wallMaterialPB);
-          wWest.position.set(-w3D/2 + wallThick/2, h3D/2, 0);
-          wWest.castShadow = true; wWest.receiveShadow = true;
+          const wWest = createWallWithDoor(d3D, h3D, wallThick, hasDoorWest, 0.5, wallMaterialPB, false);
+          wWest.position.set(-w3D/2 + wallThick/2, 0, 0);
           roomMeshGroup.add(wWest);
 
-          const wEast = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h3D, d3D), wallMaterialPB);
-          wEast.position.set(w3D/2 - wallThick/2, h3D/2, 0);
-          wEast.castShadow = true; wEast.receiveShadow = true;
+          const wEast = createWallWithDoor(d3D, h3D, wallThick, hasDoorEast, 0.5, wallMaterialPB, false);
+          wEast.position.set(w3D/2 - wallThick/2, 0, 0);
           roomMeshGroup.add(wEast);
 
           // Billboard Label
@@ -1139,26 +1204,27 @@
         fMesh.userData = { isRoom: true, data: r, floor: 2 };
         paGroup.add(fMesh);
 
-        // Muros perimetrales
+        // Muros perimetrales de Planta Alta con puertas transitables
         const wallThick = 0.25;
-        const wNorth = new THREE.Mesh(new THREE.BoxGeometry(w3D, h3D, wallThick), wallMaterialPA);
-        wNorth.position.set(0, h3D/2, -d3D/2 + wallThick/2);
-        wNorth.castShadow = true; wNorth.receiveShadow = true;
+        const isGab = r.isGabinete;
+        const isStr = r.isStreaming;
+        const isAud = r.isAuditorio;
+
+        // Gabinete tiene puerta al sur (hacia el pasillo)
+        const wNorth = createWallWithDoor(w3D, h3D, wallThick, isStr, 0.5, wallMaterialPA, true);
+        wNorth.position.set(0, 0, -d3D/2 + wallThick/2);
         paGroup.add(wNorth);
 
-        const wSouth = new THREE.Mesh(new THREE.BoxGeometry(w3D, h3D, wallThick), wallMaterialPA);
-        wSouth.position.set(0, h3D/2, d3D/2 - wallThick/2);
-        wSouth.castShadow = true; wSouth.receiveShadow = true;
+        const wSouth = createWallWithDoor(w3D, h3D, wallThick, isGab, 0.8, wallMaterialPA, true);
+        wSouth.position.set(0, 0, d3D/2 - wallThick/2);
         paGroup.add(wSouth);
 
-        const wWest = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h3D, d3D), wallMaterialPA);
-        wWest.position.set(-w3D/2 + wallThick/2, h3D/2, 0);
-        wWest.castShadow = true; wWest.receiveShadow = true;
+        const wWest = createWallWithDoor(d3D, h3D, wallThick, isAud || r.num === 'Sala previa' || r.num === 'Baños M/F' || r.num === 'Escaleras', 0.3, wallMaterialPA, false);
+        wWest.position.set(-w3D/2 + wallThick/2, 0, 0);
         paGroup.add(wWest);
 
-        const wEast = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h3D, d3D), wallMaterialPA);
-        wEast.position.set(w3D/2 - wallThick/2, h3D/2, 0);
-        wEast.castShadow = true; wEast.receiveShadow = true;
+        const wEast = createWallWithDoor(d3D, h3D, wallThick, r.num === 'AULA' || r.num === 'SALA DE DOCENTE', 0.5, wallMaterialPA, false);
+        wEast.position.set(w3D/2 - wallThick/2, 0, 0);
         paGroup.add(wEast);
 
         // Tarima en el Auditorio

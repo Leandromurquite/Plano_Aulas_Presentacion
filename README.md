@@ -67,7 +67,7 @@ Plano_Aulas_Presentacion/
 - **🏢 Selector de Pisos (Niveles):**
   - **Ambos Pisos:** Visualiza el edificio institucional completo en dos plantas superpuestas con el patio central abierto al cielo.
   - **1° Planta Baja:** Vista aislada del primer piso (Aulas 1 a 23, Dirección, Preceptoría con 4 PCs, Kiosco con Rack 42U y AP1 a AP16).
-  - **2° Planta Alta:** Vista enfocada del segundo piso (Gabinete de 16 PCs, Sala de Streaming con 3 PCs, Sala Docente, Aula Oeste, Auditorio y AP17 a AP19).
+  - **2° Planta Alta:** Vista enfocada del segundo piso (Gabinete de 32 PCs, Sala de Streaming con 3 PCs, Sala Docente, Aula Oeste, Auditorio y AP17 a AP19).
 - **🏛️ Vista 3D Orbital (Dios / Arquitecto):**
   - **Clic Izquierdo + Arrastrar:** Rotación 360° en torno al edificio.
   - **Clic Derecho + Arrastrar:** Desplazar / Panorámica.
@@ -76,17 +76,14 @@ Plano_Aulas_Presentacion/
   - **Botones de Enfoque Rápido:** Salto instantáneo a *Gabinete*, *Streaming* o *Auditorio*.
 - **🎮 Modo Videojuego en 1ª Persona (Walkthrough WASD):**
   - Haz clic en **"Videojuego (WASD)"** y haz clic en la pantalla para tomar el control.
-  - **`W, A, S, D`**: Caminar por pasillos y cruzar puertas.
-  - **`Escalera 3D Transitable`**: Sube físicamente por los escalones desde la Planta Baja hasta la Planta Alta sin paredes invisibles.
+  - **`W, A, S, D`**: Caminar por pasillos y cruzar puertas físicas transitables para entrar a las aulas.
+  - **`Escalera 3D Transitable`**: Sube físicamente por los escalones desde la Planta Baja hasta la Planta Alta de forma fluida.
   - **`1` y `2`**: Atajos de teclado para teletransportarte de inmediato entre Planta Baja y Planta Alta.
   - **`Shift`**: Correr.
-  - **`Espacio`**: Saltar.
-  - **`F`**: Linterna nocturna de inspección.
-  - **`E`**: Inspeccionar la computadora, aula o equipo que tengas enfrente.
   - **`Tab` o `Esc`**: Salir del modo videojuego.
 
 ### 2. Espacios del Segundo Piso (Planta Alta)
-- **💻 GABINETE (Laboratorio Principal de Computación):** 8 mesas dobles de trabajo equipadas con 16 computadoras de escritorio (`PC-GAB-01` a `PC-GAB-16`), Switch PoE de distribución de 24 bocas (`SW-PA-GAB`), canaletas de red perimetrales y AP17 en el techo.
+- **💻 GABINETE (Laboratorio Principal de Computación):** 8 mesas dobles de trabajo organizadas en 4 filas con pasillo central, equipadas con **32 computadoras de escritorio** (`PC-GAB-01` a `PC-GAB-32`), Switch PoE de distribución de 48 puertos (`SW-PA-GAB-01`), canaletas de red estructurada y AP17 de alta densidad en el techo.
 - **🎙️ SALA DE STREAMING:** Estudio de producción audiovisual y podcasting con 3 estaciones de alto rendimiento (`PC-STR-01`, `PC-STR-02`, `PC-STR-03`) con cableado UTP directo al switch.
 - **🧑‍🏫 SALA DE DOCENTE:** Oficina de coordinación y profesores de informática con PC docente.
 - **📐 AULA OESTE:** Aula tradicional de teoría, diseño y arquitectura.
