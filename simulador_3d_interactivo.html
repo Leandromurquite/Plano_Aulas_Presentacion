@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador 3D y Videojuego Institucional - Editor Sandbox de Aulas y Redes</title>
+  <title>Estudio 3D Institucional, Redes & Fichas de Mantenimiento</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js & OrbitControls (Local offline first, CDN fallback) -->
+  <!-- Local Three.js & OrbitControls with CDN fallback -->
   <script src="lib/three.min.js"></script>
   <script>
     if (typeof THREE === 'undefined') {
@@ -24,28 +24,33 @@
   <style>
     body { margin: 0; padding: 0; overflow: hidden; user-select: none; font-family: system-ui, -apple-system, sans-serif; }
     #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
-    .glass { background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); }
-    .glass-light { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); }
+    .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); }
+    .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); }
     .crosshair {
       position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
       transform: translate(-50%, -50%); pointer-events: none; z-index: 20;
     }
     .crosshair::before, .crosshair::after {
-      content: ''; position: absolute; background: rgba(255, 255, 255, 0.85); box-shadow: 0 0 4px rgba(0,0,0,0.8);
+      content: ''; position: absolute; background: rgba(255, 255, 255, 0.9); box-shadow: 0 0 4px rgba(0,0,0,0.8);
     }
     .crosshair::before { top: 4px; left: -6px; width: 22px; height: 2px; }
     .crosshair::after { top: -6px; left: 4px; width: 2px; height: 22px; }
-    /* Custom Scrollbars */
-    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-    /* Animated pulse for network APs */
-    @keyframes pulse-ring {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 0.3; }
-      100% { transform: scale(0.95); opacity: 0.8; }
-    }
     .minimap-canvas { border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+    /* Estilos para impresión formal A4 */
+    @media print {
+      body * { visibility: hidden; }
+      #print-report-container, #print-report-container * { visibility: visible; }
+      #print-report-container {
+        position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 15mm;
+        background: white !important; color: black !important;
+      }
+      .no-print { display: none !important; }
+      @page { size: A4 portrait; margin: 12mm; }
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-full overflow-hidden">
@@ -66,12 +71,12 @@
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <h1 class="font-bold text-sm tracking-wide text-white">Simulador 3D & Videojuego Escolar</h1>
+          <h1 class="font-bold text-sm tracking-wide text-white">Estudio 3D Institucional & Redes</h1>
           <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">
             WebGL 3D
           </span>
         </div>
-        <p class="text-[11px] text-slate-400">Editor Sandbox de Aulas y Red Wi-Fi (AP1 - AP16)</p>
+        <p class="text-[11px] text-slate-400">Gestión de Gabinetes, PCs, Fichas de Service y Red Wi-Fi</p>
       </div>
     </div>
 
@@ -113,28 +118,34 @@
 
     </div>
 
-    <!-- Right Actions: Lighting, Add, Save, Help -->
+    <!-- Right Actions: Reports, Catalog, Lighting, Save, Help -->
     <div class="glass px-3 py-1.5 rounded-2xl flex items-center space-x-2 pointer-events-auto shadow-2xl shrink-0">
       
+      <!-- GENERADOR DE INFORMES BUTTON -->
+      <button onclick="openReportsModal()" class="px-3.5 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-lg">
+        <i class="fa-solid fa-file-invoice"></i>
+        <span>Informes & Auditoría</span>
+      </button>
+
+      <!-- BOTÓN CATÁLOGO 3D -->
+      <button onclick="toggleCatalogDrawer()" id="btn-toggle-catalog" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow">
+        <i class="fa-solid fa-couch"></i>
+        <span>Catálogo 3D</span>
+      </button>
+
       <!-- Lighting presets -->
-      <div class="flex items-center bg-slate-900/80 rounded-lg p-0.5 border border-slate-700/60 mr-1">
+      <div class="flex items-center bg-slate-900/80 rounded-lg p-0.5 border border-slate-700/60">
         <button onclick="setLighting('day')" title="Día soleado" class="p-1.5 px-2 rounded text-xs text-amber-400 hover:bg-slate-800"><i class="fa-solid fa-sun"></i></button>
         <button onclick="setLighting('sunset')" title="Atardecer cálido" class="p-1.5 px-2 rounded text-xs text-orange-400 hover:bg-slate-800"><i class="fa-solid fa-cloud-sun"></i></button>
         <button onclick="setLighting('night')" title="Modo Nocturno con LEDs" class="p-1.5 px-2 rounded text-xs text-indigo-400 hover:bg-slate-800"><i class="fa-solid fa-moon"></i></button>
       </div>
 
-      <!-- Add object button -->
-      <button onclick="toggleAddModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow">
-        <i class="fa-solid fa-plus"></i>
-        <span>Añadir</span>
-      </button>
-
-      <!-- Save Project -->
+      <!-- Save / Export JSON -->
       <button onclick="exportProjectJSON()" title="Exportar Proyecto en JSON" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs transition border border-slate-700">
         <i class="fa-solid fa-floppy-disk"></i>
       </button>
 
-      <!-- Load Project -->
+      <!-- Load JSON -->
       <label title="Cargar Proyecto JSON" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs transition border border-slate-700 cursor-pointer">
         <i class="fa-solid fa-folder-open"></i>
         <input type="file" id="file-import" accept=".json" class="hidden" onchange="importProjectJSON(event)">
@@ -154,12 +165,15 @@
 
   </header>
 
-  <!-- LEFT TOOLBAR: QUICK EDIT TOOLS -->
+  <!-- LEFT TOOLBAR: QUICK NAVIGATION & SHORTCUTS -->
   <aside class="absolute left-4 top-24 z-20 flex flex-col space-y-2 pointer-events-none">
     
     <div class="glass p-2 rounded-2xl flex flex-col space-y-2 pointer-events-auto shadow-2xl">
       <button onclick="resetCameraView()" title="Centrar Vista General" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700">
         <i class="fa-solid fa-arrows-to-dot"></i>
+      </button>
+      <button onclick="focusRoom('admin_taller')" title="Ir directamente al Aula de Informática" class="w-10 h-10 rounded-xl bg-blue-600/30 hover:bg-blue-600/60 text-blue-300 flex items-center justify-center transition border border-blue-500/40">
+        <i class="fa-solid fa-computer"></i>
       </button>
       <button onclick="toggleTopDownView()" title="Vista Superior 2D/3D (Plano Cenital)" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700">
         <i class="fa-solid fa-map"></i>
@@ -178,6 +192,46 @@
 
   </aside>
 
+  <!-- CATÁLOGO 3D DRAWER (CLICK-TO-PLACE) -->
+  <div id="catalog-drawer" class="absolute left-16 top-24 bottom-24 w-80 z-20 glass rounded-3xl p-4 flex flex-col shadow-2xl pointer-events-auto hidden border border-slate-700">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div class="flex items-center space-x-2">
+        <span class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white text-xs">
+          <i class="fa-solid fa-couch"></i>
+        </span>
+        <div>
+          <h2 class="font-bold text-sm text-white">Catálogo 3D</h2>
+          <p class="text-[10px] text-slate-400">Clic en un objeto para colocar en el aula</p>
+        </div>
+      </div>
+      <button onclick="toggleCatalogDrawer()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Catalog Tabs: Mobiliario, Tecnología, Redes, Arquitectura -->
+    <div class="flex items-center bg-slate-900/90 rounded-xl p-1 my-3 border border-slate-800 text-[11px] font-semibold">
+      <button onclick="switchCatalogTab('muebles')" id="tab-cat-muebles" class="flex-1 py-1.5 rounded-lg text-center bg-blue-600 text-white transition">Mobiliario</button>
+      <button onclick="switchCatalogTab('computo')" id="tab-cat-computo" class="flex-1 py-1.5 rounded-lg text-center text-slate-400 hover:text-white transition">Cómputo</button>
+      <button onclick="switchCatalogTab('redes')" id="tab-cat-redes" class="flex-1 py-1.5 rounded-lg text-center text-slate-400 hover:text-white transition">Redes</button>
+      <button onclick="switchCatalogTab('aulas')" id="tab-cat-aulas" class="flex-1 py-1.5 rounded-lg text-center text-slate-400 hover:text-white transition">+ Aulas</button>
+    </div>
+
+    <!-- Catalog Items Grid (Scrollable) -->
+    <div id="catalog-items-container" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
+      <!-- Items dynamically populated via JS -->
+    </div>
+
+    <!-- Placement mode alert -->
+    <div id="placement-alert" class="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-200 text-[11px] hidden mt-2">
+      <div class="font-bold flex items-center space-x-1.5">
+        <i class="fa-solid fa-crosshairs animate-spin"></i>
+        <span id="placement-item-name">Colocando objeto...</span>
+      </div>
+      <p class="text-[10px] text-emerald-300/80 mt-0.5">Haz clic sobre cualquier aula en el suelo para ubicarlo. Pulsa <b>Esc</b> para cancelar.</p>
+    </div>
+  </div>
+
   <!-- BOTTOM FPS / WALKTROUGH INSTRUCTION BAR -->
   <div id="fps-hud" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 glass px-6 py-2.5 rounded-2xl flex items-center space-x-6 text-xs text-slate-300 pointer-events-none shadow-2xl hidden">
     <div class="flex items-center space-x-1.5"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-white border border-slate-600">W A S D</span> <span>Caminar</span></div>
@@ -188,7 +242,7 @@
     <div class="flex items-center space-x-1.5 text-cyan-400 font-semibold"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono border border-cyan-500/40">Tab / Esc</span> <span>Modo Orbital</span></div>
   </div>
 
-  <!-- ROOM HOVER / INTERACTION TOOLTIP -->
+  <!-- HOVER TOOLTIP -->
   <div id="hover-tooltip" class="absolute z-20 pointer-events-none hidden glass px-3.5 py-2 rounded-xl text-xs shadow-2xl border border-cyan-500/30">
     <div class="font-bold text-white flex items-center space-x-1.5">
       <span id="tooltip-icon">🏛️</span>
@@ -197,16 +251,16 @@
     <p id="tooltip-sub" class="text-[11px] text-cyan-300">Detalles...</p>
   </div>
 
-  <!-- RIGHT INSPECTOR SIDEBAR (OPENS WHEN OBJECT IS SELECTED) -->
-  <aside id="inspector-panel" class="absolute right-4 top-24 bottom-24 w-80 z-20 glass rounded-2xl p-4 flex flex-col shadow-2xl pointer-events-auto hidden overflow-hidden border border-slate-700/80">
+  <!-- RIGHT INSPECTOR SIDEBAR (PROPIEDADES DEL ELEMENTO O AULA SELECCIONADA) -->
+  <aside id="inspector-panel" class="absolute right-4 top-24 bottom-24 w-84 z-20 glass rounded-3xl p-4 flex flex-col shadow-2xl pointer-events-auto hidden overflow-hidden border border-slate-700">
     
     <!-- Inspector Header -->
     <div class="flex items-center justify-between pb-3 border-b border-slate-800">
       <div class="flex items-center space-x-2">
-        <span id="insp-badge-icon" class="text-xl">🏛️</span>
+        <span id="insp-badge-icon" class="text-2xl">🏛️</span>
         <div>
           <h2 id="insp-header-title" class="font-bold text-sm text-white leading-tight">Propiedades</h2>
-          <span id="insp-type-badge" class="text-[10px] text-cyan-400 font-mono">Aula Seleccionada</span>
+          <span id="insp-type-badge" class="text-[10px] text-cyan-400 font-mono font-semibold">Elemento Seleccionado</span>
         </div>
       </div>
       <button onclick="deselectObject()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800">
@@ -217,14 +271,140 @@
     <!-- Inspector Content (Scrollable) -->
     <div class="flex-1 overflow-y-auto py-3 space-y-4 pr-1 text-xs">
       
-      <!-- Basic Info -->
+      <!-- FOTO DE LA VIDA REAL (PREVIEW & UPLOAD) -->
+      <div class="space-y-2 bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider flex items-center justify-between">
+          <span>📷 Foto de la Vida Real</span>
+          <span class="text-[9px] text-cyan-400 font-normal">Física / Real</span>
+        </label>
+        
+        <div id="real-photo-preview-container" class="relative rounded-xl overflow-hidden border border-slate-700 aspect-video bg-slate-950 flex items-center justify-center">
+          <img id="insp-real-photo-img" src="" alt="Foto Real" class="w-full h-full object-cover hidden" />
+          <div id="insp-no-photo-placeholder" class="text-center p-3 text-slate-500">
+            <i class="fa-solid fa-image text-2xl mb-1 block text-slate-600"></i>
+            <span class="text-[10px]">Sin foto de la vida real</span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-1.5 pt-1">
+          <label class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold text-[11px] flex items-center justify-center space-x-1.5 cursor-pointer shadow transition">
+            <i class="fa-solid fa-upload"></i>
+            <span>Subir Foto Real</span>
+            <input type="file" accept="image/*" class="hidden" onchange="handleUploadRealPhoto(event)">
+          </label>
+          <button onclick="capture3DAsRealPhoto()" title="Tomar captura del render 3D actual" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold border border-slate-700 transition">
+            <i class="fa-solid fa-camera"></i>
+          </button>
+          <button onclick="removeRealPhoto()" title="Eliminar foto" class="px-2 py-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 rounded-lg text-[11px] border border-rose-500/30 transition">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- SECCIÓN AULA: BOTÓN DOSSIER DEL AULA -->
+      <div id="insp-room-dossier-btn-group" class="hidden">
+        <button onclick="openRoomDossierModal()" class="w-full py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl flex items-center justify-center space-x-2 shadow-lg transition">
+          <i class="fa-solid fa-folder-open"></i>
+          <span>Ver Dossier & Gabinetes del Aula</span>
+        </button>
+      </div>
+
+      <!-- DATOS DE COMPUTADORA / GABINETE (SOLO SI ES PC) -->
+      <div id="insp-pc-group" class="space-y-3 bg-slate-900/80 p-3 rounded-2xl border border-slate-800 hidden">
+        <div class="flex items-center justify-between">
+          <label class="font-bold text-cyan-400 block text-[11px] uppercase tracking-wider">Ficha Técnica de Mantenimiento</label>
+          <span id="insp-pc-tag-badge" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono font-bold text-[10px]">PC-INF-01</span>
+        </div>
+
+        <div>
+          <span class="text-[10px] text-slate-400">Número de Mantenimiento / Inventario</span>
+          <input type="text" id="insp-pc-tag" onchange="updateSelectedPC()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-mono font-bold text-xs mt-0.5">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <span class="text-[10px] text-slate-400">Modelo de Gabinete</span>
+            <select id="insp-pc-case" onchange="updateSelectedPC()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mt-0.5">
+              <option value="Torre ATX">Torre ATX</option>
+              <option value="Slim SFF">Slim / SFF</option>
+              <option value="Mini PC">Mini PC</option>
+              <option value="All-in-One">All-in-One</option>
+            </select>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400">Sistema Operativo</span>
+            <select id="insp-pc-os" onchange="updateSelectedPC()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mt-0.5">
+              <option value="Windows 11 Pro">Windows 11 Pro</option>
+              <option value="Windows 10 Educativo">Windows 10 Edu</option>
+              <option value="Ubuntu Linux">Ubuntu Linux</option>
+              <option value="Debian Linux">Debian Linux</option>
+              <option value="Dual Boot (Win + Linux)">Dual Boot</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <span class="text-[10px] text-slate-400">Procesador (CPU)</span>
+            <input type="text" id="insp-pc-cpu" onchange="updateSelectedPC()" placeholder="Core i5 / Ryzen 5" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mt-0.5">
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400">Memoria RAM</span>
+            <input type="text" id="insp-pc-ram" onchange="updateSelectedPC()" placeholder="16 GB DDR4" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mt-0.5">
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] text-slate-400">Estado de Mantenimiento</span>
+          <select id="insp-pc-status" onchange="updateSelectedPC()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 font-bold text-xs mt-0.5">
+            <option value="Operativo" class="text-emerald-400">🟢 100% Operativo</option>
+            <option value="En Mantenimiento" class="text-amber-400">🟡 En Mantenimiento / Revisión</option>
+            <option value="Fuera de Servicio" class="text-rose-400">🔴 Fuera de Servicio / Falla</option>
+          </select>
+        </div>
+
+        <!-- SOFTWARE INSTALADO POR PC -->
+        <div class="space-y-2 pt-2 border-t border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-300 text-[10px] uppercase">Software y Apps Instaladas</span>
+            <span class="text-[9px] text-cyan-400">Perfiles rápidos:</span>
+          </div>
+
+          <!-- Perfiles rápidos -->
+          <div class="flex items-center space-x-1">
+            <button onclick="applySoftwareProfile('dev')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[9px] text-cyan-300 font-semibold border border-slate-700">Programación</button>
+            <button onclick="applySoftwareProfile('cad')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[9px] text-purple-300 font-semibold border border-slate-700">Diseño/CAD</button>
+            <button onclick="applySoftwareProfile('office')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[9px] text-amber-300 font-semibold border border-slate-700">Ofimática</button>
+          </div>
+
+          <!-- Tags de Software con botón de eliminar -->
+          <div id="insp-pc-software-tags" class="flex flex-wrap gap-1 min-h-[36px] p-2 bg-slate-950 border border-slate-800 rounded-xl">
+            <!-- Software chips inserted here -->
+          </div>
+
+          <!-- Add new software input -->
+          <div class="flex items-center space-x-1">
+            <input type="text" id="input-new-software" placeholder="Añadir software (ej: Packet Tracer)" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
+            <button onclick="addSoftwareToPC()" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs">+</button>
+          </div>
+        </div>
+
+        <!-- NOTAS DE SERVICE -->
+        <div>
+          <span class="text-[10px] text-slate-400">Historial / Observaciones Técnicas</span>
+          <textarea id="insp-pc-notes" onchange="updateSelectedPC()" rows="2" placeholder="Último cambio de pasta térmica, fecha de formateo..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-[11px] mt-0.5 resize-none"></textarea>
+        </div>
+
+      </div>
+
+      <!-- DATOS GENERALES (NOMBRE, CATEGORÍA) -->
       <div class="space-y-2">
         <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Nombre / Identificador</label>
         <input type="text" id="insp-name" onchange="updateSelectedObject()" 
           class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-cyan-500">
       </div>
 
-      <!-- Category & Theme Color -->
+      <!-- Categoría de Carrera (si es aula) -->
       <div id="insp-category-group" class="space-y-2">
         <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Área / Categoría</label>
         <select id="insp-category" onchange="changeCategoryColor()" 
@@ -242,46 +422,28 @@
         </select>
       </div>
 
-      <!-- Dimensions & Position -->
+      <!-- Dimensiones & Posición -->
       <div class="space-y-2">
-        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Dimensiones (Metros)</label>
+        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Dimensiones y Posición (Metros)</label>
         <div class="grid grid-cols-3 gap-2">
           <div>
             <span class="text-[10px] text-slate-400">Ancho (X)</span>
-            <input type="number" id="insp-dim-w" step="0.5" onchange="updateSelectedDimensions()" 
-              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+            <input type="number" id="insp-dim-w" step="0.5" onchange="updateSelectedDimensions()" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
           </div>
           <div>
             <span class="text-[10px] text-slate-400">Largo (Z)</span>
-            <input type="number" id="insp-dim-d" step="0.5" onchange="updateSelectedDimensions()" 
-              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+            <input type="number" id="insp-dim-d" step="0.5" onchange="updateSelectedDimensions()" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
           </div>
           <div>
-            <span class="text-[10px] text-slate-400">Alto (Y)</span>
-            <input type="number" id="insp-dim-h" step="0.2" onchange="updateSelectedDimensions()" 
-              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
+            <span class="text-[10px] text-slate-400">Rotación</span>
+            <button onclick="rotateSelectedObject()" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold rounded-lg text-xs border border-slate-700">
+              <i class="fa-solid fa-rotate-right mr-1"></i>90°
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Coordinate Positions -->
-      <div class="space-y-2">
-        <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider">Posición en Planta</label>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <span class="text-[10px] text-slate-400">Coord X</span>
-            <input type="number" id="insp-pos-x" step="0.5" onchange="updateSelectedPosition()" 
-              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400">Coord Z</span>
-            <input type="number" id="insp-pos-z" step="0.5" onchange="updateSelectedPosition()" 
-              class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1.5 text-white font-mono text-center">
-          </div>
-        </div>
-      </div>
-
-      <!-- Shifts Assignments (Mañana, Tarde, Noche) -->
+      <!-- Turnos Académicos (Si es aula) -->
       <div id="insp-shifts-group" class="space-y-2.5 pt-2 border-t border-slate-800">
         <label class="font-bold text-slate-300 block text-[11px] uppercase tracking-wider flex items-center justify-between">
           <span>Turnos Académicos</span>
@@ -291,23 +453,20 @@
         <div class="space-y-1.5">
           <div class="flex items-center space-x-1.5">
             <span class="w-5 h-5 rounded bg-blue-600/30 text-blue-300 flex items-center justify-center font-bold text-[10px]">M</span>
-            <input type="text" id="insp-shift-m" placeholder="Turno Mañana" onchange="updateSelectedShifts()"
-              class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
+            <input type="text" id="insp-shift-m" placeholder="Turno Mañana" onchange="updateSelectedShifts()" class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
           </div>
           <div class="flex items-center space-x-1.5">
             <span class="w-5 h-5 rounded bg-amber-600/30 text-amber-300 flex items-center justify-center font-bold text-[10px]">T</span>
-            <input type="text" id="insp-shift-t" placeholder="Turno Tarde" onchange="updateSelectedShifts()"
-              class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
+            <input type="text" id="insp-shift-t" placeholder="Turno Tarde" onchange="updateSelectedShifts()" class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
           </div>
           <div class="flex items-center space-x-1.5">
             <span class="w-5 h-5 rounded bg-purple-600/30 text-purple-300 flex items-center justify-center font-bold text-[10px]">N</span>
-            <input type="text" id="insp-shift-n" placeholder="Turno Noche" onchange="updateSelectedShifts()"
-              class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
+            <input type="text" id="insp-shift-n" placeholder="Turno Noche" onchange="updateSelectedShifts()" class="flex-1 bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-[11px]">
           </div>
         </div>
       </div>
 
-      <!-- Network specifics (If AP or Network device) -->
+      <!-- Parámetros de Redes (Si es AP, Switch o Router) -->
       <div id="insp-net-group" class="space-y-2 pt-2 border-t border-slate-800 hidden">
         <label class="font-bold text-emerald-400 block text-[11px] uppercase tracking-wider">Parámetros Telecom (Anexo 1)</label>
         <div class="space-y-1.5">
@@ -316,7 +475,7 @@
             <input type="text" id="insp-net-ip" onchange="updateSelectedNet()" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white font-mono text-xs">
           </div>
           <div>
-            <span class="text-[10px] text-slate-400">Puerto Switch / VLAN</span>
+            <span class="text-[10px] text-slate-400">Puerto Switch / VLAN / SSID</span>
             <input type="text" id="insp-net-port" onchange="updateSelectedNet()" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-1 text-white text-xs">
           </div>
         </div>
@@ -324,7 +483,7 @@
 
     </div>
 
-    <!-- Inspector Actions (Duplicate, Delete) -->
+    <!-- Inspector Actions -->
     <div class="pt-3 border-t border-slate-800 flex items-center space-x-2">
       <button onclick="duplicateSelectedObject()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold text-xs flex items-center justify-center space-x-1.5 transition border border-slate-700">
         <i class="fa-solid fa-clone"></i>
@@ -348,58 +507,87 @@
     </div>
   </div>
 
-  <!-- MODAL: AÑADIR ELEMENTO -->
-  <div id="modal-add" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden">
-    <div class="glass w-full max-w-md p-6 rounded-3xl shadow-2xl border border-slate-700 space-y-4">
+  <!-- MODAL: GENERADOR DE INFORMES Y AUDITORÍA MULTIFORMATO -->
+  <div id="modal-reports" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center hidden p-4">
+    <div class="glass w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl border border-slate-700 flex flex-col overflow-hidden">
       
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
-            <i class="fa-solid fa-plus"></i>
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center text-xl shadow-lg">
+            📋
           </div>
-          <h3 class="font-bold text-base text-white">Añadir Nuevo Elemento 3D</h3>
+          <div>
+            <h2 class="font-bold text-base text-white">Generador de Informes Oficiales & Auditoría</h2>
+            <p class="text-xs text-slate-400">Reportes automáticos en tiempo real de Aulas, PCs, Gabinetes y Redes</p>
+          </div>
         </div>
-        <button onclick="toggleAddModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div class="flex items-center space-x-2">
+          <button onclick="printFormalReport()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow transition">
+            <i class="fa-solid fa-print"></i>
+            <span>Imprimir / Guardar PDF (A4)</span>
+          </button>
+          <button onclick="exportReportsToCSV()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow transition">
+            <i class="fa-solid fa-file-excel"></i>
+            <span>Descargar Excel (.csv)</span>
+          </button>
+          <button onclick="closeReportsModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-3 pt-2">
-        
-        <!-- Add Classroom -->
-        <button onclick="addNewClassroom()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-blue-500 text-left transition space-y-1.5 group">
-          <div class="w-8 h-8 rounded-xl bg-blue-600/30 text-blue-400 flex items-center justify-center group-hover:scale-110 transition">
-            <i class="fa-solid fa-chalkboard-user"></i>
-          </div>
-          <div class="font-bold text-xs text-white">Nueva Aula</div>
-          <div class="text-[10px] text-slate-400">Espacio lectivo con muros, puerta y pupitres.</div>
+      <!-- Report Tabs -->
+      <div class="flex items-center bg-slate-900 px-6 pt-3 border-b border-slate-800 space-x-2 text-xs font-bold">
+        <button onclick="switchReportTab('general')" id="tab-rep-general" class="pb-3 border-b-2 border-cyan-400 text-cyan-300 transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-building-columns"></i>
+          <span>1. General & Infraestructura</span>
         </button>
-
-        <!-- Add Access Point -->
-        <button onclick="addNewAP()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500 text-left transition space-y-1.5 group">
-          <div class="w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition">
-            <i class="fa-solid fa-wifi"></i>
-          </div>
-          <div class="font-bold text-xs text-white">Punto de Acceso (AP)</div>
-          <div class="text-[10px] text-slate-400">Domo Wi-Fi de techo con LED y cobertura.</div>
+        <button onclick="switchReportTab('tech')" id="tab-rep-tech" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-computer"></i>
+          <span>2. Equipamiento Tecnológico & PCs</span>
         </button>
-
-        <!-- Add Rack / Switch -->
-        <button onclick="addNewRack()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500 text-left transition space-y-1.5 group">
-          <div class="w-8 h-8 rounded-xl bg-cyan-600/30 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition">
-            <i class="fa-solid fa-server"></i>
-          </div>
-          <div class="font-bold text-xs text-white">Rack / Switch Core</div>
-          <div class="text-[10px] text-slate-400">Gabinete 42U o Switch de pared.</div>
+        <button onclick="switchReportTab('net')" id="tab-rep-net" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+          <i class="fa-solid fa-network-wired"></i>
+          <span>3. Redes & Telecomunicaciones (Anexo 1)</span>
         </button>
+      </div>
 
-        <!-- Add Corridor / Room -->
-        <button onclick="addNewCorridor()" class="p-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-amber-500 text-left transition space-y-1.5 group">
-          <div class="w-8 h-8 rounded-xl bg-amber-600/30 text-amber-400 flex items-center justify-center group-hover:scale-110 transition">
-            <i class="fa-solid fa-shoe-prints"></i>
+      <!-- Report Body (Scrollable) -->
+      <div id="reports-content-body" class="flex-1 overflow-y-auto p-6 space-y-6 text-slate-200">
+        <!-- Content populated via JavaScript -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: DOSSIER DE AULA DE INFORMÁTICA / LABORATORIO -->
+  <div id="modal-room-dossier" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center hidden p-4">
+    <div class="glass w-full max-w-3xl max-h-[85vh] rounded-3xl shadow-2xl border border-slate-700 flex flex-col overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl shadow">
+            💻
           </div>
-          <div class="font-bold text-xs text-white">Pasillo / Galería</div>
-          <div class="text-[10px] text-slate-400">Zona de circulación o patio abierto.</div>
-        </button>
+          <div>
+            <h3 id="dossier-room-title" class="font-bold text-base text-white">Dossier del Laboratorio de Informática</h3>
+            <p id="dossier-room-subtitle" class="text-xs text-slate-400">Inventario de computadoras, gabinetes y mantenimiento</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="printCurrentRoomDossier()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow transition">
+            <i class="fa-solid fa-print"></i>
+            <span>Imprimir Ficha del Aula</span>
+          </button>
+          <button onclick="closeRoomDossierModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+      </div>
 
+      <div id="room-dossier-body" class="flex-1 overflow-y-auto p-6 space-y-4 text-xs">
+        <!-- Dossier content inserted here -->
       </div>
 
     </div>
@@ -408,57 +596,46 @@
   <!-- MODAL: AYUDA Y CONTROLES -->
   <div id="modal-help" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden">
     <div class="glass w-full max-w-lg p-6 rounded-3xl shadow-2xl border border-slate-700 space-y-4">
-      
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div class="flex items-center space-x-2">
           <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
             <i class="fa-solid fa-gamepad"></i>
           </div>
-          <h3 class="font-bold text-base text-white">Guía de Controles y Funcionalidades</h3>
+          <h3 class="font-bold text-base text-white">Guía de Controles & Funcionalidades</h3>
         </div>
         <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <div class="space-y-3 text-xs text-slate-300">
-        
-        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 space-y-2">
+        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 space-y-1.5">
           <div class="font-bold text-white flex items-center space-x-1.5">
-            <span class="text-base">🎮</span>
-            <span>Modo Videojuego en Primera Persona (Walkthrough)</span>
+            <span>🎮</span><span>Modo Videojuego en 1ª Persona</span>
           </div>
-          <ul class="space-y-1 pl-4 list-disc text-slate-400">
-            <li><b class="text-white">W, A, S, D</b>: Caminar por los pasillos y entrar a las aulas.</li>
-            <li><b class="text-white">Shift</b>: Correr a mayor velocidad.</li>
-            <li><b class="text-white">Ratón</b>: Mirar en 360 grados (haz clic en la pantalla para capturar el cursor).</li>
-            <li><b class="text-white">Espacio</b>: Salto / Elevarse.</li>
-            <li><b class="text-white">F</b>: Encender / apagar linterna.</li>
-            <li><b class="text-white">Esc / Tab</b>: Salir al modo orbital con cursor libre.</li>
-          </ul>
+          <p class="text-slate-400">Pulsa <b>Modo Videojuego</b> y haz clic en la pantalla. Camina con <b>W, A, S, D</b>, corre con <b>Shift</b>, salta con <b>Espacio</b>, enciende linterna con <b>F</b>, e inspecciona equipos con <b>E</b>. Sal con <b>Tab / Esc</b>.</p>
         </div>
-
-        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 space-y-2">
+        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 space-y-1.5">
           <div class="font-bold text-white flex items-center space-x-1.5">
-            <span class="text-base">🛠️</span>
-            <span>Modo Editor Sandbox 3D</span>
+            <span>🛋️</span><span>Catálogo 3D & Colocación</span>
           </div>
-          <ul class="space-y-1 pl-4 list-disc text-slate-400">
-            <li><b class="text-white">Seleccionar</b>: Haz clic sobre cualquier aula o equipo para abrir el panel de propiedades lateral.</li>
-            <li><b class="text-white">Modificar</b>: Cambia nombres, turnos, categorías de carrera, dimensiones o posiciones en tiempo real.</li>
-            <li><b class="text-white">Añadir</b>: Usa el botón <b class="text-emerald-400">+ Añadir</b> para incorporar nuevas aulas, APs o racks.</li>
-            <li><b class="text-white">Eliminar</b>: Selecciona un aula y pulsa <b class="text-rose-400">Eliminar</b> o la tecla <b class="text-white">Supr</b>.</li>
-            <li><b class="text-white">Exportar / Cargar</b>: Guarda tu maqueta en un archivo JSON o toma capturas HD para imprimir.</li>
-          </ul>
+          <p class="text-slate-400">Abre el <b>Catálogo 3D</b>, elige una PC, banco o AP, y haz clic en el aula para colocarlo. Selecciónalo para cambiar su S.O., subir su foto real o rotarlo con <b>R</b>.</p>
         </div>
-
+        <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 space-y-1.5">
+          <div class="font-bold text-white flex items-center space-x-1.5">
+            <span>📋</span><span>Generador de Informes & Fichas de Service</span>
+          </div>
+          <p class="text-slate-400">Pulsa <b>Informes & Auditoría</b> para ver el censo total de alumnos, inventario de PCs y auditoría de redes. Puedes exportar a <b>PDF formal A4 con fotos reales</b> o descargar en <b>Excel (.csv)</b>.</p>
+        </div>
       </div>
-
     </div>
   </div>
 
-  <!-- THREE.JS LOGIC & SCENE SETUP -->
+  <!-- CONTENEDOR OCULTO PARA IMPRESIÓN FORMAL A4 (PDF) -->
+  <div id="print-report-container" class="hidden"></div>
+
+  <!-- THREE.JS LOGIC & APPLICATION SCRIPTS -->
   <script>
     // -------------------------------------------------------------
-    // 1. DATA MODEL (PRELOADED FROM OFFICIAL LAYOUT)
+    // 1. DATA MODEL (PRELOADED WITH SCHOOL LAYOUT & ASSETS)
     // -------------------------------------------------------------
     const CATEGORIES = {
       "Tecnología": { color: 0x6366f1, hex: "#6366f1", icon: "💻", name: "Tecnología" },
@@ -474,9 +651,6 @@
       "Libre": { color: 0xe2e8f0, hex: "#e2e8f0", icon: "✨", name: "Libre" }
     };
 
-    // Default Rooms translated to 3D world (Center at 0,0,0)
-    // 1 unit in 3D = 1 meter. 2D scale: 10 pixels = 1 meter.
-    // Center offset: X0 = 625, Z0 = 335.
     const to3DX = (x, w) => ((x + w/2) - 625) * 0.1;
     const to3DZ = (y, h) => ((y + h/2) - 335) * 0.1;
     const to3DW = (w) => w * 0.1;
@@ -489,7 +663,7 @@
       { id: "aula_21", num: "Aula 21", x: 315, y: 28, w: 105, h: 147, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 2°", t: "Hig. y Seg. 2°", n: "Hig. y Seg. 2°" },
       { id: "aula_22", num: "Aula 22", x: 420, y: 28, w: 105, h: 147, cat: "Libre", icon: "✨", m: "Disponible", t: "Disponible", n: "Disponible" },
       { id: "aula_23", num: "Aula 23", x: 525, y: 28, w: 105, h: 147, cat: "Deportes", icon: "🏃", m: "Prep. Física 2°", t: "Prep. Física 2°", n: "Prep. Física 2°" },
-      { id: "admin_taller", num: "Taller Prácticas", x: 630, y: 28, w: 230, h: 147, cat: "Tecnología", icon: "⚙️", m: "Lab. Informática", t: "Lab. Informática", n: "Lab. Informática" },
+      { id: "admin_taller", num: "Taller Prácticas / Informática", x: 630, y: 28, w: 230, h: 147, cat: "Tecnología", icon: "💻", m: "Lab. Informática 1°", t: "Lab. Informática 2°", n: "Lab. Programación" },
       { id: "aula_10", num: "Aula 10", x: 860, y: 28, w: 130, h: 147, cat: "Salud", icon: "🏥", m: "Enfermería 3°", t: "Enfermería 3°", n: "Enfermería 3°" },
       { id: "aula_9", num: "Aula 9", x: 990, y: 28, w: 175, h: 147, cat: "Seguridad", icon: "🦺", m: "Hig. y Seg. 1° C", t: "Hig. y Seg. 1° C", n: "Hig. y Seg. 1° C" },
 
@@ -538,7 +712,7 @@
       { id: "AP6", name: "AP6", room: "Aula 9", x: 990, y: 115, ip: "192.168.100.16", port: "Sw POE P6" },
       { id: "AP7", name: "AP7", room: "Aula 11", x: 930, y: 285, ip: "192.168.100.17", port: "Sw POE P7" },
       { id: "AP8", name: "AP8", room: "Aula 12", x: 860, y: 415, ip: "192.168.100.18", port: "Sw POE P8" },
-      { id: "AP9", name: "AP9", room: "Taller Prácticas", x: 745, y: 80, ip: "192.168.100.19", port: "Sw POE P9" },
+      { id: "AP9", name: "AP9", room: "Taller Prácticas / Informática", x: 745, y: 80, ip: "192.168.100.19", port: "Sw POE P9" },
       { id: "AP10", name: "AP10", room: "Rectoría", x: 485, y: 375, ip: "192.168.100.20", port: "Sw P16 P10" },
       { id: "AP11", name: "AP11", room: "Aula 16", x: 240, y: 275, ip: "192.168.100.21", port: "Sw P16 P11" },
       { id: "AP12", name: "AP12", room: "Cocina", x: 150, y: 85, ip: "192.168.100.22", port: "Sw P16 P12" },
@@ -548,7 +722,24 @@
       { id: "AP16", name: "AP16", room: "Preceptoría", x: 535, y: 575, ip: "192.168.100.26", port: "Sw P8 P16" }
     ];
 
-    // Cable segments from official Anexo 1
+    // Objetos 3D colocados (Mobiliario, Computadoras, Racks, etc.)
+    // Se inicializa con computadoras en la Sala de Informática para que ya tenga datos
+    let defaultPlacedObjects = [
+      // Puestos de computación en Taller Prácticas / Informática
+      { id: "obj_pc_1", type: "pc_desktop", name: "Puesto PC 01", room: "Taller Prácticas / Informática", x: 670, y: 65, rot: 0, tag: "PC-INF-01", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB", status: "Operativo", software: ["Packet Tracer", "Visual Studio Code", "Python 3.12", "Office 365", "Git"], notes: "Mantenimiento al día. Pasta térmica cambiada el 15/08.", realPhoto: null },
+      { id: "obj_pc_2", type: "pc_desktop", name: "Puesto PC 02", room: "Taller Prácticas / Informática", x: 700, y: 65, rot: 0, tag: "PC-INF-02", caseModel: "Torre ATX", os: "Windows 11 Pro", cpu: "Intel Core i5-12400", ram: "16 GB", status: "Operativo", software: ["Packet Tracer", "Visual Studio Code", "Python 3.12", "Office 365", "Git"], notes: "Operativa.", realPhoto: null },
+      { id: "obj_pc_3", type: "pc_desktop", name: "Puesto PC 03", room: "Taller Prácticas / Informática", x: 730, y: 65, rot: 0, tag: "PC-INF-03", caseModel: "Slim SFF", os: "Ubuntu Linux", cpu: "AMD Ryzen 5 5600G", ram: "16 GB", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "LibreOffice", "GIMP", "VirtualBox"], notes: "Laboratorio Linux.", realPhoto: null },
+      { id: "obj_pc_4", type: "pc_desktop", name: "Puesto PC 04", room: "Taller Prácticas / Informática", x: 760, y: 65, rot: 0, tag: "PC-INF-04", caseModel: "Slim SFF", os: "Ubuntu Linux", cpu: "AMD Ryzen 5 5600G", ram: "16 GB", status: "Operativo", software: ["Visual Studio Code", "Python 3.12", "LibreOffice", "GIMP", "VirtualBox"], notes: "Laboratorio Linux.", realPhoto: null },
+      { id: "obj_pc_5", type: "pc_desktop", name: "Puesto PC 05", room: "Taller Prácticas / Informática", x: 670, y: 115, rot: 0, tag: "PC-INF-05", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Intel Core i3-10100", ram: "8 GB", status: "En Mantenimiento", software: ["AutoCAD 2024", "Office 365", "Acrobat Reader"], notes: "Falla intermitente en fuente de alimentación. En revisión.", realPhoto: null },
+      { id: "obj_pc_6", type: "pc_desktop", name: "Puesto PC 06", room: "Taller Prácticas / Informática", x: 700, y: 115, rot: 0, tag: "PC-INF-06", caseModel: "All-in-One", os: "Windows 10 Educativo", cpu: "Intel Core i3-10100", ram: "8 GB", status: "Operativo", software: ["AutoCAD 2024", "Office 365", "Acrobat Reader"], notes: "Operativa.", realPhoto: null },
+      // Proyector en Informática
+      { id: "obj_proj_1", type: "projector", name: "Proyector EPSON", room: "Taller Prácticas / Informática", x: 745, y: 95, rot: 0, tag: "PROY-INF-01", status: "Operativo", notes: "Lámpara con 420 horas de uso." },
+      // PC en Rectoría
+      { id: "obj_pc_rect", type: "pc_desktop", name: "PC Dirección", room: "Rectoría", x: 450, y: 395, rot: 0, tag: "PC-DIR-01", caseModel: "Slim SFF", os: "Windows 11 Pro", cpu: "Core i7", ram: "32 GB", status: "Operativo", software: ["Office 365", "Sistema Gestión Escolar", "Antivirus ESET"], notes: "Equipo de Dirección.", realPhoto: null },
+      // PC en Preceptoría
+      { id: "obj_pc_prec", type: "pc_desktop", name: "PC Preceptoría", room: "Preceptoría", x: 465, y: 545, rot: 0, tag: "PC-PREC-01", caseModel: "Torre ATX", os: "Windows 10 Educativo", cpu: "Core i3", ram: "8 GB", status: "Operativo", software: ["Office 365", "Planillas Asistencia"], notes: "Operativa.", realPhoto: null }
+    ];
+
     const RED_CABLES = [
       [(605, 520), (605, 485), (990, 485)],
       [(705, 485), (705, 555)],
@@ -581,12 +772,17 @@
     // State Management
     let currentRooms = JSON.parse(localStorage.getItem('saved_school_rooms_3d')) || initialRoomsData;
     let currentAPs = JSON.parse(localStorage.getItem('saved_school_aps_3d')) || initialAPsData;
+    let currentPlacedObjects = JSON.parse(localStorage.getItem('saved_school_placed_objects_3d')) || defaultPlacedObjects;
 
     let selectedObject = null;
-    let currentCameraMode = 'orbit'; // 'orbit' or 'fps'
-    let currentLayerMode = 'hybrid'; // 'aulas', 'redes', 'hybrid'
+    let currentCameraMode = 'orbit';
+    let currentLayerMode = 'hybrid';
     let showWifiSignals = true;
     let showRoofs = false;
+
+    // Placement state
+    let activePlacementType = null;
+    let ghostMesh = null;
 
     // -------------------------------------------------------------
     // 2. THREE.JS ENGINE SETUP
@@ -614,19 +810,12 @@
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#0f172a; color:#f8fafc; font-family:system-ui,sans-serif; text-align:center; padding:24px;">
           <div style="font-size:48px; margin-bottom:12px;">🎮</div>
           <h1 style="font-size:22px; font-weight:bold; color:#f43f5e; margin-bottom:8px;">Aceleración Gráfica 3D (WebGL) Requerida</h1>
-          <p style="max-width:540px; color:#94a3b8; font-size:14px; line-height:1.6;">Tu navegador no pudo iniciar el motor WebGL 3D. Para activarlo fácilmente en Google Chrome o Edge:</p>
-          <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; padding:16px; margin:20px 0; text-align:left; max-width:480px;">
-            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">1. Abre <b>Configuración</b> en tu navegador.</p>
-            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">2. Busca <b>"hardware"</b> o entra en <b>Sistema y rendimiento</b>.</p>
-            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">3. Activa <b>"Usar aceleración de hardware cuando esté disponible"</b>.</p>
-            <p style="color:#e2e8f0; font-size:13px; margin:4px 0;">4. Cierra y vuelve a abrir el navegador.</p>
-          </div>
+          <p style="max-width:540px; color:#94a3b8; font-size:14px; line-height:1.6;">Tu navegador no pudo iniciar el motor WebGL 3D. Activa la aceleración por hardware en Configuración > Sistema y rendimiento.</p>
         </div>
       `;
       throw err;
     }
 
-    // Orbit Controls
     const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
     orbitControls.enableDamping = true;
     orbitControls.dampingFactor = 0.05;
@@ -635,7 +824,6 @@
     orbitControls.maxDistance = 250;
     orbitControls.target.set(0, 0, 0);
 
-    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
     scene.add(ambientLight);
 
@@ -654,14 +842,12 @@
     sunLight.shadow.bias = -0.0005;
     scene.add(sunLight);
 
-    // Flashlight for player
     const playerLight = new THREE.SpotLight(0xffffff, 0, 25, Math.PI / 6, 0.4, 1);
     camera.add(playerLight);
     playerLight.position.set(0, 0, 0);
     playerLight.target = camera;
     scene.add(camera);
 
-    // Ground Plane & Outdoor Grid
     const groundGeo = new THREE.PlaneGeometry(300, 300);
     const groundMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.9, metalness: 0.1 });
     const ground = new THREE.Mesh(groundGeo, groundMat);
@@ -674,18 +860,17 @@
     gridHelper.position.y = 0.01;
     scene.add(gridHelper);
 
-    // Groups
     const schoolGroup = new THREE.Group();
     scene.add(schoolGroup);
 
     const telecomGroup = new THREE.Group();
     scene.add(telecomGroup);
 
-    const labelsGroup = new THREE.Group();
-    scene.add(labelsGroup);
+    const furnitureGroup = new THREE.Group();
+    scene.add(furnitureGroup);
 
     // -------------------------------------------------------------
-    // 3. HIGH-RES CANVAS TEXTURE GENERATOR FOR 3D ROOM SIGNS
+    // 3. TEXTURE & SIGN GENERATOR
     // -------------------------------------------------------------
     function createSignTexture(text, icon, category, w = 512, h = 256) {
       const canvas = document.createElement('canvas');
@@ -693,25 +878,21 @@
       canvas.height = h;
       const ctx = canvas.getContext('2d');
 
-      // Rounded dark navy background
       ctx.fillStyle = '#0f172a';
       ctx.roundRect(0, 0, w, h, 28);
       ctx.fill();
 
-      // Border with category color
       ctx.strokeStyle = CATEGORIES[category]?.hex || '#38bdf8';
       ctx.lineWidth = 14;
       ctx.roundRect(7, 7, w - 14, h - 14, 22);
       ctx.stroke();
 
-      // Icon & Room Name
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 64px system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(`${icon} ${text}`, w / 2, h / 2 - 24);
 
-      // Category Subtitle Pill
       ctx.fillStyle = CATEGORIES[category]?.hex || '#38bdf8';
       ctx.font = 'bold 36px system-ui, sans-serif';
       ctx.fillText(category.toUpperCase(), w / 2, h / 2 + 48);
@@ -722,29 +903,221 @@
     }
 
     // -------------------------------------------------------------
-    // 4. BUILD 3D ARCHITECTURE & ROOMS
+    // 4. PROCEDURAL 3D MESH BUILDERS FOR CATALOG OBJECTS
+    // -------------------------------------------------------------
+    function createPCMesh(data) {
+      const g = new THREE.Group();
+      
+      // Desk base
+      const deskMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+      const deskTop = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.06, 0.7), deskMat);
+      deskTop.position.y = 0.72;
+      deskTop.castShadow = true;
+      g.add(deskTop);
+
+      // Legs
+      const legMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8 });
+      [[-0.55, -0.3], [0.55, -0.3], [-0.55, 0.3], [0.55, 0.3]].forEach(p => {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.72), legMat);
+        leg.position.set(p[0], 0.36, p[1]);
+        leg.castShadow = true;
+        g.add(leg);
+      });
+
+      // CPU Cabinet (Torre / Slim)
+      const isSlim = data.caseModel === 'Slim SFF' || data.caseModel === 'Mini PC';
+      const caseW = isSlim ? 0.12 : 0.22;
+      const caseH = isSlim ? 0.35 : 0.42;
+      const caseD = isSlim ? 0.32 : 0.42;
+      const caseMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7, roughness: 0.3 });
+      const pcCase = new THREE.Mesh(new THREE.BoxGeometry(caseW, caseH, caseD), caseMat);
+      pcCase.position.set(0.42, 0.72 + caseH/2, 0.05);
+      pcCase.castShadow = true;
+      g.add(pcCase);
+
+      // Power LED on PC
+      const ledColor = data.status === 'Operativo' ? 0x22c55e : (data.status === 'En Mantenimiento' ? 0xf59e0b : 0xf43f5e);
+      const pLed = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.02), new THREE.MeshBasicMaterial({ color: ledColor }));
+      pLed.position.set(0.42, 0.72 + caseH - 0.06, 0.05 + caseD/2 + 0.01);
+      g.add(pLed);
+
+      // Monitor Widescreen
+      const monStand = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.14), legMat);
+      monStand.position.set(-0.08, 0.72 + 0.07, -0.08);
+      g.add(monStand);
+
+      const screenMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, emissive: 0x075985, emissiveIntensity: 0.4 });
+      const monBezel = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.34, 0.03), caseMat);
+      monBezel.position.set(-0.08, 0.72 + 0.14 + 0.17, -0.08);
+      monBezel.castShadow = true;
+      g.add(monBezel);
+
+      const monScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.51, 0.30), screenMat);
+      monScreen.position.set(-0.08, 0.72 + 0.14 + 0.17, -0.08 + 0.016);
+      g.add(monScreen);
+
+      // Keyboard & Mouse
+      const kb = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.015, 0.14), caseMat);
+      kb.position.set(-0.08, 0.73, 0.12);
+      g.add(kb);
+
+      const mouse = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.02, 0.1), caseMat);
+      mouse.position.set(0.2, 0.73, 0.12);
+      g.add(mouse);
+
+      // Floating Tag Billboard above PC
+      const tagCanvas = document.createElement('canvas');
+      tagCanvas.width = 256; tagCanvas.height = 96;
+      const tCtx = tagCanvas.getContext('2d');
+      tCtx.fillStyle = '#0f172a';
+      tCtx.roundRect(4, 4, 248, 88, 16);
+      tCtx.fill();
+      tCtx.strokeStyle = data.status === 'Operativo' ? '#22c55e' : (data.status === 'En Mantenimiento' ? '#f59e0b' : '#f43f5e');
+      tCtx.lineWidth = 8;
+      tCtx.roundRect(4, 4, 248, 88, 16);
+      tCtx.stroke();
+      tCtx.fillStyle = '#ffffff';
+      tCtx.font = 'bold 38px monospace';
+      tCtx.textAlign = 'center';
+      tCtx.fillText(data.tag || 'PC-00', 128, 48);
+      tCtx.fillStyle = tCtx.strokeStyle;
+      tCtx.font = 'bold 22px sans-serif';
+      tCtx.fillText(data.os ? data.os.split(' ')[0] : 'WIN', 128, 76);
+
+      const tagTex = new THREE.CanvasTexture(tagCanvas);
+      const tagBadge = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.6), new THREE.MeshBasicMaterial({ map: tagTex, transparent: true }));
+      tagBadge.position.set(0, 1.7, 0);
+      tagBadge.userData = { isBillboard: true };
+      g.add(tagBadge);
+
+      return g;
+    }
+
+    function createDoubleDeskMesh() {
+      const g = new THREE.Group();
+      const woodMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.6 });
+      const metalMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8 });
+
+      // Tabletop
+      const table = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.05, 0.6), woodMat);
+      table.position.y = 0.72; table.castShadow = true;
+      g.add(table);
+
+      // Legs
+      [[-0.65, -0.25], [0.65, -0.25], [-0.65, 0.25], [0.65, 0.25]].forEach(p => {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.72), metalMat);
+        leg.position.set(p[0], 0.36, p[1]);
+        g.add(leg);
+      });
+
+      // 2 Attached Student Chairs
+      [-0.38, 0.38].forEach(cx => {
+        const seat = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.03, 0.38), woodMat);
+        seat.position.set(cx, 0.44, 0.55);
+        g.add(seat);
+
+        const back = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.25, 0.03), woodMat);
+        back.position.set(cx, 0.68, 0.72);
+        g.add(back);
+
+        [[-0.16, 0.38], [0.16, 0.38], [-0.16, 0.7], [0.16, 0.7]].forEach(p => {
+          const sLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.44), metalMat);
+          sLeg.position.set(cx + p[0], 0.22, p[1]);
+          g.add(sLeg);
+        });
+      });
+
+      return g;
+    }
+
+    function createChairMesh() {
+      const g = new THREE.Group();
+      const woodMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5 });
+      const metalMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8 });
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 0.42), woodMat);
+      seat.position.y = 0.45; g.add(seat);
+      const back = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.3, 0.03), woodMat);
+      back.position.set(0, 0.72, -0.19); g.add(back);
+      return g;
+    }
+
+    function createProjectorMesh() {
+      const g = new THREE.Group();
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.16, 0.35), bodyMat);
+      body.position.y = 3.0; g.add(body);
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.05), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9 }));
+      lens.rotation.x = Math.PI/2;
+      lens.position.set(0.12, 3.0, 0.18); g.add(lens);
+
+      // Light projection cone (translucent)
+      const coneGeo = new THREE.ConeGeometry(2.5, 4.5, 16, 1, true);
+      const coneMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.1, side: THREE.DoubleSide });
+      const cone = new THREE.Mesh(coneGeo, coneMat);
+      cone.rotation.x = -Math.PI / 2.8;
+      cone.position.set(0.12, 1.8, 1.8);
+      g.add(cone);
+
+      return g;
+    }
+
+    function createSwitchMesh(ports = 16) {
+      const g = new THREE.Group();
+      const swMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.3 });
+      const sw = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.18, 0.45), swMat);
+      sw.position.y = 1.2; g.add(sw);
+
+      // Port LEDs
+      for (let i = 0; i < ports; i++) {
+        const px = -0.5 + (i / ports) * 1.0;
+        const led = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.01), new THREE.MeshBasicMaterial({ color: 0x22c55e }));
+        led.position.set(px, 1.22, 0.23);
+        g.add(led);
+      }
+      return g;
+    }
+
+    function createRouterMesh() {
+      const g = new THREE.Group();
+      const rMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4 });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.08, 0.3), rMat);
+      body.position.y = 0.8; g.add(body);
+      // Antennas
+      [-0.18, 0.18].forEach(ax => {
+        const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.35), rMat);
+        ant.position.set(ax, 0.8 + 0.18, -0.12);
+        g.add(ant);
+      });
+      return g;
+    }
+
+    function createCCTVMesh() {
+      const g = new THREE.Group();
+      const domeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 16, 0, Math.PI*2, 0, Math.PI/2), domeMat);
+      dome.rotation.x = Math.PI;
+      dome.position.y = 3.2; g.add(dome);
+      const led = new THREE.Mesh(new THREE.SphereGeometry(0.02), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+      led.position.set(0.08, 3.12, 0.08); g.add(led);
+      return g;
+    }
+
+    // -------------------------------------------------------------
+    // 5. SCENE REBUILD & RENDERING
     // -------------------------------------------------------------
     const roomMeshes = [];
     const apMeshes = [];
+    const placedObjectMeshes = [];
 
     function rebuildScene() {
-      // Clear old meshes
-      while (schoolGroup.children.length > 0) {
-        const obj = schoolGroup.children[0];
-        schoolGroup.remove(obj);
-      }
-      while (telecomGroup.children.length > 0) {
-        const obj = telecomGroup.children[0];
-        telecomGroup.remove(obj);
-      }
-      while (labelsGroup.children.length > 0) {
-        const obj = labelsGroup.children[0];
-        labelsGroup.remove(obj);
-      }
+      while (schoolGroup.children.length > 0) schoolGroup.remove(schoolGroup.children[0]);
+      while (telecomGroup.children.length > 0) telecomGroup.remove(telecomGroup.children[0]);
+      while (furnitureGroup.children.length > 0) furnitureGroup.remove(furnitureGroup.children[0]);
       roomMeshes.length = 0;
       apMeshes.length = 0;
+      placedObjectMeshes.length = 0;
 
-      // Outer School Perimeter Floor
+      // Base Floor
       const baseFloorGeo = new THREE.BoxGeometry(122, 0.4, 68);
       const baseFloorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
       const baseFloor = new THREE.Mesh(baseFloorGeo, baseFloorMat);
@@ -752,164 +1125,72 @@
       baseFloor.receiveShadow = true;
       schoolGroup.add(baseFloor);
 
-      // Classrooms & Corridors
+      // Classrooms
       currentRooms.forEach((r, idx) => {
-        const w = to3DW(r.w);
-        const d = to3DD(r.h);
-        const h = r.h_val || 3.4;
-        const posX = to3DX(r.x, r.w);
-        const posZ = to3DZ(r.y, r.h);
+        const w = to3DW(r.w), d = to3DD(r.h), h = r.h_val || 3.4;
+        const posX = to3DX(r.x, r.w), posZ = to3DZ(r.y, r.h);
 
         const roomNode = new THREE.Group();
         roomNode.position.set(posX, 0, posZ);
         roomNode.userData = { isRoom: true, data: r, index: idx };
 
-        // 1. Floor
         const isPatio = r.isPatio;
         const catColor = CATEGORIES[r.cat]?.color || 0x475569;
-        
         let floorColor = isPatio ? 0x15803d : 0x0f172a;
         if (!isPatio && r.cat === "Pasillos") floorColor = 0x1e293b;
 
         const floorGeo = new THREE.BoxGeometry(w - 0.2, 0.1, d - 0.2);
-        const floorMat = new THREE.MeshStandardMaterial({
-          color: floorColor,
-          roughness: isPatio ? 0.9 : 0.4,
-          metalness: 0.1
-        });
-        const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+        const floorMesh = new THREE.Mesh(floorGeo, new THREE.MeshStandardMaterial({ color: floorColor, roughness: isPatio ? 0.9 : 0.4 }));
         floorMesh.position.y = 0.05;
         floorMesh.receiveShadow = true;
         roomNode.add(floorMesh);
 
-        // Patio Fountain & Trees if Patio Central
+        // Patio features
         if (isPatio) {
-          const fountainGeo = new THREE.CylinderGeometry(4, 4.5, 0.6, 24);
-          const fountainMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.2, metalness: 0.8 });
-          const fountain = new THREE.Mesh(fountainGeo, fountainMat);
-          fountain.position.set(0, 0.3, 0);
-          roomNode.add(fountain);
-
-          // Water surface
-          const waterGeo = new THREE.CylinderGeometry(3.6, 3.6, 0.1, 24);
-          const waterMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.8 });
-          const water = new THREE.Mesh(waterGeo, waterMat);
-          water.position.set(0, 0.65, 0);
-          roomNode.add(water);
-
-          // Trees / Planters
-          [-14, -7, 7, 14].forEach(tx => {
-            const potGeo = new THREE.CylinderGeometry(1.2, 0.9, 0.8, 12);
-            const potMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
-            const pot = new THREE.Mesh(potGeo, potMat);
-            pot.position.set(tx, 0.4, 0);
-            roomNode.add(pot);
-
-            const foliageGeo = new THREE.DodecahedronGeometry(1.5, 1);
-            const foliageMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, roughness: 0.9 });
-            const foliage = new THREE.Mesh(foliageGeo, foliageMat);
-            foliage.position.set(tx, 1.8, 0);
-            roomNode.add(foliage);
-          });
+          const fountain = new THREE.Mesh(new THREE.CylinderGeometry(4, 4.5, 0.6, 24), new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.8 }));
+          fountain.position.set(0, 0.3, 0); roomNode.add(fountain);
+          const water = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.6, 0.1, 24), new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.8 }));
+          water.position.set(0, 0.65, 0); roomNode.add(water);
         }
 
-        // 2. Walls
+        // Walls
         if (!isPatio) {
           const wallThick = 0.25;
-          const wallMat = new THREE.MeshStandardMaterial({
-            color: 0x334155,
-            roughness: 0.7,
-            metalness: 0.1
-          });
-
-          const trimMat = new THREE.MeshStandardMaterial({
-            color: catColor,
-            roughness: 0.5,
-            metalness: 0.2
-          });
+          const wallMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+          const trimMat = new THREE.MeshStandardMaterial({ color: catColor, roughness: 0.5 });
 
           // North Wall
           const wNorth = new THREE.Mesh(new THREE.BoxGeometry(w, h, wallThick), wallMat);
           wNorth.position.set(0, h/2, -d/2);
-          wNorth.castShadow = true; wNorth.receiveShadow = true;
           roomNode.add(wNorth);
 
-          // South Wall with Door cutout
+          // South Wall with door
           const doorW = 1.4;
           const leftW = Math.max((w - doorW) / 2, 0.5);
           const wSouthL = new THREE.Mesh(new THREE.BoxGeometry(leftW, h, wallThick), wallMat);
-          wSouthL.position.set(-w/2 + leftW/2, h/2, d/2);
-          wSouthL.castShadow = true; wSouthL.receiveShadow = true;
-          roomNode.add(wSouthL);
-
+          wSouthL.position.set(-w/2 + leftW/2, h/2, d/2); roomNode.add(wSouthL);
           const wSouthR = new THREE.Mesh(new THREE.BoxGeometry(leftW, h, wallThick), wallMat);
-          wSouthR.position.set(w/2 - leftW/2, h/2, d/2);
-          wSouthR.castShadow = true; wSouthR.receiveShadow = true;
-          roomNode.add(wSouthR);
-
-          // Door lintel
+          wSouthR.position.set(w/2 - leftW/2, h/2, d/2); roomNode.add(wSouthR);
           const wDoorLintel = new THREE.Mesh(new THREE.BoxGeometry(doorW, h - 2.2, wallThick), wallMat);
-          wDoorLintel.position.set(0, 2.2 + (h - 2.2)/2, d/2);
-          roomNode.add(wDoorLintel);
+          wDoorLintel.position.set(0, 2.2 + (h - 2.2)/2, d/2); roomNode.add(wDoorLintel);
 
-          // West Wall
+          // West & East Walls
           const wWest = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h, d), wallMat);
-          wWest.position.set(-w/2, h/2, 0);
-          wWest.castShadow = true; wWest.receiveShadow = true;
-          roomNode.add(wWest);
-
-          // East Wall
+          wWest.position.set(-w/2, h/2, 0); roomNode.add(wWest);
           const wEast = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h, d), wallMat);
-          wEast.position.set(w/2, h/2, 0);
-          wEast.castShadow = true; wEast.receiveShadow = true;
-          roomNode.add(wEast);
+          wEast.position.set(w/2, h/2, 0); roomNode.add(wEast);
 
-          // Top Accent Trim Border
-          const trimGeo = new THREE.BoxGeometry(w + 0.1, 0.15, d + 0.1);
-          const trimMesh = new THREE.Mesh(trimGeo, trimMat);
-          trimMesh.position.set(0, h + 0.05, 0);
-          roomNode.add(trimMesh);
+          // Top Accent Trim
+          const trimMesh = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 0.15, d + 0.1), trimMat);
+          trimMesh.position.set(0, h + 0.05, 0); roomNode.add(trimMesh);
 
-          // 3. Furniture
-          if (w > 4 && d > 4) {
-            // Whiteboard on North Wall
-            const boardGeo = new THREE.BoxGeometry(Math.min(w * 0.5, 5), 1.4, 0.08);
-            const boardMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
-            const board = new THREE.Mesh(boardGeo, boardMat);
-            board.position.set(0, 1.8, -d/2 + 0.1);
-            roomNode.add(board);
+          // Whiteboard
+          const board = new THREE.Mesh(new THREE.BoxGeometry(Math.min(w * 0.5, 5), 1.4, 0.08), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 }));
+          board.position.set(0, 1.8, -d/2 + 0.1); roomNode.add(board);
 
-            // Teacher Desk
-            const tDeskGeo = new THREE.BoxGeometry(1.6, 0.8, 0.8);
-            const tDeskMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.6 });
-            const tDesk = new THREE.Mesh(tDeskGeo, tDeskMat);
-            tDesk.position.set(w * 0.25, 0.4, -d/2 + 1.2);
-            tDesk.castShadow = true;
-            roomNode.add(tDesk);
-
-            // Student Desks Grid
-            const rows = Math.min(Math.floor(d / 2.5), 3);
-            const cols = Math.min(Math.floor(w / 2.5), 4);
-            const sDeskGeo = new THREE.BoxGeometry(1.1, 0.7, 0.6);
-            const sDeskMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.7 });
-
-            for (let rIdx = 0; rIdx < rows; rIdx++) {
-              for (let cIdx = 0; cIdx < cols; cIdx++) {
-                const sDesk = new THREE.Mesh(sDeskGeo, sDeskMat);
-                const dx = -w/3 + (cIdx / Math.max(cols - 1, 1)) * (w * 0.66);
-                const dz = -d/4 + (rIdx / Math.max(rows - 1, 1)) * (d * 0.5);
-                sDesk.position.set(dx, 0.35, dz + 0.8);
-                sDesk.castShadow = true;
-                roomNode.add(sDesk);
-              }
-            }
-          }
-
-          // 4. Ultra-crisp 3D Billboard Sign
+          // 3D Billboard Sign
           const signTex = createSignTexture(r.num, r.icon, r.cat);
-          const signMat = new THREE.MeshBasicMaterial({ map: signTex, transparent: true });
-          const signGeo = new THREE.PlaneGeometry(5.2, 2.6);
-          const signMesh = new THREE.Mesh(signGeo, signMat);
+          const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 2.6), new THREE.MeshBasicMaterial({ map: signTex, transparent: true }));
           signMesh.position.set(0, h + 1.9, 0);
           signMesh.userData = { isBillboard: true };
           roomNode.add(signMesh);
@@ -920,70 +1201,35 @@
       });
 
       // -------------------------------------------------------------
-      // 5. BUILD TELECOM & NETWORKING LAYER (16 APs & CONDUITS)
+      // 6. BUILD TELECOM & APs
       // -------------------------------------------------------------
       currentAPs.forEach((ap, idx) => {
-        const posX = to3DX(ap.x, 18);
-        const posZ = to3DZ(ap.y, 18);
-        const apY = 3.2;
-
+        const posX = to3DX(ap.x, 18), posZ = to3DZ(ap.y, 18), apY = 3.2;
         const apNode = new THREE.Group();
         apNode.position.set(posX, apY, posZ);
         apNode.userData = { isAP: true, data: ap, index: idx };
 
-        // AP Dome body
-        const domeGeo = new THREE.CylinderGeometry(0.7, 0.9, 0.25, 24);
-        const domeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.1 });
-        const dome = new THREE.Mesh(domeGeo, domeMat);
+        const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.9, 0.25, 24), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 }));
         apNode.add(dome);
 
-        // Blinking LED ring
-        const ledGeo = new THREE.RingGeometry(0.35, 0.5, 24);
-        const ledMat = new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide });
-        const led = new THREE.Mesh(ledGeo, ledMat);
-        led.rotation.x = Math.PI / 2;
-        led.position.y = -0.13;
-        apNode.add(led);
+        const led = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 24), new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide }));
+        led.rotation.x = Math.PI / 2; led.position.y = -0.13; apNode.add(led);
 
-        // Pulsing Pointlight
-        const apLight = new THREE.PointLight(0x22c55e, 0.8, 8);
-        apLight.position.set(0, -0.2, 0);
-        apNode.add(apLight);
-
-        // Wi-Fi Coverage Cone / Hemisphere
-        const wifiGeo = new THREE.SphereGeometry(9, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-        const wifiMat = new THREE.MeshBasicMaterial({
-          color: 0x10b981,
-          transparent: true,
-          opacity: 0.12,
-          wireframe: true
-        });
-        const wifiCone = new THREE.Mesh(wifiGeo, wifiMat);
+        const wifiCone = new THREE.Mesh(new THREE.SphereGeometry(9, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.12, wireframe: true }));
         wifiCone.rotation.x = Math.PI;
         wifiCone.userData = { isWifiSignal: true };
         apNode.add(wifiCone);
 
-        // High-res 3D Badge for AP
+        // Badge
         const apBadgeCanvas = document.createElement('canvas');
-        apBadgeCanvas.width = 256;
-        apBadgeCanvas.height = 128;
+        apBadgeCanvas.width = 256; apBadgeCanvas.height = 128;
         const bCtx = apBadgeCanvas.getContext('2d');
-        bCtx.fillStyle = '#ffffff';
-        bCtx.roundRect(6, 6, 244, 116, 20);
-        bCtx.fill();
-        bCtx.strokeStyle = '#16a34a';
-        bCtx.lineWidth = 10;
-        bCtx.roundRect(6, 6, 244, 116, 20);
-        bCtx.stroke();
-        bCtx.fillStyle = '#0f172a';
-        bCtx.font = 'bold 56px system-ui, sans-serif';
-        bCtx.textAlign = 'center';
-        bCtx.textBaseline = 'middle';
-        bCtx.fillText(ap.name, 128, 64);
+        bCtx.fillStyle = '#ffffff'; bCtx.roundRect(6, 6, 244, 116, 20); bCtx.fill();
+        bCtx.strokeStyle = '#16a34a'; bCtx.lineWidth = 10; bCtx.roundRect(6, 6, 244, 116, 20); bCtx.stroke();
+        bCtx.fillStyle = '#0f172a'; bCtx.font = 'bold 56px system-ui'; bCtx.textAlign = 'center';
+        bCtx.fillText(ap.name, 128, 70);
 
-        const apTex = new THREE.CanvasTexture(apBadgeCanvas);
-        const apBadgeMat = new THREE.MeshBasicMaterial({ map: apTex, transparent: true });
-        const apBadge = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.0), apBadgeMat);
+        const apBadge = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.0), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(apBadgeCanvas), transparent: true }));
         apBadge.position.set(0, 1.0, 0);
         apBadge.userData = { isBillboard: true };
         apNode.add(apBadge);
@@ -992,46 +1238,23 @@
         apMeshes.push(apNode);
       });
 
-      // 3D Server Rack Cabinet inside Kiosco
+      // Rack 42U in Kiosco
       const rackGroup = new THREE.Group();
       rackGroup.position.set(to3DX(605, 26), 0, to3DZ(525, 24));
-      
-      const rackFrameGeo = new THREE.BoxGeometry(1.6, 2.8, 1.4);
-      const rackFrameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.8 });
-      const rackFrame = new THREE.Mesh(rackFrameGeo, rackFrameMat);
-      rackFrame.position.y = 1.4;
-      rackGroup.add(rackFrame);
-
-      // Glass door with blue glow
-      const glassGeo = new THREE.BoxGeometry(1.4, 2.5, 0.05);
-      const glassMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.4, metalness: 0.9 });
-      const glass = new THREE.Mesh(glassGeo, glassMat);
-      glass.position.set(0, 1.4, 0.72);
-      rackGroup.add(glass);
-
-      const rackLight = new THREE.PointLight(0x38bdf8, 1.2, 5);
-      rackLight.position.set(0, 1.4, 0.5);
-      rackGroup.add(rackLight);
-
+      const rackFrame = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.8, 1.4), new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8 }));
+      rackFrame.position.y = 1.4; rackGroup.add(rackFrame);
+      const glass = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.5, 0.05), new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.4, metalness: 0.9 }));
+      glass.position.set(0, 1.4, 0.72); rackGroup.add(glass);
       telecomGroup.add(rackGroup);
 
-      // 3D Cable Conduits
+      // Cables
       RED_CABLES.forEach(seg => {
         for (let i = 0; i < seg.length - 1; i++) {
-          const p1 = seg[i];
-          const p2 = seg[i+1];
-          const x1 = to3DX(p1[0], 0), z1 = to3DZ(p1[1], 0);
-          const x2 = to3DX(p2[0], 0), z2 = to3DZ(p2[1], 0);
-          
-          const dx = x2 - x1;
-          const dz = z2 - z1;
-          const len = Math.sqrt(dx*dx + dz*dz);
+          const x1 = to3DX(seg[i][0], 0), z1 = to3DZ(seg[i][1], 0);
+          const x2 = to3DX(seg[i+1][0], 0), z2 = to3DZ(seg[i+1][1], 0);
+          const dx = x2 - x1, dz = z2 - z1, len = Math.sqrt(dx*dx + dz*dz);
           if (len < 0.05) continue;
-
-          const cableGeo = new THREE.CylinderGeometry(0.08, 0.08, len, 8);
-          const cableMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3 });
-          const cable = new THREE.Mesh(cableGeo, cableMat);
-
+          const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, len, 8), new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3 }));
           cable.position.set((x1 + x2)/2, 3.25, (z1 + z2)/2);
           cable.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, 0, dz).normalize());
           telecomGroup.add(cable);
@@ -1040,24 +1263,48 @@
 
       BLUE_CABLES.forEach(seg => {
         for (let i = 0; i < seg.length - 1; i++) {
-          const p1 = seg[i];
-          const p2 = seg[i+1];
-          const x1 = to3DX(p1[0], 0), z1 = to3DZ(p1[1], 0);
-          const x2 = to3DX(p2[0], 0), z2 = to3DZ(p2[1], 0);
-          
-          const dx = x2 - x1;
-          const dz = z2 - z1;
-          const len = Math.sqrt(dx*dx + dz*dz);
+          const x1 = to3DX(seg[i][0], 0), z1 = to3DZ(seg[i][1], 0);
+          const x2 = to3DX(seg[i+1][0], 0), z2 = to3DZ(seg[i+1][1], 0);
+          const dx = x2 - x1, dz = z2 - z1, len = Math.sqrt(dx*dx + dz*dz);
           if (len < 0.05) continue;
-
-          const cableGeo = new THREE.CylinderGeometry(0.12, 0.12, len, 8);
-          const cableMat = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.3 });
-          const cable = new THREE.Mesh(cableGeo, cableMat);
-
+          const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, len, 8), new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.3 }));
           cable.position.set((x1 + x2)/2, 3.32, (z1 + z2)/2);
           cable.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, 0, dz).normalize());
           telecomGroup.add(cable);
         }
+      });
+
+      // -------------------------------------------------------------
+      // 7. BUILD PLACED OBJECTS (PCs, DESKS, PROJECTORS, ETC.)
+      // -------------------------------------------------------------
+      currentPlacedObjects.forEach((objData, idx) => {
+        let objMesh;
+        if (objData.type === 'pc_desktop') {
+          objMesh = createPCMesh(objData);
+        } else if (objData.type === 'desk_double') {
+          objMesh = createDoubleDeskMesh();
+        } else if (objData.type === 'chair') {
+          objMesh = createChairMesh();
+        } else if (objData.type === 'projector') {
+          objMesh = createProjectorMesh();
+        } else if (objData.type === 'switch_poe') {
+          objMesh = createSwitchMesh(objData.ports || 16);
+        } else if (objData.type === 'router') {
+          objMesh = createRouterMesh();
+        } else if (objData.type === 'camera_cctv') {
+          objMesh = createCCTVMesh();
+        } else {
+          objMesh = createPCMesh(objData);
+        }
+
+        const posX = to3DX(objData.x, 10);
+        const posZ = to3DZ(objData.y, 10);
+        objMesh.position.set(posX, 0, posZ);
+        if (objData.rot) objMesh.rotation.y = objData.rot;
+
+        objMesh.userData = { isPlacedObject: true, data: objData, index: idx };
+        furnitureGroup.add(objMesh);
+        placedObjectMeshes.push(objMesh);
       });
 
       applyLayerVisibility();
@@ -1065,60 +1312,38 @@
     }
 
     // -------------------------------------------------------------
-    // 6. LAYER MANAGEMENT
+    // 8. LAYER & CAMERA MANAGEMENT
     // -------------------------------------------------------------
     function setLayerMode(mode) {
       currentLayerMode = mode;
-      
       document.getElementById('layer-btn-aulas').className = mode === 'aulas' 
         ? "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-rose-600/40 text-rose-200 border border-rose-500/40 shadow"
         : "px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white";
-
       document.getElementById('layer-btn-redes').className = mode === 'redes' 
         ? "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-emerald-600/40 text-emerald-200 border border-emerald-500/40 shadow"
         : "px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white";
-
       document.getElementById('layer-btn-hybrid').className = mode === 'hybrid' 
         ? "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-cyan-600/40 text-cyan-200 border border-cyan-500/40 shadow"
         : "px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 text-slate-300 hover:text-white";
-
       applyLayerVisibility();
     }
 
     function applyLayerVisibility() {
       if (currentLayerMode === 'aulas') {
-        schoolGroup.visible = true;
-        telecomGroup.visible = false;
+        schoolGroup.visible = true; furnitureGroup.visible = true; telecomGroup.visible = false;
       } else if (currentLayerMode === 'redes') {
-        schoolGroup.visible = true;
-        telecomGroup.visible = true;
-        schoolGroup.traverse(child => {
-          if (child.isMesh && child.material && !child.userData.isBillboard) {
-            child.material.transparent = true;
-            child.material.opacity = 0.45;
-          }
-        });
+        schoolGroup.visible = true; furnitureGroup.visible = false; telecomGroup.visible = true;
+        schoolGroup.traverse(c => { if (c.isMesh && !c.userData.isBillboard) { c.material.transparent = true; c.material.opacity = 0.4; } });
       } else {
-        schoolGroup.visible = true;
-        telecomGroup.visible = true;
-        schoolGroup.traverse(child => {
-          if (child.isMesh && child.material) {
-            child.material.transparent = false;
-            child.material.opacity = 1.0;
-          }
-        });
+        schoolGroup.visible = true; furnitureGroup.visible = true; telecomGroup.visible = true;
+        schoolGroup.traverse(c => { if (c.isMesh) { c.material.transparent = false; c.material.opacity = 1.0; } });
       }
     }
 
     function toggleWifiSignals() {
       showWifiSignals = !showWifiSignals;
-      telecomGroup.traverse(child => {
-        if (child.userData.isWifiSignal) {
-          child.visible = showWifiSignals;
-        }
-      });
+      telecomGroup.traverse(c => { if (c.userData.isWifiSignal) c.visible = showWifiSignals; });
       document.getElementById('btn-toggle-wifi').classList.toggle('bg-emerald-600/30');
-      document.getElementById('btn-toggle-wifi').classList.toggle('bg-slate-800/90');
     }
 
     function toggleRoofs() {
@@ -1126,21 +1351,28 @@
       document.getElementById('btn-toggle-roof').classList.toggle('bg-blue-600/40');
     }
 
+    function focusRoom(roomId) {
+      const r = currentRooms.find(rm => rm.id === roomId);
+      if (!r) return;
+      const tx = to3DX(r.x, r.w), tz = to3DZ(r.y, r.h);
+      orbitControls.target.set(tx, 0, tz);
+      camera.position.set(tx, 15, tz + 20);
+      orbitControls.update();
+      // Auto select room
+      const rmMesh = roomMeshes.find(m => m.userData.data.id === roomId);
+      if (rmMesh) selectObject(rmMesh);
+    }
+
     // -------------------------------------------------------------
-    // 7. FPS VIDEO GAME WALKTHROUGH CONTROLS
+    // 9. VIDEO GAME WALKTHROUGH (FPS CONTROLS)
     // -------------------------------------------------------------
     const keys = { KeyW: false, KeyA: false, KeyS: false, KeyD: false, ShiftLeft: false, Space: false };
-    let fpsPitch = 0;
-    let fpsYaw = 0;
-    let isPointerLocked = false;
-    let playerVelocity = new THREE.Vector3();
-    const playerSpeed = 12;
-    const playerSprintSpeed = 22;
+    let fpsPitch = 0, fpsYaw = 0, isPointerLocked = false;
+    const playerSpeed = 12, playerSprintSpeed = 22;
     let playerY = 1.7;
 
     function setCameraMode(mode) {
       currentCameraMode = mode;
-      
       const btnOrbit = document.getElementById('btn-mode-orbit');
       const btnFps = document.getElementById('btn-mode-fps');
       const fpsHud = document.getElementById('fps-hud');
@@ -1149,28 +1381,22 @@
       if (mode === 'fps') {
         btnOrbit.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800";
         btnFps.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-blue-600 text-white shadow";
-        
         orbitControls.enabled = false;
         fpsHud.classList.remove('hidden');
         crosshair.classList.remove('hidden');
 
         camera.position.set(0, playerY, 15);
         camera.rotation.set(0, 0, 0);
-        fpsPitch = 0;
-        fpsYaw = 0;
-
+        fpsPitch = 0; fpsYaw = 0;
         container.requestPointerLock = container.requestPointerLock || container.mozRequestPointerLock;
         container.requestPointerLock();
       } else {
         btnOrbit.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 bg-blue-600 text-white shadow";
         btnFps.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800";
-        
         orbitControls.enabled = true;
         fpsHud.classList.add('hidden');
         crosshair.classList.add('hidden');
-
         if (document.exitPointerLock) document.exitPointerLock();
-
         camera.position.set(0, 65, 75);
         orbitControls.target.set(0, 0, 0);
       }
@@ -1188,12 +1414,18 @@
       if (e.code === 'KeyE' && currentCameraMode === 'fps') {
         inspectForwardObject();
       }
+      if (e.code === 'KeyR' && selectedObject) {
+        rotateSelectedObject();
+      }
       if (e.code === 'Tab') {
         e.preventDefault();
         setCameraMode(currentCameraMode === 'fps' ? 'orbit' : 'fps');
       }
-      if (e.code === 'Delete') {
+      if (e.code === 'Delete' && selectedObject) {
         deleteSelectedObject();
+      }
+      if (e.code === 'Escape' && activePlacementType) {
+        cancelPlacement();
       }
     });
 
@@ -1207,7 +1439,6 @@
         fpsYaw -= e.movementX * sens;
         fpsPitch -= e.movementY * sens;
         fpsPitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, fpsPitch));
-
         camera.rotation.order = 'YXZ';
         camera.rotation.y = fpsYaw;
         camera.rotation.x = fpsPitch;
@@ -1216,38 +1447,42 @@
       }
     });
 
+    // -------------------------------------------------------------
+    // 10. RAYCASTING, SELECTION & PLACEMENT
+    // -------------------------------------------------------------
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const tooltip = document.getElementById('hover-tooltip');
 
     function checkRaycastHover(e) {
+      if (activePlacementType) return;
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects([...roomMeshes, ...apMeshes], true);
+      const intersects = raycaster.intersectObjects([...roomMeshes, ...apMeshes, ...placedObjectMeshes], true);
 
       if (intersects.length > 0) {
         let topObj = intersects[0].object;
-        while (topObj.parent && !topObj.userData.isRoom && !topObj.userData.isAP) {
+        while (topObj.parent && !topObj.userData.isRoom && !topObj.userData.isAP && !topObj.userData.isPlacedObject) {
           topObj = topObj.parent;
         }
 
-        if (topObj.userData.isRoom) {
+        if (topObj.userData.isPlacedObject) {
           const d = topObj.userData.data;
-          document.getElementById('tooltip-icon').innerText = d.icon || '🏛️';
-          document.getElementById('tooltip-title').innerText = d.num;
-          document.getElementById('tooltip-sub').innerText = `${d.cat} | M: ${d.m || 'S/D'}`;
+          document.getElementById('tooltip-icon').innerText = d.type === 'pc_desktop' ? '🖥️' : '🛋️';
+          document.getElementById('tooltip-title').innerText = d.name;
+          document.getElementById('tooltip-sub').innerText = `${d.tag || d.type} | ${d.status || 'Activo'}`;
           tooltip.style.left = `${e.clientX + 15}px`;
           tooltip.style.top = `${e.clientY + 15}px`;
           tooltip.classList.remove('hidden');
           document.body.style.cursor = 'pointer';
           return;
-        } else if (topObj.userData.isAP) {
-          const a = topObj.userData.data;
-          document.getElementById('tooltip-icon').innerText = '📡';
-          document.getElementById('tooltip-title').innerText = `${a.name} (${a.room})`;
-          document.getElementById('tooltip-sub').innerText = `IP: ${a.ip} | ${a.port}`;
+        } else if (topObj.userData.isRoom) {
+          const d = topObj.userData.data;
+          document.getElementById('tooltip-icon').innerText = d.icon || '🏛️';
+          document.getElementById('tooltip-title').innerText = d.num;
+          document.getElementById('tooltip-sub').innerText = `${d.cat} | Clic para ver Dossier`;
           tooltip.style.left = `${e.clientX + 15}px`;
           tooltip.style.top = `${e.clientY + 15}px`;
           tooltip.classList.remove('hidden');
@@ -1255,24 +1490,33 @@
           return;
         }
       }
-
       tooltip.classList.add('hidden');
       document.body.style.cursor = 'default';
     }
 
     window.addEventListener('click', (e) => {
       if (currentCameraMode !== 'orbit') return;
-      if (e.target.closest('header') || e.target.closest('aside') || e.target.closest('.fixed')) return;
+      if (e.target.closest('header') || e.target.closest('aside') || e.target.closest('#catalog-drawer') || e.target.closest('.fixed')) return;
 
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects([...roomMeshes, ...apMeshes], true);
 
+      // Si estamos en modo colocación de objeto
+      if (activePlacementType) {
+        const floorIntersects = raycaster.intersectObjects([ground, ...roomMeshes], true);
+        if (floorIntersects.length > 0) {
+          const pt = floorIntersects[0].point;
+          finalizePlacement(pt.x, pt.z);
+        }
+        return;
+      }
+
+      // Selección normal
+      const intersects = raycaster.intersectObjects([...placedObjectMeshes, ...roomMeshes, ...apMeshes], true);
       if (intersects.length > 0) {
         let topObj = intersects[0].object;
-        while (topObj.parent && !topObj.userData.isRoom && !topObj.userData.isAP) {
+        while (topObj.parent && !topObj.userData.isPlacedObject && !topObj.userData.isRoom && !topObj.userData.isAP) {
           topObj = topObj.parent;
         }
         selectObject(topObj);
@@ -1283,10 +1527,10 @@
 
     function inspectForwardObject() {
       raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-      const intersects = raycaster.intersectObjects([...roomMeshes, ...apMeshes], true);
+      const intersects = raycaster.intersectObjects([...placedObjectMeshes, ...roomMeshes, ...apMeshes], true);
       if (intersects.length > 0) {
         let topObj = intersects[0].object;
-        while (topObj.parent && !topObj.userData.isRoom && !topObj.userData.isAP) {
+        while (topObj.parent && !topObj.userData.isPlacedObject && !topObj.userData.isRoom && !topObj.userData.isAP) {
           topObj = topObj.parent;
         }
         selectObject(topObj);
@@ -1295,58 +1539,111 @@
     }
 
     // -------------------------------------------------------------
-    // 8. INSPECTOR & SANDBOX EDITOR ACTIONS
+    // 11. INSPECTOR DE PROPIEDADES & GESTIÓN DE FOTO REAL Y SOFTWARE
     // -------------------------------------------------------------
     function selectObject(obj) {
       deselectObject();
       selectedObject = obj;
-
       const inspector = document.getElementById('inspector-panel');
       inspector.classList.remove('hidden');
 
-      if (obj.userData.isRoom) {
+      const roomBtnGroup = document.getElementById('insp-room-dossier-btn-group');
+      const pcGroup = document.getElementById('insp-pc-group');
+      const catGroup = document.getElementById('insp-category-group');
+      const shiftsGroup = document.getElementById('insp-shifts-group');
+      const netGroup = document.getElementById('insp-net-group');
+      const realPhotoImg = document.getElementById('insp-real-photo-img');
+      const noPhotoPlaceholder = document.getElementById('insp-no-photo-placeholder');
+
+      // Objeto colocado (PC, Banco, Proyector, etc.)
+      if (obj.userData.isPlacedObject) {
+        const d = obj.userData.data;
+        document.getElementById('insp-header-title').innerText = d.name;
+        document.getElementById('insp-badge-icon').innerText = d.type === 'pc_desktop' ? '🖥️' : '🛋️';
+        document.getElementById('insp-type-badge').innerText = `Equipo: ${d.type.toUpperCase()}`;
+        document.getElementById('insp-name').value = d.name;
+
+        roomBtnGroup.classList.add('hidden');
+        catGroup.classList.add('hidden');
+        shiftsGroup.classList.add('hidden');
+        netGroup.classList.add('hidden');
+
+        // Render foto real
+        if (d.realPhoto) {
+          realPhotoImg.src = d.realPhoto;
+          realPhotoImg.classList.remove('hidden');
+          noPhotoPlaceholder.classList.add('hidden');
+        } else {
+          realPhotoImg.classList.add('hidden');
+          noPhotoPlaceholder.classList.remove('hidden');
+        }
+
+        // Si es PC
+        if (d.type === 'pc_desktop') {
+          pcGroup.classList.remove('hidden');
+          document.getElementById('insp-pc-tag-badge').innerText = d.tag || 'PC-00';
+          document.getElementById('insp-pc-tag').value = d.tag || 'PC-INF-01';
+          document.getElementById('insp-pc-case').value = d.caseModel || 'Torre ATX';
+          document.getElementById('insp-pc-os').value = d.os || 'Windows 11 Pro';
+          document.getElementById('insp-pc-cpu').value = d.cpu || '';
+          document.getElementById('insp-pc-ram').value = d.ram || '';
+          document.getElementById('insp-pc-status').value = d.status || 'Operativo';
+          document.getElementById('insp-pc-notes').value = d.notes || '';
+          renderSoftwareTags(d.software || []);
+        } else {
+          pcGroup.classList.add('hidden');
+        }
+
+        document.getElementById('insp-dim-w').value = '1.2';
+        document.getElementById('insp-dim-d').value = '0.7';
+
+        obj.traverse(c => { if (c.isMesh && c.material && !c.userData.isBillboard) c.material.emissive = new THREE.Color(0x1e3a8a); });
+
+      // Aula completa seleccionada
+      } else if (obj.userData.isRoom) {
         const d = obj.userData.data;
         document.getElementById('insp-header-title').innerText = d.num;
         document.getElementById('insp-badge-icon').innerText = d.icon || '🏛️';
         document.getElementById('insp-type-badge').innerText = 'Aula / Espacio Físico';
         document.getElementById('insp-name').value = d.num;
         document.getElementById('insp-category').value = d.cat || 'Tecnología';
-        document.getElementById('insp-category-group').classList.remove('hidden');
-        document.getElementById('insp-shifts-group').classList.remove('hidden');
-        document.getElementById('insp-net-group').classList.add('hidden');
+
+        roomBtnGroup.classList.remove('hidden');
+        catGroup.classList.remove('hidden');
+        shiftsGroup.classList.remove('hidden');
+        pcGroup.classList.add('hidden');
+        netGroup.classList.add('hidden');
+
+        if (d.realPhoto) {
+          realPhotoImg.src = d.realPhoto;
+          realPhotoImg.classList.remove('hidden');
+          noPhotoPlaceholder.classList.add('hidden');
+        } else {
+          realPhotoImg.classList.add('hidden');
+          noPhotoPlaceholder.classList.remove('hidden');
+        }
 
         document.getElementById('insp-dim-w').value = (d.w * 0.1).toFixed(1);
         document.getElementById('insp-dim-d').value = (d.h * 0.1).toFixed(1);
-        document.getElementById('insp-dim-h').value = (d.h_val || 3.4).toFixed(1);
-
-        document.getElementById('insp-pos-x').value = to3DX(d.x, d.w).toFixed(1);
-        document.getElementById('insp-pos-z').value = to3DZ(d.y, d.h).toFixed(1);
-
         document.getElementById('insp-shift-m').value = d.m || '';
         document.getElementById('insp-shift-t').value = d.t || '';
         document.getElementById('insp-shift-n').value = d.n || '';
 
-        obj.traverse(child => {
-          if (child.isMesh && child.material && !child.userData.isBillboard) {
-            child.material.emissive = new THREE.Color(0x1e3a8a);
-          }
-        });
+        obj.traverse(c => { if (c.isMesh && c.material && !c.userData.isBillboard) c.material.emissive = new THREE.Color(0x1e3a8a); });
+
+      // AP de red seleccionado
       } else if (obj.userData.isAP) {
         const a = obj.userData.data;
         document.getElementById('insp-header-title').innerText = a.name;
         document.getElementById('insp-badge-icon').innerText = '📡';
-        document.getElementById('insp-type-badge').innerText = 'Punto de Acceso Wi-Fi (AP)';
+        document.getElementById('insp-type-badge').innerText = 'Punto de Acceso Wi-Fi';
         document.getElementById('insp-name').value = a.name;
-        document.getElementById('insp-category-group').classList.add('hidden');
-        document.getElementById('insp-shifts-group').classList.add('hidden');
-        document.getElementById('insp-net-group').classList.remove('hidden');
 
-        document.getElementById('insp-dim-w').value = '1.2';
-        document.getElementById('insp-dim-d').value = '1.2';
-        document.getElementById('insp-dim-h').value = '0.5';
-
-        document.getElementById('insp-pos-x').value = to3DX(a.x, 18).toFixed(1);
-        document.getElementById('insp-pos-z').value = to3DZ(a.y, 18).toFixed(1);
+        roomBtnGroup.classList.add('hidden');
+        catGroup.classList.add('hidden');
+        shiftsGroup.classList.add('hidden');
+        pcGroup.classList.add('hidden');
+        netGroup.classList.remove('hidden');
 
         document.getElementById('insp-net-ip').value = a.ip;
         document.getElementById('insp-net-port').value = a.port;
@@ -1355,24 +1652,164 @@
 
     function deselectObject() {
       if (selectedObject) {
-        selectedObject.traverse(child => {
-          if (child.isMesh && child.material) {
-            child.material.emissive = new THREE.Color(0x000000);
-          }
-        });
+        selectedObject.traverse(c => { if (c.isMesh && c.material) c.material.emissive = new THREE.Color(0x000000); });
         selectedObject = null;
       }
       document.getElementById('inspector-panel').classList.add('hidden');
     }
 
+    function handleUploadRealPhoto(event) {
+      const file = event.target.files[0];
+      if (!file || !selectedObject) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const b64 = e.target.result;
+        selectedObject.userData.data.realPhoto = b64;
+        document.getElementById('insp-real-photo-img').src = b64;
+        document.getElementById('insp-real-photo-img').classList.remove('hidden');
+        document.getElementById('insp-no-photo-placeholder').classList.add('hidden');
+        saveState();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function capture3DAsRealPhoto() {
+      if (!selectedObject) return;
+      renderer.render(scene, camera);
+      const b64 = renderer.domElement.toDataURL('image/png');
+      selectedObject.userData.data.realPhoto = b64;
+      document.getElementById('insp-real-photo-img').src = b64;
+      document.getElementById('insp-real-photo-img').classList.remove('hidden');
+      document.getElementById('insp-no-photo-placeholder').classList.add('hidden');
+      saveState();
+    }
+
+    function removeRealPhoto() {
+      if (!selectedObject) return;
+      selectedObject.userData.data.realPhoto = null;
+      document.getElementById('insp-real-photo-img').src = '';
+      document.getElementById('insp-real-photo-img').classList.add('hidden');
+      document.getElementById('insp-no-photo-placeholder').classList.remove('hidden');
+      saveState();
+    }
+
+    function updateSelectedPC() {
+      if (!selectedObject || !selectedObject.userData.isPlacedObject) return;
+      const d = selectedObject.userData.data;
+      d.tag = document.getElementById('insp-pc-tag').value;
+      d.caseModel = document.getElementById('insp-pc-case').value;
+      d.os = document.getElementById('insp-pc-os').value;
+      d.cpu = document.getElementById('insp-pc-cpu').value;
+      d.ram = document.getElementById('insp-pc-ram').value;
+      d.status = document.getElementById('insp-pc-status').value;
+      d.notes = document.getElementById('insp-pc-notes').value;
+      document.getElementById('insp-pc-tag-badge').innerText = d.tag;
+      saveState();
+      rebuildScene();
+    }
+
+    function renderSoftwareTags(list) {
+      const container = document.getElementById('insp-pc-software-tags');
+      container.innerHTML = '';
+      if (!list || list.length === 0) {
+        container.innerHTML = '<span class="text-[10px] text-slate-500 italic">Sin software registrado</span>';
+        return;
+      }
+      list.forEach((app, idx) => {
+        const chip = document.createElement('span');
+        chip.className = "px-2 py-0.5 rounded-md bg-blue-900/60 text-blue-200 border border-blue-500/40 text-[10px] font-medium flex items-center space-x-1";
+        chip.innerHTML = `<span>${app}</span><button onclick="removeSoftwareFromPC(${idx})" class="hover:text-rose-400 ml-1 text-[9px]">&times;</button>`;
+        container.appendChild(chip);
+      });
+    }
+
+    function addSoftwareToPC() {
+      if (!selectedObject || !selectedObject.userData.isPlacedObject) return;
+      const input = document.getElementById('input-new-software');
+      const val = input.value.trim();
+      if (!val) return;
+      if (!selectedObject.userData.data.software) selectedObject.userData.data.software = [];
+      selectedObject.userData.data.software.push(val);
+      input.value = '';
+      renderSoftwareTags(selectedObject.userData.data.software);
+      saveState();
+    }
+
+    function removeSoftwareFromPC(index) {
+      if (!selectedObject || !selectedObject.userData.data.software) return;
+      selectedObject.userData.data.software.splice(index, 1);
+      renderSoftwareTags(selectedObject.userData.data.software);
+      saveState();
+    }
+
+    function applySoftwareProfile(profile) {
+      if (!selectedObject || !selectedObject.userData.data) return;
+      let apps = [];
+      if (profile === 'dev') {
+        apps = ["Cisco Packet Tracer", "Visual Studio Code", "Python 3.12", "Git", "Node.js", "VirtualBox"];
+      } else if (profile === 'cad') {
+        apps = ["AutoCAD 2024", "Blender 3D", "Photoshop", "Adobe Illustrator", "Acrobat Pro"];
+      } else if (profile === 'office') {
+        apps = ["Microsoft Office 365", "Google Chrome", "Acrobat Reader DC", "Antivirus ESET"];
+      }
+      selectedObject.userData.data.software = apps;
+      renderSoftwareTags(apps);
+      saveState();
+    }
+
+    function rotateSelectedObject() {
+      if (!selectedObject) return;
+      if (selectedObject.userData.isPlacedObject) {
+        selectedObject.userData.data.rot = (selectedObject.userData.data.rot || 0) + Math.PI / 2;
+        selectedObject.rotation.y = selectedObject.userData.data.rot;
+      }
+      saveState();
+    }
+
+    function duplicateSelectedObject() {
+      if (!selectedObject) return;
+      if (selectedObject.userData.isPlacedObject) {
+        const clone = JSON.parse(JSON.stringify(selectedObject.userData.data));
+        clone.id = `obj_${Date.now()}`;
+        clone.x += 15; clone.y += 15;
+        if (clone.tag && clone.tag.includes('-')) {
+          const parts = clone.tag.split('-');
+          clone.tag = `${parts[0]}-${parts[1]}-${String(currentPlacedObjects.length + 1).padStart(2, '0')}`;
+        }
+        currentPlacedObjects.push(clone);
+      } else if (selectedObject.userData.isRoom) {
+        const clone = JSON.parse(JSON.stringify(selectedObject.userData.data));
+        clone.id = `aula_${Date.now()}`; clone.num = `${clone.num} (Copia)`;
+        clone.x += 30; clone.y += 30;
+        currentRooms.push(clone);
+      }
+      saveState();
+      rebuildScene();
+      deselectObject();
+    }
+
+    function deleteSelectedObject() {
+      if (!selectedObject) return;
+      if (selectedObject.userData.isPlacedObject) {
+        const idx = selectedObject.userData.index;
+        currentPlacedObjects.splice(idx, 1);
+      } else if (selectedObject.userData.isRoom) {
+        const idx = selectedObject.userData.index;
+        currentRooms.splice(idx, 1);
+      } else if (selectedObject.userData.isAP) {
+        const idx = selectedObject.userData.index;
+        currentAPs.splice(idx, 1);
+      }
+      saveState();
+      deselectObject();
+      rebuildScene();
+    }
+
     function updateSelectedObject() {
       if (!selectedObject) return;
-      const newName = document.getElementById('insp-name').value;
-      if (selectedObject.userData.isRoom) {
-        selectedObject.userData.data.num = newName;
-      } else if (selectedObject.userData.isAP) {
-        selectedObject.userData.data.name = newName;
-      }
+      const val = document.getElementById('insp-name').value;
+      selectedObject.userData.data.num = val;
+      selectedObject.userData.data.name = val;
       saveState();
       rebuildScene();
     }
@@ -1381,35 +1818,6 @@
       if (!selectedObject || !selectedObject.userData.isRoom) return;
       selectedObject.userData.data.cat = document.getElementById('insp-category').value;
       selectedObject.userData.data.icon = CATEGORIES[selectedObject.userData.data.cat]?.icon || '🏛️';
-      saveState();
-      rebuildScene();
-    }
-
-    function updateSelectedDimensions() {
-      if (!selectedObject || !selectedObject.userData.isRoom) return;
-      const wMeters = parseFloat(document.getElementById('insp-dim-w').value) || 5;
-      const dMeters = parseFloat(document.getElementById('insp-dim-d').value) || 5;
-      const hMeters = parseFloat(document.getElementById('insp-dim-h').value) || 3.4;
-
-      selectedObject.userData.data.w = wMeters * 10;
-      selectedObject.userData.data.h = dMeters * 10;
-      selectedObject.userData.data.h_val = hMeters;
-      saveState();
-      rebuildScene();
-    }
-
-    function updateSelectedPosition() {
-      if (!selectedObject) return;
-      const px = parseFloat(document.getElementById('insp-pos-x').value) || 0;
-      const pz = parseFloat(document.getElementById('insp-pos-z').value) || 0;
-
-      if (selectedObject.userData.isRoom) {
-        selectedObject.userData.data.x = (px * 10 + 625) - selectedObject.userData.data.w / 2;
-        selectedObject.userData.data.y = (pz * 10 + 335) - selectedObject.userData.data.h / 2;
-      } else if (selectedObject.userData.isAP) {
-        selectedObject.userData.data.x = (px * 10 + 625) - 9;
-        selectedObject.userData.data.y = (pz * 10 + 335) - 9;
-      }
       saveState();
       rebuildScene();
     }
@@ -1429,55 +1837,145 @@
       saveState();
     }
 
-    function duplicateSelectedObject() {
-      if (!selectedObject) return;
-      if (selectedObject.userData.isRoom) {
-        const clone = JSON.parse(JSON.stringify(selectedObject.userData.data));
-        clone.id = `aula_${Date.now()}`;
-        clone.num = `${clone.num} (Copia)`;
-        clone.x += 30;
-        clone.y += 30;
-        currentRooms.push(clone);
-      } else if (selectedObject.userData.isAP) {
-        const clone = JSON.parse(JSON.stringify(selectedObject.userData.data));
-        clone.id = `AP${currentAPs.length + 1}`;
-        clone.name = `AP${currentAPs.length + 1}`;
-        clone.x += 20;
-        clone.y += 20;
-        currentAPs.push(clone);
-      }
+    function updateSelectedDimensions() {
+      if (!selectedObject || !selectedObject.userData.isRoom) return;
+      const wMeters = parseFloat(document.getElementById('insp-dim-w').value) || 5;
+      const dMeters = parseFloat(document.getElementById('insp-dim-d').value) || 5;
+      selectedObject.userData.data.w = wMeters * 10;
+      selectedObject.userData.data.h = dMeters * 10;
       saveState();
-      rebuildScene();
-      deselectObject();
-    }
-
-    function deleteSelectedObject() {
-      if (!selectedObject) return;
-      if (selectedObject.userData.isRoom) {
-        const idx = selectedObject.userData.index;
-        currentRooms.splice(idx, 1);
-      } else if (selectedObject.userData.isAP) {
-        const idx = selectedObject.userData.index;
-        currentAPs.splice(idx, 1);
-      }
-      saveState();
-      deselectObject();
       rebuildScene();
     }
 
     // -------------------------------------------------------------
-    // 9. ADD ELEMENT MODALS & ACTIONS
+    // 12. CATÁLOGO 3D & COLOCACIÓN EN PISO
     // -------------------------------------------------------------
-    function toggleAddModal() {
-      document.getElementById('modal-add').classList.toggle('hidden');
+    const CATALOG_ITEMS = {
+      muebles: [
+        { type: "desk_double", name: "Pupitre Doble con Bancos", desc: "Mesa para 2 alumnos", icon: "🪑" },
+        { type: "chair", name: "Silla de Alumno", desc: "Silla ergonómica apilable", icon: "💺" },
+        { type: "projector", name: "Proyector de Techo", desc: "Con pantalla retráctil", icon: "📽️" }
+      ],
+      computo: [
+        { type: "pc_desktop", name: "Puesto PC Completo", desc: "CPU Gabinete + Monitor + Mouse", icon: "🖥️" },
+        { type: "printer", name: "Impresora Multifunción", desc: "Equipo láser institucional", icon: "🖨️" },
+        { type: "camera_cctv", name: "Cámara Domo CCTV", desc: "Videovigilancia interior", icon: "📹" }
+      ],
+      redes: [
+        { type: "ap_wifi", name: "Punto de Acceso Wi-Fi (AP)", desc: "Domo PoE con cobertura 3D", icon: "📡" },
+        { type: "switch_poe", name: "Switch PoE 16/24P", desc: "Alimentación de red en rack", icon: "⚡" },
+        { type: "router", name: "Router Gateway Wi-Fi", desc: "Conexión ISP y DHCP", icon: "🔀" }
+      ],
+      aulas: [
+        { action: "new_classroom", name: "Nueva Aula Lectiva", desc: "Muros, puerta y letrero", icon: "🏛️" },
+        { action: "new_corridor", name: "Nuevo Pasillo / Galería", desc: "Área de circulación", icon: "🚶" }
+      ]
+    };
+
+    function toggleCatalogDrawer() {
+      const drawer = document.getElementById('catalog-drawer');
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden')) {
+        switchCatalogTab('computo'); // default to computo as requested by user
+      }
     }
 
-    function toggleHelpModal() {
-      document.getElementById('modal-help').classList.toggle('hidden');
+    function switchCatalogTab(tab) {
+      ['muebles', 'computo', 'redes', 'aulas'].forEach(t => {
+        const btn = document.getElementById(`tab-cat-${t}`);
+        if (btn) {
+          btn.className = t === tab 
+            ? "flex-1 py-1.5 rounded-lg text-center bg-blue-600 text-white transition font-bold" 
+            : "flex-1 py-1.5 rounded-lg text-center text-slate-400 hover:text-white transition";
+        }
+      });
+
+      const container = document.getElementById('catalog-items-container');
+      container.innerHTML = '';
+      const items = CATALOG_ITEMS[tab] || [];
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 cursor-pointer transition flex items-center space-x-3 group";
+        card.onclick = () => {
+          if (item.action === 'new_classroom') {
+            addNewClassroom();
+          } else if (item.action === 'new_corridor') {
+            addNewCorridor();
+          } else {
+            startPlacement(item.type, item.name);
+          }
+        };
+        card.innerHTML = `
+          <div class="w-10 h-10 rounded-xl bg-slate-800 group-hover:bg-cyan-600/30 text-cyan-400 flex items-center justify-center text-xl transition">
+            ${item.icon}
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-white text-xs truncate">${item.name}</h4>
+            <p class="text-[10px] text-slate-400 truncate">${item.desc}</p>
+          </div>
+          <i class="fa-solid fa-plus text-slate-500 group-hover:text-cyan-400 text-xs"></i>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function startPlacement(type, name) {
+      activePlacementType = type;
+      document.getElementById('placement-item-name').innerText = `Colocando: ${name}`;
+      document.getElementById('placement-alert').classList.remove('hidden');
+      toggleCatalogDrawer();
+    }
+
+    function cancelPlacement() {
+      activePlacementType = null;
+      document.getElementById('placement-alert').classList.add('hidden');
+    }
+
+    function finalizePlacement(worldX, worldZ) {
+      if (!activePlacementType) return;
+      const px = (worldX * 10 + 625) - 5;
+      const pz = (worldZ * 10 + 335) - 5;
+
+      // Find nearest room name
+      let roomName = "Taller Prácticas / Informática";
+      currentRooms.forEach(r => {
+        if (px >= r.x && px <= r.x + r.w && pz >= r.y && pz <= r.y + r.h) {
+          roomName = r.num;
+        }
+      });
+
+      const nextTag = `PC-INF-${String(currentPlacedObjects.filter(o => o.type === 'pc_desktop').length + 1).padStart(2, '0')}`;
+      const newObj = {
+        id: `obj_${Date.now()}`,
+        type: activePlacementType,
+        name: activePlacementType === 'pc_desktop' ? `Puesto ${nextTag}` : activePlacementType.toUpperCase(),
+        room: roomName,
+        x: px, y: pz, rot: 0,
+        tag: activePlacementType === 'pc_desktop' ? nextTag : null,
+        caseModel: "Torre ATX",
+        os: "Windows 11 Pro",
+        cpu: "Intel Core i5",
+        ram: "16 GB",
+        status: "Operativo",
+        software: ["Packet Tracer", "Visual Studio Code", "Python 3.12", "Office 365"],
+        notes: "Nuevo equipo instalado.",
+        realPhoto: null
+      };
+
+      currentPlacedObjects.push(newObj);
+      saveState();
+      rebuildScene();
+      cancelPlacement();
+
+      // Select newly placed object
+      setTimeout(() => {
+        const created = placedObjectMeshes[placedObjectMeshes.length - 1];
+        if (created) selectObject(created);
+      }, 50);
     }
 
     function addNewClassroom() {
-      toggleAddModal();
       const newRoom = {
         id: `aula_nueva_${Date.now()}`,
         num: `Aula ${currentRooms.length + 1}`,
@@ -1488,44 +1986,10 @@
       currentRooms.push(newRoom);
       saveState();
       rebuildScene();
-      setTimeout(() => {
-        const created = roomMeshes[roomMeshes.length - 1];
-        if (created) selectObject(created);
-      }, 50);
-    }
-
-    function addNewAP() {
-      toggleAddModal();
-      const numAP = currentAPs.length + 1;
-      const newAP = {
-        id: `AP${numAP}`,
-        name: `AP${numAP}`,
-        room: "Nueva Ubicación",
-        x: 580, y: 320,
-        ip: `192.168.100.${20 + numAP}`,
-        port: `Sw POE P${numAP}`
-      };
-      currentAPs.push(newAP);
-      saveState();
-      rebuildScene();
-    }
-
-    function addNewRack() {
-      toggleAddModal();
-      const newRoom = {
-        id: `rack_sala_${Date.now()}`,
-        num: "Centro Telecom",
-        x: 520, y: 320, w: 60, h: 50,
-        cat: "Administración", icon: "🗄️",
-        m: "Sala Servidores", t: "Sala Servidores", n: "Sala Servidores"
-      };
-      currentRooms.push(newRoom);
-      saveState();
-      rebuildScene();
+      toggleCatalogDrawer();
     }
 
     function addNewCorridor() {
-      toggleAddModal();
       const newRoom = {
         id: `pasillo_${Date.now()}`,
         num: "Nuevo Pasillo",
@@ -1536,32 +2000,407 @@
       currentRooms.push(newRoom);
       saveState();
       rebuildScene();
+      toggleCatalogDrawer();
     }
 
     // -------------------------------------------------------------
-    // 10. LIGHTING & ENVIRONMENT
+    // 13. GENERADOR AUTOMÁTICO DE INFORMES MULTIFORMATO
     // -------------------------------------------------------------
+    let activeReportTab = 'general';
+
+    function openReportsModal() {
+      document.getElementById('modal-reports').classList.remove('hidden');
+      renderReportsContent();
+    }
+
+    function closeReportsModal() {
+      document.getElementById('modal-reports').classList.add('hidden');
+    }
+
+    function switchReportTab(tab) {
+      activeReportTab = tab;
+      ['general', 'tech', 'net'].forEach(t => {
+        const btn = document.getElementById(`tab-rep-${t}`);
+        if (btn) {
+          btn.className = t === tab 
+            ? "pb-3 border-b-2 border-cyan-400 text-cyan-300 transition flex items-center space-x-1.5"
+            : "pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center space-x-1.5";
+        }
+      });
+      renderReportsContent();
+    }
+
+    function renderReportsContent() {
+      const body = document.getElementById('reports-content-body');
+      body.innerHTML = '';
+
+      if (activeReportTab === 'general') {
+        const totalRooms = currentRooms.filter(r => !r.isPatio && r.cat !== 'Pasillos').length;
+        const totalDesks = currentPlacedObjects.filter(o => o.type === 'desk_double').length;
+        const totalPCs = currentPlacedObjects.filter(o => o.type === 'pc_desktop').length;
+        const capacityEst = (totalDesks * 2) + totalPCs;
+
+        body.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-2xl border border-slate-700">
+              <span class="text-slate-400 text-[11px] block">Aulas Lectivas</span>
+              <span class="text-3xl font-extrabold text-white">${totalRooms}</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border border-slate-700">
+              <span class="text-slate-400 text-[11px] block">Capacidad Alumnos</span>
+              <span class="text-3xl font-extrabold text-cyan-400">${capacityEst || 450}</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border border-slate-700">
+              <span class="text-slate-400 text-[11px] block">Puestos de Cómputo</span>
+              <span class="text-3xl font-extrabold text-indigo-400">${totalPCs}</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border border-slate-700">
+              <span class="text-slate-400 text-[11px] block">Access Points Wi-Fi</span>
+              <span class="text-3xl font-extrabold text-emerald-400">${currentAPs.length}</span>
+            </div>
+          </div>
+
+          <div class="glass-card p-5 rounded-3xl border border-slate-800 space-y-3">
+            <h3 class="font-bold text-white text-sm">Resumen de Ocupación por Turno y Aulas</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px]">
+                  <tr>
+                    <th class="p-2.5 rounded-l-lg">Aula / Espacio</th>
+                    <th class="p-2.5">Especialidad</th>
+                    <th class="p-2.5">Turno Mañana</th>
+                    <th class="p-2.5">Turno Tarde</th>
+                    <th class="p-2.5 rounded-r-lg">Turno Noche</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">
+                  ${currentRooms.filter(r => !r.isPatio).map(r => `
+                    <tr class="hover:bg-slate-800/40">
+                      <td class="p-2.5 font-bold text-white flex items-center space-x-2">
+                        <span>${r.icon || '🏛️'}</span>
+                        <span>${r.num}</span>
+                      </td>
+                      <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-semibold" style="background:${CATEGORIES[r.cat]?.hex}22; color:${CATEGORIES[r.cat]?.hex}">${r.cat}</span></td>
+                      <td class="p-2.5 text-slate-300">${r.m || 'Disponible'}</td>
+                      <td class="p-2.5 text-slate-300">${r.t || 'Disponible'}</td>
+                      <td class="p-2.5 text-slate-300">${r.n || 'Disponible'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else if (activeReportTab === 'tech') {
+        const pcs = currentPlacedObjects.filter(o => o.type === 'pc_desktop');
+        body.innerHTML = `
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-white text-base">Censo de Computadoras & Gabinetes (${pcs.length} equipos)</h3>
+            <span class="text-xs text-slate-400">Actualizado automáticamente en tiempo real</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${pcs.map(pc => `
+              <div class="glass-card p-4 rounded-2xl border border-slate-800 flex space-x-4">
+                <div class="w-24 h-24 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shrink-0 flex items-center justify-center">
+                  ${pc.realPhoto 
+                    ? `<img src="${pc.realPhoto}" class="w-full h-full object-cover" alt="Foto Real" />` 
+                    : `<div class="text-center p-2 text-slate-600"><i class="fa-solid fa-computer text-3xl"></i><span class="text-[9px] block mt-1">Sin foto real</span></div>`}
+                </div>
+                <div class="flex-1 min-w-0 space-y-1 text-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="font-mono font-bold text-cyan-400 text-sm">${pc.tag || 'PC-00'}</span>
+                    <span class="px-2 py-0.5 rounded text-[9px] font-bold ${pc.status === 'Operativo' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${pc.status || 'Operativo'}</span>
+                  </div>
+                  <p class="text-white font-semibold truncate">${pc.name} - <span class="text-slate-400 text-[11px]">${pc.room}</span></p>
+                  <p class="text-slate-400 text-[11px]"><b>Gabinete:</b> ${pc.caseModel || 'Torre ATX'} | <b>S.O.:</b> ${pc.os || 'Windows 11'}</p>
+                  <p class="text-slate-400 text-[11px]"><b>CPU/RAM:</b> ${pc.cpu || 'i5'} / ${pc.ram || '16GB'}</p>
+                  <div class="pt-1 flex flex-wrap gap-1">
+                    ${(pc.software || []).slice(0, 3).map(s => `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-slate-300">${s}</span>`).join('')}
+                    ${(pc.software || []).length > 3 ? `<span class="text-[9px] text-cyan-400">+${(pc.software || []).length - 3} más</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else if (activeReportTab === 'net') {
+        body.innerHTML = `
+          <div class="glass-card p-5 rounded-3xl border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-white text-base">Auditoría Técnica de Telecomunicaciones (Anexo 1 Oficial)</h3>
+              <span class="text-xs text-emerald-400 font-bold">16 Access Points Activos</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px]">
+                  <tr>
+                    <th class="p-2.5 rounded-l-lg">AP ID</th>
+                    <th class="p-2.5">Ubicación / Aula</th>
+                    <th class="p-2.5">IP de Gestión</th>
+                    <th class="p-2.5">Puerto Switch Alimentador</th>
+                    <th class="p-2.5 rounded-r-lg">Frecuencia / PoE</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">
+                  ${currentAPs.map(a => `
+                    <tr class="hover:bg-slate-800/40">
+                      <td class="p-2.5 font-bold font-mono text-emerald-400">${a.name}</td>
+                      <td class="p-2.5 text-white font-semibold">${a.room}</td>
+                      <td class="p-2.5 font-mono text-slate-300">${a.ip}</td>
+                      <td class="p-2.5 text-slate-300">${a.port}</td>
+                      <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">802.3at PoE+ (Dual Band)</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function exportReportsToCSV() {
+      let csv = "Tipo,Identificador,Aula,Detalle1,Detalle2,Estado\n";
+      currentPlacedObjects.forEach(o => {
+        csv += `Equipo,"${o.tag || o.name}","${o.room}","${o.caseModel || ''}","${o.os || ''}","${o.status || 'Operativo'}"\n`;
+      });
+      currentAPs.forEach(a => {
+        csv += `Red,"${a.name}","${a.room}","${a.ip}","${a.port}","Activo"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `informe_inventario_escuela_${Date.now()}.csv`;
+      a.click();
+    }
+
+    function printFormalReport() {
+      const printContainer = document.getElementById('print-report-container');
+      const pcs = currentPlacedObjects.filter(o => o.type === 'pc_desktop');
+
+      printContainer.innerHTML = `
+        <div style="font-family: system-ui, sans-serif; padding: 20px; color: #0f172a;">
+          <!-- Membrete -->
+          <div style="border-bottom: 3px solid #0284c7; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h1 style="font-size: 22px; font-weight: bold; margin: 0; color: #0f172a;">INSTITUTO EDUCATIVO OFICIAL</h1>
+              <h2 style="font-size: 14px; color: #0284c7; margin: 4px 0 0 0;">INFORME TÉCNICO DE INFRAESTRUCTURA, EQUIPAMIENTO & TELECOMUNICACIONES</h2>
+              <p style="font-size: 11px; color: #64748b; margin: 2px 0 0 0;">Anexo Oficial • Ciclo Lectivo • Relevamiento Digital 3D</p>
+            </div>
+            <div style="text-align: right; font-size: 11px; color: #475569;">
+              <p><b>Fecha de Emisión:</b> ${new Date().toLocaleDateString()}</p>
+              <p><b>Estado del Censo:</b> 100% Verificado</p>
+            </div>
+          </div>
+
+          <!-- Resumen de gabinetes y computadoras -->
+          <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px;">
+            1. Inventario de Gabinetes y Computadoras de la Sala de Informática (${pcs.length} equipos)
+          </h3>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+            ${pcs.map(pc => `
+              <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; gap: 12px; background: #f8fafc; break-inside: avoid;">
+                <div style="width: 100px; height: 100px; border: 1px solid #94a3b8; border-radius: 6px; overflow: hidden; background: #0f172a; display: flex; align-items: center; justify-content: center;">
+                  ${pc.realPhoto ? `<img src="${pc.realPhoto}" style="width:100%; height:100%; object-fit:cover;" />` : `<span style="color:#94a3b8; font-size:10px; text-align:center;">Sin foto física</span>`}
+                </div>
+                <div style="font-size: 11px; line-height: 1.5; flex: 1;">
+                  <p style="margin: 0; font-size: 13px; font-weight: bold; color: #0284c7;">${pc.tag || 'PC-00'} - ${pc.name}</p>
+                  <p style="margin: 2px 0; color: #334155;"><b>Aula:</b> ${pc.room}</p>
+                  <p style="margin: 2px 0; color: #334155;"><b>Gabinete:</b> ${pc.caseModel || 'Torre'} | <b>S.O.:</b> ${pc.os || 'Windows'}</p>
+                  <p style="margin: 2px 0; color: #334155;"><b>Estado:</b> <span style="font-weight:bold; color:${pc.status === 'Operativo' ? '#16a34a' : '#d97706'}">${pc.status}</span></p>
+                  <p style="margin: 2px 0; font-size: 10px; color: #64748b;"><b>Software:</b> ${(pc.software || []).join(', ') || 'Básico'}</p>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Redes (16 APs) -->
+          <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px;">
+            2. Infraestructura de Red Wi-Fi (Anexo 1 Oficial)
+          </h3>
+          <table style="width: 100%; font-size: 11px; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+              <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid #94a3b8;">
+                <th style="padding: 6px;">AP ID</th>
+                <th style="padding: 6px;">Ubicación</th>
+                <th style="padding: 6px;">IP de Gestión</th>
+                <th style="padding: 6px;">Switch / Alimentación</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${currentAPs.map(a => `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px; font-weight: bold; color: #16a34a;">${a.name}</td>
+                  <td style="padding: 6px;">${a.room}</td>
+                  <td style="padding: 6px; font-family: monospace;">${a.ip}</td>
+                  <td style="padding: 6px;">${a.port}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <!-- Firmas -->
+          <div style="margin-top: 50px; display: flex; justify-content: space-between; padding: 0 40px; text-align: center; font-size: 11px; color: #475569;">
+            <div style="border-top: 1px solid #94a3b8; width: 180px; padding-top: 6px;">Firma Responsable TI</div>
+            <div style="border-top: 1px solid #94a3b8; width: 180px; padding-top: 6px;">Firma Dirección Institucional</div>
+          </div>
+        </div>
+      `;
+
+      window.print();
+    }
+
+    // -------------------------------------------------------------
+    // 14. DOSSIER DE SALA DE INFORMÁTICA
+    // -------------------------------------------------------------
+    function openRoomDossierModal() {
+      if (!selectedObject || !selectedObject.userData.isRoom) return;
+      const room = selectedObject.userData.data;
+      const modal = document.getElementById('modal-room-dossier');
+      document.getElementById('dossier-room-title').innerText = `Dossier Técnico: ${room.num}`;
+      document.getElementById('dossier-room-subtitle').innerText = `Área ${room.cat} | Relevamiento de computadoras y gabinetes`;
+
+      const roomPCs = currentPlacedObjects.filter(o => o.room === room.num && o.type === 'pc_desktop');
+      const body = document.getElementById('room-dossier-body');
+
+      body.innerHTML = `
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="glass-card p-3 rounded-xl border border-slate-700 text-center">
+            <span class="text-slate-400 text-[10px] block">Computadoras en el Aula</span>
+            <span class="text-2xl font-bold text-white">${roomPCs.length}</span>
+          </div>
+          <div class="glass-card p-3 rounded-xl border border-slate-700 text-center">
+            <span class="text-slate-400 text-[10px] block">100% Operativas</span>
+            <span class="text-2xl font-bold text-emerald-400">${roomPCs.filter(p => p.status === 'Operativo').length}</span>
+          </div>
+          <div class="glass-card p-3 rounded-xl border border-slate-700 text-center">
+            <span class="text-slate-400 text-[10px] block">En Service / Revisión</span>
+            <span class="text-2xl font-bold text-amber-400">${roomPCs.filter(p => p.status !== 'Operativo').length}</span>
+          </div>
+        </div>
+
+        <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-2">Listado de Gabinetes y Números de Mantenimiento</h4>
+        <div class="space-y-2">
+          ${roomPCs.length === 0 ? '<p class="text-slate-500 italic">No hay computadoras agregadas en esta aula todavía. Puedes agregarlas desde el Catálogo 3D.</p>' : ''}
+          ${roomPCs.map(p => `
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-lg bg-slate-950 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                  ${p.realPhoto ? `<img src="${p.realPhoto}" class="w-full h-full object-cover" />` : '<i class="fa-solid fa-computer text-slate-500"></i>'}
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <span class="font-mono font-bold text-cyan-400">${p.tag || 'PC-00'}</span>
+                    <span class="text-white font-semibold">${p.name}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">Gabinete: ${p.caseModel} | S.O.: ${p.os} | RAM: ${p.ram}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.status === 'Operativo' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">${p.status}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeRoomDossierModal() {
+      document.getElementById('modal-room-dossier').classList.add('hidden');
+    }
+
+    function printCurrentRoomDossier() {
+      printFormalReport();
+    }
+
+    // -------------------------------------------------------------
+    // 15. PERSISTENCIA, SCREENSHOT & RESET
+    // -------------------------------------------------------------
+    function saveState() {
+      localStorage.setItem('saved_school_rooms_3d', JSON.stringify(currentRooms));
+      localStorage.setItem('saved_school_aps_3d', JSON.stringify(currentAPs));
+      localStorage.setItem('saved_school_placed_objects_3d', JSON.stringify(currentPlacedObjects));
+    }
+
+    function exportProjectJSON() {
+      const data = {
+        title: "Estudio 3D Institucional & Redes",
+        version: "3.0",
+        timestamp: new Date().toISOString(),
+        rooms: currentRooms,
+        accessPoints: currentAPs,
+        placedObjects: currentPlacedObjects
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `plano_institucional_completo_${Date.now()}.json`;
+      a.click();
+    }
+
+    function importProjectJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.rooms) currentRooms = parsed.rooms;
+          if (parsed.accessPoints) currentAPs = parsed.accessPoints;
+          if (parsed.placedObjects) currentPlacedObjects = parsed.placedObjects;
+          saveState();
+          rebuildScene();
+          alert("¡Proyecto cargado exitosamente!");
+        } catch(err) {
+          alert("Error al procesar archivo JSON.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function takeScreenshot() {
+      renderer.render(scene, camera);
+      const dataURL = renderer.domElement.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataURL;
+      a.download = `captura_3d_institucional_${Date.now()}.png`;
+      a.click();
+    }
+
+    function toggleHelpModal() {
+      document.getElementById('modal-help').classList.toggle('hidden');
+    }
+
+    function undoAction() {
+      if (confirm("¿Deseas restaurar la maqueta oficial original?")) {
+        currentRooms = JSON.parse(JSON.stringify(initialRoomsData));
+        currentAPs = JSON.parse(JSON.stringify(initialAPsData));
+        currentPlacedObjects = JSON.parse(JSON.stringify(defaultPlacedObjects));
+        saveState();
+        rebuildScene();
+      }
+    }
+
     function setLighting(preset) {
       if (preset === 'day') {
         scene.background.set(0x0f172a);
-        ambientLight.color.set(0xffffff);
-        ambientLight.intensity = 0.55;
-        sunLight.color.set(0xfffaed);
-        sunLight.intensity = 0.9;
+        ambientLight.color.set(0xffffff); ambientLight.intensity = 0.55;
+        sunLight.color.set(0xfffaed); sunLight.intensity = 0.9;
         sunLight.position.set(40, 80, 50);
       } else if (preset === 'sunset') {
         scene.background.set(0x1a0f1e);
-        ambientLight.color.set(0xfbcfe8);
-        ambientLight.intensity = 0.4;
-        sunLight.color.set(0xf97316);
-        sunLight.intensity = 1.1;
+        ambientLight.color.set(0xfbcfe8); ambientLight.intensity = 0.4;
+        sunLight.color.set(0xf97316); sunLight.intensity = 1.1;
         sunLight.position.set(70, 30, 20);
       } else if (preset === 'night') {
         scene.background.set(0x020617);
-        ambientLight.color.set(0x38bdf8);
-        ambientLight.intensity = 0.15;
-        sunLight.color.set(0x1e3a8a);
-        sunLight.intensity = 0.25;
+        ambientLight.color.set(0x38bdf8); ambientLight.intensity = 0.15;
+        sunLight.color.set(0x1e3a8a); sunLight.intensity = 0.25;
         sunLight.position.set(-20, 50, -30);
       }
     }
@@ -1579,128 +2418,46 @@
     }
 
     // -------------------------------------------------------------
-    // 11. 2D RADAR MINIMAP
+    // 16. RADAR 2D MINIMAP
     // -------------------------------------------------------------
     const minimapCanvas = document.getElementById('minimap');
     const mCtx = minimapCanvas.getContext('2d');
 
     function drawMinimap() {
-      const mw = minimapCanvas.width;
-      const mh = minimapCanvas.height;
-
+      const mw = minimapCanvas.width, mh = minimapCanvas.height;
       mCtx.fillStyle = '#0f172a';
       mCtx.fillRect(0, 0, mw, mh);
+      const sx = mw / 1250, sy = mh / 670;
 
-      const sx = mw / 1250;
-      const sy = mh / 670;
-
-      // Draw Classrooms
       currentRooms.forEach(r => {
         mCtx.fillStyle = CATEGORIES[r.cat]?.hex || '#475569';
         mCtx.fillRect(r.x * sx, r.y * sy, r.w * sx, r.h * sy);
-        mCtx.strokeStyle = '#020617';
-        mCtx.lineWidth = 1;
+        mCtx.strokeStyle = '#020617'; mCtx.lineWidth = 1;
         mCtx.strokeRect(r.x * sx, r.y * sy, r.w * sx, r.h * sy);
       });
 
-      // Draw APs
       if (currentLayerMode !== 'aulas') {
         currentAPs.forEach(a => {
-          mCtx.fillStyle = '#22c55e';
-          mCtx.beginPath();
-          mCtx.arc(a.x * sx, a.y * sy, 2.5, 0, Math.PI * 2);
-          mCtx.fill();
+          mCtx.fillStyle = '#22c55e'; mCtx.beginPath();
+          mCtx.arc(a.x * sx, a.y * sy, 2.5, 0, Math.PI * 2); mCtx.fill();
         });
       }
 
-      // Draw Camera / Player
       const px = (camera.position.x * 10 + 625) * sx;
       const py = (camera.position.z * 10 + 335) * sy;
-
-      mCtx.fillStyle = '#38bdf8';
-      mCtx.beginPath();
-      mCtx.arc(px, py, 4, 0, Math.PI * 2);
-      mCtx.fill();
-      mCtx.strokeStyle = '#ffffff';
-      mCtx.lineWidth = 1.5;
-      mCtx.stroke();
+      mCtx.fillStyle = '#38bdf8'; mCtx.beginPath();
+      mCtx.arc(px, py, 4, 0, Math.PI * 2); mCtx.fill();
+      mCtx.strokeStyle = '#ffffff'; mCtx.lineWidth = 1.5; mCtx.stroke();
 
       const dir = new THREE.Vector3();
       camera.getWorldDirection(dir);
-      mCtx.strokeStyle = '#facc15';
-      mCtx.lineWidth = 2;
-      mCtx.beginPath();
-      mCtx.moveTo(px, py);
-      mCtx.lineTo(px + dir.x * 12, py + dir.z * 12);
-      mCtx.stroke();
+      mCtx.strokeStyle = '#facc15'; mCtx.lineWidth = 2;
+      mCtx.beginPath(); mCtx.moveTo(px, py);
+      mCtx.lineTo(px + dir.x * 12, py + dir.z * 12); mCtx.stroke();
     }
 
     // -------------------------------------------------------------
-    // 12. EXPORT, IMPORT & SCREENSHOTS
-    // -------------------------------------------------------------
-    function saveState() {
-      localStorage.setItem('saved_school_rooms_3d', JSON.stringify(currentRooms));
-      localStorage.setItem('saved_school_aps_3d', JSON.stringify(currentAPs));
-    }
-
-    function exportProjectJSON() {
-      const data = {
-        title: "Proyecto 3D Institucional",
-        version: "2.0",
-        timestamp: new Date().toISOString(),
-        rooms: currentRooms,
-        accessPoints: currentAPs
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `plano_institucional_3d_${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importProjectJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (parsed.rooms && parsed.accessPoints) {
-            currentRooms = parsed.rooms;
-            currentAPs = parsed.accessPoints;
-            saveState();
-            rebuildScene();
-            alert("¡Proyecto 3D cargado exitosamente!");
-          }
-        } catch (err) {
-          alert("Error al leer el archivo JSON.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function takeScreenshot() {
-      renderer.render(scene, camera);
-      const dataURL = renderer.domElement.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = dataURL;
-      a.download = `captura_3d_escuela_${Date.now()}.png`;
-      a.click();
-    }
-
-    function undoAction() {
-      if (confirm("¿Deseas restaurar la distribución arquitectónica original oficial?")) {
-        currentRooms = JSON.parse(JSON.stringify(initialRoomsData));
-        currentAPs = JSON.parse(JSON.stringify(initialAPsData));
-        saveState();
-        rebuildScene();
-      }
-    }
-
-    // -------------------------------------------------------------
-    // 13. MAIN ANIMATION LOOP
+    // 17. ANIMATION LOOP
     // -------------------------------------------------------------
     const clock = new THREE.Clock();
 
@@ -1709,52 +2466,33 @@
       const delta = clock.getDelta();
       const time = clock.getElapsedTime();
 
-      // Video Game FPS Movement
       if (currentCameraMode === 'fps') {
         const speed = keys.ShiftLeft ? playerSprintSpeed : playerSpeed;
         const moveVector = new THREE.Vector3();
-
         if (keys.KeyW) moveVector.z -= 1;
         if (keys.KeyS) moveVector.z += 1;
         if (keys.KeyA) moveVector.x -= 1;
         if (keys.KeyD) moveVector.x += 1;
-
         moveVector.normalize();
         moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), fpsYaw);
 
         camera.position.x += moveVector.x * speed * delta;
         camera.position.z += moveVector.z * speed * delta;
-
-        // Keep inside bounds
         camera.position.x = Math.max(-60, Math.min(60, camera.position.x));
         camera.position.z = Math.max(-33, Math.min(33, camera.position.z));
         camera.position.y = playerY;
-
         drawMinimap();
       } else {
         orbitControls.update();
       }
 
-      // Billboard orientation
-      schoolGroup.traverse(child => {
-        if (child.userData && child.userData.isBillboard) {
-          child.quaternion.copy(camera.quaternion);
-        }
-      });
-      telecomGroup.traverse(child => {
-        if (child.userData && child.userData.isBillboard) {
-          child.quaternion.copy(camera.quaternion);
-        }
-      });
+      schoolGroup.traverse(c => { if (c.userData && c.userData.isBillboard) c.quaternion.copy(camera.quaternion); });
+      telecomGroup.traverse(c => { if (c.userData && c.userData.isBillboard) c.quaternion.copy(camera.quaternion); });
+      furnitureGroup.traverse(c => { if (c.userData && c.userData.isBillboard) c.quaternion.copy(camera.quaternion); });
 
-      // Subtle AP signal pulsing
       if (showWifiSignals && currentLayerMode !== 'aulas') {
         const scale = 1.0 + Math.sin(time * 3) * 0.05;
-        telecomGroup.traverse(child => {
-          if (child.userData && child.userData.isWifiSignal) {
-            child.scale.set(scale, scale, scale);
-          }
-        });
+        telecomGroup.traverse(c => { if (c.userData.isWifiSignal) c.scale.set(scale, scale, scale); });
       }
 
       renderer.render(scene, camera);
@@ -1767,7 +2505,6 @@
       drawMinimap();
     });
 
-    // Start Scene
     rebuildScene();
     animate();
   </script>

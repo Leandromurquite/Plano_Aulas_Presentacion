@@ -80,25 +80,44 @@ Plano_Aulas_Presentacion/
   - **`E`**: Inspeccionar el aula o equipo que tengas enfrente.
   - **`Tab` o `Esc`**: Salir del modo videojuego y liberar el cursor.
 
-### 2. Editor Sandbox 3D (Añadir, Modificar, Eliminar)
-- **Seleccionar e Inspeccionar:** Haz clic sobre cualquier aula o nodo de red AP para abrir el panel lateral de propiedades:
+### 2. Catálogo 3D y Colocación Interactiva (Click-to-Place)
+El botón **Catálogo 3D** despliega un inventario completo clasificado por pestañas:
+- **🪑 Mobiliario Escolar:** Pupitre doble escolar, Silla ergonómica, Escritorio docente, Pizarra interactiva, Proyector de techo.
+- **💻 Tecnología & Cómputo:** Computadora completa (Gabinete + Monitor + Teclado), Impresora departamental, Cámara domo CCTV.
+- **📡 Telecomunicaciones:** Access Point Wi-Fi con domo de cobertura 3D, Switch PoE (8, 16 y 24 puertos), Router Gateway, Rack 42U de piso, Rosetas RJ45 de pared.
+- **🏢 Espacios:** Aulas lectivas completas y pasillos conectores.
+
+### 3. Ficha Técnica por Computadora & Foto de la Vida Real
+Al hacer clic en cualquier PC en el 3D o dentro de la **Sala de Informática**:
+- **Número de Inventario / Service único:** Ej. `PC-INF-01`, `PC-INF-02`.
+- **Modelo de Gabinete:** Torre ATX, Slim SFF, Mini PC, All-in-One.
+- **Sistema Operativo:** Windows 11 Pro, Windows 10 Educativo, Ubuntu Linux, Debian, Dual Boot.
+- **Especificaciones de Hardware:** Procesador (CPU), Memoria RAM, Almacenamiento.
+- **Estado de Mantenimiento:** 🟢 100% Operativo, 🟡 En Mantenimiento / Revisión, 🔴 Fuera de Servicio.
+- **📷 Subir Foto de la Vida Real:** Botón para cargar la fotografía física real tomada con el celular o cámara digital de la PC o rack físico. La foto queda vinculada al equipo y se incorpora a los informes técnicos.
+- **💻 Software y Aplicaciones Instaladas:** Etiquetas dinámicas por equipo (Cisco Packet Tracer, VS Code, AutoCAD, Office 365, Python, etc.) con **Perfiles Rápidos** (Programación, Diseño/CAD, Ofimática).
+
+### 4. Generador Automático de Informes Oficiales & Auditoría
+El botón **Informes & Auditoría** genera reportes consolidados en tiempo real:
+1. **📋 1. General & Infraestructura:** Censo de aulas, capacidad de alumnos por turno (Mañana, Tarde, Noche), m² útiles y mobiliario.
+2. **💻 2. Equipamiento Tecnológico & PCs:** Inventario exhaustivo de computadoras con número de service, modelo de gabinete, sistema operativo, software instalado y **fotos reales integradas**.
+3. **📡 3. Redes & Telecomunicaciones (Anexo 1):** Balance de puertos PoE, listado de los 16 APs, IPs asignadas, switches y cableado UTP Cat6.
+- **🖨️ Imprimir / Guardar en PDF (A4):** Formato formal con membrete institucional, tablas estilizadas, fotos físicas y campo de firmas para entrega de auditoría o directivos.
+- **📊 Descargar Excel (.csv):** Exportación completa para abrir en Excel o Google Sheets.
+
+### 5. Editor Sandbox 3D (Añadir, Modificar, Eliminar)
+- **Seleccionar e Inspeccionar:** Haz clic sobre cualquier aula o equipo para abrir el panel lateral de propiedades:
   - Cambiar nombre ("Aula 24", "Laboratorio de Robótica", etc.).
-  - Asignar carreras y horarios (Mañana, Tarde, Noche).
+  - Asignar carreras y turnos (Mañana, Tarde, Noche).
   - Modificar categoría y color visual (Tecnología, Salud, Seguridad, Gastronomía, etc.).
   - Ajustar dimensiones en metros (Ancho X, Largo Z, Alto Y) y posición en planta.
-- **➕ Botón Añadir:**
-  - **Nueva Aula:** Agrega un espacio lectivo 3D con muros, puerta y pupitres de alumnos.
-  - **Nuevo AP Wi-Fi:** Añade un domo de techo con LED parpadeante y cúpula de cobertura.
-  - **Nuevo Rack:** Crea gabinetes de telecomunicaciones de 42U.
-  - **Nuevo Pasillo:** Incorpora galerías o áreas de circulación.
 - **🗑️ Eliminar y Duplicar:**
-  - Pulsa **"Eliminar"** en el panel lateral o presiona la tecla `Supr` (`Delete`) en tu teclado.
-  - Pulsa **"Duplicar"** para clonar un aula de inmediato.
+  - Pulsa **"Eliminar"** en el panel lateral o presiona la tecla `Supr` (`Delete`).
+  - Pulsa **"Duplicar"** para clonar un objeto con un solo clic.
 - **💾 Guardar / Cargar Proyecto:**
-  - Puedes exportar tu maqueta a un archivo `.json` o importar estados previos con un solo clic.
-  - Guarda automáticamente tus cambios en el almacenamiento local (`LocalStorage`) de tu navegador.
+  - Guarda automáticamente en el navegador (`LocalStorage`) y permite exportar/importar maquetas completas en archivo `.json`.
 - **📸 Captura HD:**
-  - Botón de cámara para descargar una foto nítida de la escena en formato PNG.
+  - Descarga instantánea de fotos nítidas del render 3D en formato PNG.
 
 ---
 
