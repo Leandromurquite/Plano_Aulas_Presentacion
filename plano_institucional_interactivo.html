@@ -3,8 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plano Institucional y de Telecomunicaciones - Editor Interactivo</title>
+  <title>Plataforma Institucional y de Telecomunicaciones • 2 Pisos & Redes | IES Nuevo Horizonte</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- html2pdf.js local y CDN fallback -->
+  <script src="lib/html2pdf.bundle.min.js"></script>
+  <script>
+    if (typeof html2pdf === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>');
+    }
+  </script>
+
   <style>
     @media print {
       .no-print { display: none !important; }
@@ -64,27 +78,27 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-full flex flex-col font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
 
-  <!-- BARRA DE NAVEGACIÓN PRINCIPAL (CONMUTADOR DE LAS 2 SECCIONES) -->
+  <!-- BARRA DE NAVEGACIÓN PRINCIPAL -->
   <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md no-print border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
       
       <!-- Logotipo e Institución -->
       <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-lg shadow-sm">
           🏛️
         </div>
         <div>
           <div class="flex items-center space-x-2">
             <h1 class="text-sm sm:text-base font-bold text-white leading-tight">Plataforma Institucional y de Telecomunicaciones</h1>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              Autónomo
+              Autónomo • 2 Pisos
             </span>
           </div>
-          <p class="text-[11px] text-slate-400">Anexo Oficial: Gestión de Aulas y Red Wi-Fi (AP1 - AP16)</p>
+          <p class="text-[11px] text-slate-400">Anexo Oficial: Planta Baja & Planta Alta (Gabinete 32 PCs + Auditorio 19.5m)</p>
         </div>
       </div>
 
-      <!-- CONMUTADOR CENTRAL DE LAS 2 SECCIONES -->
+      <!-- CONMUTADOR CENTRAL DE LAS 2 SECCIONES (AULAS / REDES) -->
       <div class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700 shadow-inner">
         <button onclick="switchMainSection('aulas')" id="tab-btn-aulas" 
           class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-blue-600 text-white shadow-sm">
@@ -94,73 +108,71 @@
         <button onclick="switchMainSection('redes')" id="tab-btn-redes" 
           class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60">
           <span class="text-sm">🔌</span>
-          <span>Sección 2: Plano de las Redes (Oficial)</span>
+          <span>Sección 2: Plano de las Redes (19 APs)</span>
         </button>
       </div>
 
-      <!-- BOTONERA SUPERIOR DE ACCIONES Y DESCARGA -->
+      <!-- BOTONES DE ACCIÓN: SIMULADOR 3D, INFORME Y EXPORTAR -->
       <div class="flex items-center space-x-2">
-        <a href="simulador_3d_interactivo.html" target="_blank" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-sm">
-          <span class="text-sm">🎮</span>
-          <span>Simulador 3D / Videojuego</span>
+        
+        <!-- Enlace Directo al Simulador 3D -->
+        <a href="simulador_3d_interactivo.html" 
+          class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm border border-indigo-400/40">
+          <span>🎮</span>
+          <span class="hidden sm:inline">Simulador 3D</span>
         </a>
-        <button onclick="toggleTableModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-          </svg>
-          <span id="btnModalLabel">Planilla e Inventario</span>
+
+        <!-- Botón Ver Informe Oficial Completo (14 Puntos) -->
+        <button onclick="openFormalReportModal()" 
+          class="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
+          <span>📋</span>
+          <span class="hidden sm:inline">Informe Oficial</span>
         </button>
 
-        <div class="relative inline-block text-left" id="downloadDropdownContainer">
-          <button onclick="toggleDownloadMenu()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-xs">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-            </svg>
-            <span>Descargar</span>
-            <svg class="w-3 h-3 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
+        <!-- Botón Planilla Técnica -->
+        <button onclick="toggleTableModal()" 
+          class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold transition flex items-center space-x-1.5">
+          <span>📊</span>
+          <span class="hidden sm:inline">Planilla</span>
+        </button>
 
-          <div id="downloadMenu" class="hidden absolute right-0 mt-2 w-64 rounded-xl shadow-xl bg-white border border-slate-200 z-50 py-2 text-slate-800">
-            <a href="simulador_3d_interactivo.html" target="_blank" class="flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-purple-600 transition">
-              <span class="text-base mr-2.5">🎮</span>
+        <!-- Dropdown de Exportación con PDF Corregido -->
+        <div class="relative">
+          <button onclick="toggleDownloadMenu()" id="btnDownloadDropdown" 
+            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+            <span>📥</span>
+            <span>Exportar</span>
+            <svg class="w-3.5 h-3.5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          
+          <!-- Menú desplegable -->
+          <div id="downloadDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 py-1.5 z-50 text-slate-800">
+            <button onclick="downloadOfficialReportPDF()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-blue-50 hover:text-blue-700 transition">
+              <span class="text-base mr-2.5">📄</span>
               <div>
-                <p class="font-bold text-slate-900">Abrir Simulador 3D & Videojuego</p>
-                <p class="text-[11px] text-slate-500">Recorrido en 1ra persona y editor</p>
+                <p class="font-bold text-slate-900">Descargar Informe PDF Oficial</p>
+                <p class="text-[11px] text-slate-500">14 puntos, hardware y software</p>
               </div>
-            </a>
-            <a href="distribucion_aulas_editable.pptx" download class="flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
-              <span class="text-base mr-2.5">📊</span>
+            </button>
+            <button onclick="printFormalReportPopup()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-blue-50 hover:text-blue-700 transition border-t border-slate-100">
+              <span class="text-base mr-2.5">🖨️</span>
               <div>
-                <p class="font-bold text-slate-900">Presentación PowerPoint (.pptx)</p>
-                <p class="text-[11px] text-slate-500">Con los 16 APs y diapositivas editables</p>
-              </div>
-            </a>
-            <button onclick="downloadSelfContainedHtml()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
-              <span class="text-base mr-2.5">🌐</span>
-              <div>
-                <p class="font-bold text-slate-900">Guardar Web Actualizada (.html)</p>
-                <p class="text-[11px] text-slate-500">Guarda todas las modificaciones</p>
+                <p class="font-bold text-slate-900">Imprimir / Guardar en PDF</p>
+                <p class="text-[11px] text-slate-500">Ventana limpia A4 sin cortes</p>
               </div>
             </button>
             <button onclick="downloadPngImage()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
               <span class="text-base mr-2.5">🖼️</span>
               <div>
                 <p class="font-bold text-slate-900">Exportar Imagen HD (.png)</p>
-                <p class="text-[11px] text-slate-500" id="downloadPngDesc">Exporta el plano activo</p>
+                <p class="text-[11px] text-slate-500">Plano activo de alta resolución</p>
               </div>
             </button>
             <button onclick="downloadSvgVector()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
               <span class="text-base mr-2.5">📐</span>
               <div>
                 <p class="font-bold text-slate-900">Vector SVG Nítido (.svg)</p>
-                <p class="text-[11px] text-slate-500">Formato vectorial escalable</p>
-              </div>
-            </button>
-            <button onclick="window.print()" class="w-full text-left flex items-center px-4 py-2.5 text-xs hover:bg-slate-50 hover:text-blue-600 transition border-t border-slate-100">
-              <span class="text-base mr-2.5">🖨️</span>
-              <div>
-                <p class="font-bold text-slate-900">Imprimir o Guardar PDF</p>
-                <p class="text-[11px] text-slate-500">Hoja A4 horizontal</p>
+                <p class="text-[11px] text-slate-500">Escalable para planos arquitectónicos</p>
               </div>
             </button>
           </div>
@@ -170,423 +182,402 @@
     </div>
   </header>
 
-  <!-- SUB-BARRA DE HERRAMIENTAS DINÁMICAS (SECCIÓN AULAS) -->
-  <div id="toolbar-aulas" class="bg-white border-b border-slate-200 no-print py-2.5 px-4 sm:px-6 lg:px-8 shadow-2xs">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+  <!-- BARRA DE SELECCIÓN DE PISOS Y CALIBRADOR DE MEDIDAS -->
+  <nav class="bg-white border-b border-slate-200 no-print py-2 px-4 sm:px-6 lg:px-8 shadow-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       
+      <!-- SELECTOR DE PISO: PLANTA BAJA / PLANTA ALTA / SUPERPUESTO -->
       <div class="flex items-center space-x-2">
+        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nivel:</span>
         <div class="bg-slate-100 p-1 rounded-xl flex items-center space-x-1 border border-slate-200">
-          <button onclick="setShift('manana')" id="btn-manana" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition bg-white text-blue-700 shadow-xs flex items-center space-x-1">
-            <span>🌅</span><span>Mañana</span>
+          <button onclick="switchFloor('pb')" id="floor-btn-pb" 
+            class="px-3 py-1 rounded-lg text-xs font-bold transition-all bg-white text-blue-700 shadow-xs flex items-center space-x-1.5">
+            <span>🏛️</span>
+            <span>Planta Baja (1° Piso)</span>
           </button>
-          <button onclick="setShift('tarde')" id="btn-tarde" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
-            <span>☀️</span><span>Tarde</span>
+          <button onclick="switchFloor('pa')" id="floor-btn-pa" 
+            class="px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center space-x-1.5">
+            <span>🏢</span>
+            <span>Planta Alta (2° Piso - Gabinete & Auditorio)</span>
           </button>
-          <button onclick="setShift('noche')" id="btn-noche" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
-            <span>🌙</span><span>Noche</span>
-          </button>
-          <button onclick="setShift('todos')" id="btn-todos" class="shift-btn px-2.5 py-1 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900 flex items-center space-x-1">
-            <span>📑</span><span>Completo</span>
+          <button onclick="switchFloor('both')" id="floor-btn-both" 
+            class="px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center space-x-1.5"
+            title="Muestra la Planta Alta con la silueta de Planta Baja debajo para verificar el calce con la escalera">
+            <span>🏢+🏛️</span>
+            <span>Huella Superpuesta</span>
           </button>
         </div>
+      </div>
 
-        <button onclick="addNewRoomQuick()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow-xs transition">
-          <span>+ Aula</span>
+      <!-- CONTROLES RÁPIDOS DE PLANTA ALTA (CALIBRADOR VISIBLE EN MODO PA) -->
+      <div id="pa-quick-calibrator" class="flex items-center space-x-3 bg-amber-50/80 px-3 py-1 rounded-xl border border-amber-200/80">
+        <span class="text-xs font-bold text-amber-800 flex items-center space-x-1">
+          <span>📐</span>
+          <span>Ajuste Rápido 2° Piso:</span>
+        </span>
+        <div class="flex items-center space-x-1">
+          <label class="text-[11px] text-amber-900 font-semibold">Ancho Gabinete:</label>
+          <input type="number" id="quickGabineteW" value="16.0" step="0.5" min="10" max="25" 
+            onchange="updateGabineteWidthReal(this.value)" 
+            class="w-14 px-1.5 py-0.5 text-xs bg-white border border-amber-300 rounded font-bold text-slate-800 text-center">
+          <span class="text-[10px] text-amber-700">m</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <label class="text-[11px] text-amber-900 font-semibold">Auditorio:</label>
+          <span class="text-xs font-bold text-slate-800 bg-white px-2 py-0.5 rounded border border-amber-300">19.50m × 13.65m</span>
+        </div>
+        <button onclick="resetPaDimensions()" class="px-2 py-0.5 bg-amber-200 hover:bg-amber-300 text-amber-900 text-[11px] font-bold rounded transition">
+          Restablecer
         </button>
-        <button onclick="addNewCorridorQuick()" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow-xs transition">
-          <span>+ Pasillo</span>
-        </button>
       </div>
 
-      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
-        <span class="text-slate-400 font-medium whitespace-nowrap mr-1">Filtrar:</span>
-        <button onclick="filterCategory('all')" id="cat-all" class="cat-pill px-2.5 py-1 rounded-md font-semibold bg-slate-800 text-white transition">Todas</button>
-        <button onclick="filterCategory('Salud')" id="cat-Salud" class="cat-pill px-2 py-1 rounded-md font-medium bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition">🏥 Salud</button>
-        <button onclick="filterCategory('Seguridad')" id="cat-Seguridad" class="cat-pill px-2 py-1 rounded-md font-medium bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition">🦺 Seguridad</button>
-        <button onclick="filterCategory('Tecnología')" id="cat-Tecnología" class="cat-pill px-2 py-1 rounded-md font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition">💻 Software</button>
-        <button onclick="filterCategory('Sociales')" id="cat-Sociales" class="cat-pill px-2 py-1 rounded-md font-medium bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition">⚖️ Jurídica</button>
-        <button onclick="filterCategory('Gastronomía')" id="cat-Gastronomía" class="cat-pill px-2 py-1 rounded-md font-medium bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 transition">🍳 Cocina</button>
-        <button onclick="filterCategory('Pasillos')" id="cat-Pasillos" class="cat-pill px-2 py-1 rounded-md font-medium bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 transition">🚶 Pasillos</button>
-        <button onclick="filterCategory('Libre')" id="cat-Libre" class="cat-pill px-2 py-1 rounded-md font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition">✨ Libres</button>
-      </div>
-
-      <div class="relative min-w-[200px]">
-        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Buscar aula o materia..." 
-          class="w-full pl-8 pr-3 py-1 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500 text-slate-800 placeholder-slate-400">
-        <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- SUB-BARRA DE HERRAMIENTAS DINÁMICAS (SECCIÓN REDES) -->
-  <div id="toolbar-redes" class="hidden bg-slate-800 text-white border-b border-slate-700 no-print py-2.5 px-4 sm:px-6 lg:px-8 shadow-md">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-      
-      <!-- Filtros de Equipamiento Oficial -->
-      <div class="flex items-center gap-1.5 overflow-x-auto text-xs pb-1 md:pb-0">
-        <span class="text-slate-400 font-medium whitespace-nowrap mr-1">Filtrar Red:</span>
-        <button onclick="filterNetworkType('all')" id="net-filter-all" class="net-pill px-2.5 py-1 rounded-md font-bold bg-blue-600 text-white transition">Todos (25)</button>
-        <button onclick="filterNetworkType('ap')" id="net-filter-ap" class="net-pill px-2.5 py-1 rounded-md font-medium bg-slate-700 hover:bg-slate-600 text-rose-300 border border-slate-600 transition">📡 Access Points AP (16)</button>
-        <button onclick="filterNetworkType('switch')" id="net-filter-switch" class="net-pill px-2.5 py-1 rounded-md font-medium bg-slate-700 hover:bg-slate-600 text-emerald-300 border border-slate-600 transition">🗄️ Switches y Racks (5)</button>
-        <button onclick="filterNetworkType('router')" id="net-filter-router" class="net-pill px-2.5 py-1 rounded-md font-medium bg-slate-700 hover:bg-slate-600 text-sky-300 border border-slate-600 transition">🌐 Routers y Firewall (4)</button>
-      </div>
-
-      <!-- Acciones de Red -->
+      <!-- BUSCADOR RÁPIDO -->
       <div class="flex items-center space-x-2">
-        <button onclick="toggleClassroomBackdrop()" id="btn-toggle-backdrop" class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
-          <span>👁️</span>
-          <span id="backdropToggleLabel">Atenuar Aulas</span>
-        </button>
-        <button onclick="addNewApQuick()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow-xs transition">
-          <span>+ Agregar AP</span>
-        </button>
-      </div>
-
-      <!-- Buscador de Redes -->
-      <div class="relative min-w-[200px]">
-        <input type="text" id="searchNetworkInput" oninput="handleNetworkSearch()" placeholder="Buscar AP, Switch, IP o aula..." 
-          class="w-full pl-8 pr-3 py-1 text-xs bg-slate-900 border border-slate-700 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-sky-400 text-white placeholder-slate-400">
-        <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
+        <div class="relative w-48 sm:w-56">
+          <svg class="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Buscar aula o espacio..." 
+            class="w-full pl-8 pr-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+        </div>
       </div>
 
     </div>
-  </div>
+  </nav>
 
-  <!-- ESTADÍSTICAS SUPERIORES -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1 w-full flex flex-wrap items-center justify-between gap-3 text-xs">
-    
-    <div id="stats-container-aulas" class="flex items-center space-x-3 sm:space-x-4">
-      <div class="flex items-center space-x-1.5">
-        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
-        <span class="font-bold text-slate-700" id="currentShiftLabel">Turno Mañana</span>
-      </div>
-      <div class="text-slate-500"><span class="font-bold text-slate-800" id="statOccupied">18</span> aulas ocupadas</div>
-      <div class="text-slate-300">•</div>
-      <div class="text-slate-500"><span class="font-bold text-emerald-600" id="statFree">3</span> libres</div>
-      <div class="text-slate-300">•</div>
-      <div class="text-slate-500"><span class="font-bold text-slate-700" id="statCorridors">5</span> pasillos activos</div>
-    </div>
-
-    <div id="stats-container-redes" class="hidden flex items-center space-x-3 sm:space-x-4 text-slate-700">
-      <div class="flex items-center space-x-1.5">
-        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
-        <span class="font-bold text-slate-800">Infraestructura Oficial de Redes (Anexo 1)</span>
-      </div>
-      <div class="text-slate-600"><span class="font-bold text-rose-600" id="statAps">16</span> Access Points (AP1-AP16)</div>
-      <div class="text-slate-300">•</div>
-      <div class="text-slate-600"><span class="font-bold text-emerald-600" id="statSwitches">4</span> Switches + 1 Rack</div>
-      <div class="text-slate-300">•</div>
-      <div class="text-slate-600"><span class="font-bold text-sky-600" id="statRouters">4</span> Modems / Routers / FW</div>
-    </div>
-
-    <div class="flex items-center space-x-3 text-slate-400">
-      <span id="savedIndicator" class="text-emerald-600 font-medium flex items-center space-x-1 opacity-0 transition-opacity">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-        <span>Guardado</span>
-      </span>
-      <button onclick="confirmResetDefaults()" class="hover:text-rose-600 transition text-[11px] underline">Restablecer valores originales</button>
-    </div>
-  </div>
-
-  <!-- CONTENEDOR PRINCIPAL: PLANO SVG + PANEL LATERAL DINÁMICO -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex-1 w-full flex flex-col lg:flex-row gap-5 items-start">
-    
-    <!-- CANVAS DEL PLANO SVG -->
-    <div class="flex-1 w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 overflow-hidden relative print-container">
+  <!-- SUB-BARRA DE FILTROS POR TURNO (SECCIÓN AULAS) -->
+  <div id="toolbar-aulas" class="bg-white border-b border-slate-200 no-print py-2 px-4 sm:px-6 lg:px-8 shadow-2xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       
-      <div class="hidden print:block mb-3 border-b pb-2">
-        <h2 class="text-xl font-bold text-slate-900" id="printMainTitle">Plano Oficial de Infraestructura Institucional</h2>
-        <p class="text-xs text-slate-600" id="printSubheader">Sección 2: Infraestructura y Telecomunicaciones de Red</p>
+      <!-- Selector de Turno -->
+      <div class="flex items-center space-x-2">
+        <span class="text-xs font-bold text-slate-500">Turno:</span>
+        <div class="bg-slate-100 p-0.5 rounded-lg flex items-center space-x-1 border border-slate-200 text-xs">
+          <button onclick="setShift('manana')" id="btn-manana" class="shift-btn px-2 py-1 rounded-md font-semibold transition bg-white text-blue-700 shadow-xs">
+            🌅 Mañana
+          </button>
+          <button onclick="setShift('tarde')" id="btn-tarde" class="shift-btn px-2 py-1 rounded-md font-semibold transition text-slate-600 hover:text-slate-900">
+            ☀️ Tarde
+          </button>
+          <button onclick="setShift('noche')" id="btn-noche" class="shift-btn px-2 py-1 rounded-md font-semibold transition text-slate-600 hover:text-slate-900">
+            🌙 Noche
+          </button>
+          <button onclick="setShift('todos')" id="btn-todos" class="shift-btn px-2 py-1 rounded-md font-semibold transition text-slate-600 hover:text-slate-900">
+            🏢 General
+          </button>
+        </div>
       </div>
 
-      <!-- SVG 1250x670 -->
-      <div class="w-full overflow-x-auto relative pr-2 pb-2">
-        <svg id="campusSvg" viewBox="0 0 1250 670" class="w-full h-auto select-none transition-all duration-300" style="min-width: 860px;"
-             onmousemove="handleSvgMouseMove(event)" onmouseup="handleSvgMouseUp(event)" onmouseleave="handleSvgMouseUp(event)">
+      <!-- Filtro de Categorías de Carreras -->
+      <div class="flex items-center space-x-1 overflow-x-auto py-1">
+        <span class="text-xs font-bold text-slate-500 mr-1">Área:</span>
+        <button onclick="filterCategory('all')" class="cat-chip px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-600 text-white">Todas</button>
+        <button onclick="filterCategory('Tecnología')" class="cat-chip px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100">💻 Tecnología</button>
+        <button onclick="filterCategory('Sociales')" class="cat-chip px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100">⚖️ Sociales</button>
+        <button onclick="filterCategory('Salud')" class="cat-chip px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100">🏥 Salud</button>
+        <button onclick="filterCategory('Administración')" class="cat-chip px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200">🏛️ Admin</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUB-BARRA DE HERRAMIENTAS DE REDES (SECCIÓN REDES) -->
+  <div id="toolbar-redes" class="hidden bg-slate-900 text-white border-b border-slate-800 no-print py-2 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-xs font-bold text-slate-200">Infraestructura Telecomunicaciones:</span>
+        </div>
+        <span class="text-xs text-sky-400 font-semibold bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+          📶 19 Access Points (AP1 a AP19) • 100% Operativos
+        </span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="filterNetworkType('all')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white">Todos</button>
+        <button onclick="filterNetworkType('ap')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700">Access Points (19)</button>
+        <button onclick="filterNetworkType('switch')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700">Switches & Racks</button>
+        <button onclick="filterNetworkType('router')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700">Routers & ISP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÁREA DE TRABAJO PRINCIPAL: PLANO INTERACTIVO Y PANEL LATERAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-start gap-6">
+
+    <!-- CONTENEDOR DEL CANVAS SVG -->
+    <section class="flex-1 w-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+      
+      <!-- Encabezado del Lienzo -->
+      <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+          <h2 id="blueprintTitle" class="text-sm font-bold text-slate-800">
+            Lienzo SVG Interactivo • Planta Baja (1° Piso)
+          </h2>
+        </div>
+        <div class="flex items-center space-x-2 text-xs text-slate-500">
+          <span id="canvasFloorBadge" class="px-2 py-0.5 bg-blue-100 text-blue-800 font-bold rounded-full">1° Planta Baja</span>
+          <span>|</span>
+          <span>Arrastre las aulas o use el calibrador lateral</span>
+        </div>
+      </div>
+
+      <!-- Lienzo SVG -->
+      <div class="relative w-full overflow-auto bg-slate-50 flex items-center justify-center p-2 sm:p-4" style="min-height: 520px;">
+        <svg id="campusSvg" viewBox="0 0 1250 670" class="w-full h-auto select-none transition-all duration-300" style="min-width: 900px; max-height: 72vh;"
+          onmousemove="handleSvgMouseMove(event)" onmouseup="handleSvgMouseUp(event)" onmouseleave="handleSvgMouseUp(event)">
+          
           <defs>
-            <pattern id="patioPattern" width="24" height="24" patternUnits="userSpaceOnUse">
-              <path d="M 24 0 L 0 24 M 0 0 L 24 24" fill="none" stroke="#e2e8f0" stroke-width="0.75"/>
-            </pattern>
-            <linearGradient id="corridorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#f8fafc"/>
-              <stop offset="100%" stop-color="#edf2f7"/>
+            <!-- Gradiente de Pasillos -->
+            <linearGradient id="corridorGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f8fafc" />
+              <stop offset="100%" stop-color="#f1f5f9" />
             </linearGradient>
-            <filter id="cardShadow" x="-4%" y="-4%" width="108%" height="108%">
-              <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.08"/>
-            </filter>
+
+            <!-- Patrón de fondo cuadriculado milimétrico -->
+            <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e2e8f0" stroke-width="0.75"/>
+            </pattern>
+            <pattern id="gridPatternFine" width="100" height="100" patternUnits="userSpaceOnUse">
+              <rect width="100" height="100" fill="url(#gridPattern)" />
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#cbd5e1" stroke-width="1.25"/>
+            </pattern>
+
+            <!-- Marcador para cableado -->
+            <marker id="dotMarker" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
+              <circle cx="5" cy="5" r="4" fill="#ef4444" />
+            </marker>
           </defs>
 
-          <!-- MUROS EXTERIORES BASE -->
-          <rect id="outerWallBg" x="20" y="16" width="1175" height="635" rx="14" fill="#ffffff" stroke="#334155" stroke-width="3.5"/>
-          <rect x="15" y="11" width="1185" height="645" rx="18" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity="0.6"/>
+          <!-- Fondo técnico milimétrico -->
+          <rect width="1250" height="670" fill="#ffffff" />
+          <rect width="1250" height="670" fill="url(#gridPatternFine)" opacity="0.65" />
 
-          <!-- PATIO CENTRAL -->
-          <g id="patio-central">
-            <rect x="320" y="220" width="540" height="140" fill="url(#patioPattern)" stroke="#cbd5e1" stroke-width="1.5"/>
-            <circle cx="590" cy="290" r="28" fill="#dcfce7" stroke="#86efac" stroke-width="2"/>
-            <circle cx="590" cy="290" r="12" fill="#22c55e" opacity="0.4"/>
-            <text x="590" y="332" text-anchor="middle" fill="#64748b" font-size="13" font-weight="bold" letter-spacing="2">PATIO CENTRAL</text>
-          </g>
+          <!-- GRUPO: HUELLA PLANTA BAJA DE FONDO (Ghost backdrop para alinear con PA) -->
+          <g id="pb-ghost-backdrop-group" opacity="0.25" style="display: none;"></g>
 
-          <!-- CAPA 1: PASILLOS DINÁMICOS -->
+          <!-- GRUPO: PASILLOS DINÁMICOS -->
           <g id="dynamic-corridors-group"></g>
 
-          <!-- CAPA 2: AULAS DINÁMICAS -->
+          <!-- GRUPO: AULAS Y ESPACIOS DINÁMICOS -->
           <g id="dynamic-rooms-group"></g>
 
-          <!-- CAPA 3: REDES Y TELECOMUNICACIONES (ANEXO 1 OFICIAL) -->
-          <g id="dynamic-networks-group"></g>
+          <!-- GRUPO: DETALLES INTERNOS DEL GABINETE (32 PCs en 4 filas con pasillo de 1.60m) -->
+          <g id="dynamic-gabinete-details-group"></g>
 
+          <!-- GRUPO: DETALLES INTERNOS DEL AUDITORIO (100 Asientos y Escenario) -->
+          <g id="dynamic-auditorio-details-group"></g>
+
+          <!-- GRUPO: CAPA DE CABLEADO Y ENLACES DE RED -->
+          <g id="dynamic-cables-group" style="display: none;"></g>
+
+          <!-- GRUPO: CAPA DE DISPOSITIVOS DE RED (APs, Switches, Racks, Modems) -->
+          <g id="dynamic-networks-group" style="display: none;"></g>
+
+          <!-- GRUPO: MANIPULADORES DE CAMBIO DE TAMAÑO (Resize Handles) -->
+          <g id="dynamic-handles-group"></g>
         </svg>
       </div>
 
-      <!-- Pie Informativo -->
-      <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 no-print">
-        <div id="footer-tip-aulas" class="flex items-center space-x-2">
-          <span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
-          <span><b>Modo Aulas:</b> Haz clic en cualquier aula o pasillo para moverlo o cambiar asignaciones.</span>
+      <!-- Pie del Lienzo con Leyenda Dinámica -->
+      <div class="px-5 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+        <div class="flex items-center space-x-4">
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-indigo-200 border border-indigo-400 inline-block"></span><span>Tecnología</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-purple-200 border border-purple-400 inline-block"></span><span>Sociales / Auditorio</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-rose-200 border border-rose-400 inline-block"></span><span>Salud</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-slate-200 border border-slate-400 inline-block"></span><span>Administración</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-red-400 border border-red-600 inline-block"></span><span>AP Wi-Fi</span></span>
         </div>
-        <div id="footer-tip-redes" class="hidden flex items-center space-x-2">
-          <span class="inline-block w-2 h-2 rounded-full bg-rose-500"></span>
-          <span><b>Modo Redes Oficial:</b> Haz clic en cualquier AP (AP1 a AP16) o equipo para ver y editar su boca de Switch o IP.</span>
-        </div>
-        <div class="text-[11px] text-slate-400">
-          Resolución SVG: 1250 x 670 px • Escala 100%
+        <div class="text-[11px] text-slate-500 font-mono">
+          Resolución Lienzo: 1250 × 670 px | Coordenadas Vectoriales
         </div>
       </div>
-    </div>
 
-    <!-- PANEL LATERAL DERECHO -->
-    <aside class="w-full lg:w-96 flex flex-col no-print">
+    </section>
+
+    <!-- PANEL LATERAL: EDICIÓN, MEDIDAS Y CALIBRADOR DE PLANTA ALTA -->
+    <aside class="w-full lg:w-80 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col space-y-5">
       
-      <!-- INSPECTOR DE AULA O PASILLO (SECCIÓN 1) -->
-      <div id="card-inspector-aula" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
-        <div class="flex items-start justify-between border-b border-slate-100 pb-3 mb-3">
-          <div class="flex-1 mr-2">
-            <span id="selectedTypeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 inline-block mb-1">
-              Aula / Espacio
-            </span>
-            <input type="text" id="directNumInput" oninput="updateCurrentRoomField('num', this.value)" 
-              class="text-lg font-bold text-slate-900 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 w-full focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
+      <!-- CALIBRADOR DEL 2° PISO (PLANTA ALTA) -->
+      <div id="sidebar-pa-calibrator" class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 shadow-xs">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center space-x-1">
+            <span>🎛️</span>
+            <span>Calibrador Planta Alta</span>
+          </h3>
+          <span class="text-[10px] bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded">Interactivo</span>
+        </div>
+        <p class="text-[11px] text-amber-800 mb-3">
+          Ajuste las dimensiones en metros reales o en píxeles. El plano y la distribución de PCs se actualizan en tiempo real.
+        </p>
+
+        <!-- Ancho del Gabinete -->
+        <div class="space-y-1 mb-2.5">
+          <div class="flex justify-between text-xs">
+            <span class="font-semibold text-slate-700">Ancho Gabinete:</span>
+            <span id="labelGabineteW" class="font-bold text-indigo-700">16.0 m</span>
           </div>
-          <button onclick="confirmDeleteCurrentRoom()" title="Eliminar este elemento" class="text-rose-500 hover:text-rose-700 p-2 rounded-lg hover:bg-rose-50 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-          </button>
+          <input type="range" id="sliderGabineteW" min="10" max="24" step="0.5" value="16.0" 
+            oninput="handleGabineteSlider(this.value)" class="w-full accent-indigo-600 cursor-pointer">
         </div>
 
-        <!-- Coordenadas y Dimensiones -->
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 mb-3 text-xs space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-slate-700">📐 Posición y Tamaño</span>
-            <span class="text-[11px] text-slate-500 font-mono" id="coordsIndicator">(0, 0) • 0x0</span>
+        <!-- Largo del Auditorio (19.5m oficial) -->
+        <div class="space-y-1 mb-2.5">
+          <div class="flex justify-between text-xs">
+            <span class="font-semibold text-slate-700">Largo Auditorio (Oficial):</span>
+            <span id="labelAuditorioL" class="font-bold text-purple-700">19.5 m</span>
           </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div class="flex items-center space-x-1 bg-white p-1 rounded-lg border border-slate-200 justify-center">
-              <span class="text-[11px] text-slate-500 font-semibold mr-1">Mover:</span>
-              <button onclick="nudgeRoom(-15, 0)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">⬅️</button>
-              <button onclick="nudgeRoom(15, 0)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">➡️</button>
-              <button onclick="nudgeRoom(0, -15)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">⬆️</button>
-              <button onclick="nudgeRoom(0, 15)" class="p-1 hover:bg-slate-100 rounded text-slate-700 font-bold">⬇️</button>
-            </div>
-            <div class="flex items-center space-x-1 bg-white p-1 rounded-lg border border-slate-200 justify-center">
-              <span class="text-[11px] text-slate-500 font-semibold mr-1">Dim:</span>
-              <button onclick="resizeRoom(15, 0)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">W+</button>
-              <button onclick="resizeRoom(-15, 0)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">W-</button>
-              <button onclick="resizeRoom(0, 15)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">H+</button>
-              <button onclick="resizeRoom(0, -15)" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-slate-700 font-bold text-xs">H-</button>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between bg-white p-1.5 rounded-lg border border-slate-200">
-            <span class="text-[11px] text-slate-600 font-semibold">🔤 Tamaño Letras:</span>
-            <div class="flex items-center space-x-1">
-              <button onclick="adjustFontSize(-0.15)" class="px-2.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded font-bold text-slate-700 text-xs">A-</button>
-              <button onclick="resetFontSize()" class="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded font-semibold text-slate-600 text-[11px]">Auto</button>
-              <button onclick="adjustFontSize(0.15)" class="px-2.5 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded font-bold text-xs">A+</button>
-            </div>
-          </div>
+          <input type="range" id="sliderAuditorioL" min="14" max="25" step="0.5" value="19.5" 
+            oninput="handleAuditorioSlider(this.value)" class="w-full accent-purple-600 cursor-pointer">
         </div>
 
-        <!-- Asignaciones de Turnos -->
-        <div class="space-y-2.5 flex-1 text-xs">
-          <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1">
-            <div class="flex items-center justify-between">
-              <label class="font-bold text-slate-700">🌅 Turno Mañana</label>
-              <select id="directCatM" onchange="updateCurrentShiftCat('manana', this.value)" class="text-[11px] px-1.5 py-0.5 border border-slate-200 rounded bg-slate-50 font-semibold">
-                <option value="Salud">Salud</option>
-                <option value="Seguridad">Seguridad</option>
-                <option value="Tecnología">Software / IA</option>
-                <option value="Sociales">Jurídica / Soc.</option>
-                <option value="Gastronomía">Gastronomía</option>
-                <option value="Deportes">Prep. Física</option>
-                <option value="Financiera">Financiera</option>
-                <option value="Administración">Administración</option>
-                <option value="Servicios">Servicios</option>
-                <option value="Pasillos">Pasillo / Circulación</option>
-                <option value="Técnica">Técnica</option>
-                <option value="Libre">Libre</option>
-              </select>
-            </div>
-            <input type="text" id="directTextM" oninput="updateCurrentShiftText('manana', this.value)" 
-              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg font-bold text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
+        <!-- Escala General Planta Alta -->
+        <div class="space-y-1 mb-3">
+          <div class="flex justify-between text-xs">
+            <span class="font-semibold text-slate-700">Escala Global 2° Piso:</span>
+            <span id="labelScalePA" class="font-bold text-amber-900">100%</span>
           </div>
-
-          <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1">
-            <div class="flex items-center justify-between">
-              <label class="font-bold text-slate-700">☀️ Turno Tarde</label>
-              <select id="directCatT" onchange="updateCurrentShiftCat('tarde', this.value)" class="text-[11px] px-1.5 py-0.5 border border-slate-200 rounded bg-slate-50 font-semibold">
-                <option value="Salud">Salud</option>
-                <option value="Seguridad">Seguridad</option>
-                <option value="Tecnología">Software / IA</option>
-                <option value="Sociales">Jurídica / Soc.</option>
-                <option value="Gastronomía">Gastronomía</option>
-                <option value="Deportes">Prep. Física</option>
-                <option value="Financiera">Financiera</option>
-                <option value="Administración">Administración</option>
-                <option value="Servicios">Servicios</option>
-                <option value="Pasillos">Pasillo / Circulación</option>
-                <option value="Técnica">Técnica</option>
-                <option value="Libre">Libre</option>
-              </select>
-            </div>
-            <input type="text" id="directTextT" oninput="updateCurrentShiftText('tarde', this.value)" 
-              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg font-bold text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
-          </div>
-
-          <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1">
-            <div class="flex items-center justify-between">
-              <label class="font-bold text-slate-700">🌙 Turno Noche</label>
-              <select id="directCatN" onchange="updateCurrentShiftCat('noche', this.value)" class="text-[11px] px-1.5 py-0.5 border border-slate-200 rounded bg-slate-50 font-semibold">
-                <option value="Salud">Salud</option>
-                <option value="Seguridad">Seguridad</option>
-                <option value="Tecnología">Software / IA</option>
-                <option value="Sociales">Jurídica / Soc.</option>
-                <option value="Gastronomía">Gastronomía</option>
-                <option value="Deportes">Prep. Física</option>
-                <option value="Financiera">Financiera</option>
-                <option value="Administración">Administración</option>
-                <option value="Servicios">Servicios</option>
-                <option value="Pasillos">Pasillo / Circulación</option>
-                <option value="Técnica">Técnica</option>
-                <option value="Libre">Libre</option>
-              </select>
-            </div>
-            <input type="text" id="directTextN" oninput="updateCurrentShiftText('noche', this.value)" 
-              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg font-bold text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden">
-          </div>
+          <input type="range" id="sliderScalePA" min="80" max="125" step="1" value="100" 
+            oninput="handlePaScaleSlider(this.value)" class="w-full accent-amber-600 cursor-pointer">
         </div>
 
-        <div class="mt-3 pt-3 border-t border-slate-100 flex items-center space-x-2">
-          <button onclick="duplicateCurrentRoom()" class="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
-            <span>📋 Duplicar</span>
-          </button>
-          <button onclick="confirmDeleteCurrentRoom()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition">
-            <span>Quitar</span>
+        <div class="flex space-x-2 pt-1 border-t border-amber-200">
+          <button onclick="resetPaDimensions()" class="flex-1 py-1.5 bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-xs font-bold transition">
+            🔄 Medidas Oficiales
           </button>
         </div>
       </div>
 
-      <!-- INSPECTOR DE EQUIPO DE RED (SECCIÓN 2 - OFICIAL) -->
-      <div id="card-inspector-red" class="hidden bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-xl p-5 flex flex-col">
-        <div class="flex items-start justify-between border-b border-slate-800 pb-3 mb-3">
-          <div class="flex-1 mr-2">
-            <span id="netTypeBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 inline-block mb-1">
-              Punto de Acceso Wi-Fi
-            </span>
-            <input type="text" id="netNameInput" oninput="updateCurrentNetField('name', this.value)" 
-              class="text-lg font-bold text-white bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 w-full focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 focus:outline-hidden">
-          </div>
-          <button onclick="confirmDeleteCurrentNetDevice()" title="Eliminar equipo" class="text-rose-400 hover:text-rose-300 p-2 rounded-lg hover:bg-rose-950/40 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-          </button>
+      <!-- PROPIEDADES DEL ELEMENTO SELECCIONADO -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
+            Propiedades del Espacio
+          </h3>
+          <span id="selectedTypeBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+            Ninguno
+          </span>
         </div>
 
-        <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/80 mb-3 text-xs space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-slate-300">📍 Posición en Plano</span>
-            <span class="text-[11px] text-sky-400 font-mono" id="netCoordsIndicator">(0, 0)</span>
-          </div>
-
-          <div class="flex items-center space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-700 justify-center">
-            <span class="text-[11px] text-slate-400 font-semibold mr-1">Mover:</span>
-            <button onclick="nudgeNetDevice(-10, 0)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">⬅️</button>
-            <button onclick="nudgeNetDevice(10, 0)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">➡️</button>
-            <button onclick="nudgeNetDevice(0, -10)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">⬆️</button>
-            <button onclick="nudgeNetDevice(0, 10)" class="p-1 hover:bg-slate-800 rounded text-slate-200 font-bold">⬇️</button>
-          </div>
+        <!-- Nombre / Número -->
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-600">Nombre del Espacio</label>
+          <input type="text" id="propNameInput" oninput="updateCurrentRoomField('num', this.value)"
+            class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500">
         </div>
 
-        <div class="space-y-2.5 flex-1 text-xs">
-          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
-            <label class="font-bold text-slate-300">Ubicación / Aula</label>
-            <input type="text" id="netRoomInput" oninput="updateCurrentNetField('room', this.value)" 
-              class="w-full px-2.5 py-1 border border-slate-700 rounded-lg text-white bg-slate-900 focus:ring-2 focus:ring-sky-400 font-semibold">
+        <!-- Medidas Exactas (X, Y, W, H) -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="space-y-1">
+            <label class="font-semibold text-slate-500">Ancho (W px)</label>
+            <input type="number" id="propWInput" oninput="updateCurrentRoomField('w', parseInt(this.value))"
+              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 font-bold">
           </div>
-
-          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
-            <label class="font-bold text-slate-300">Puerto de Switch / Boca PoE</label>
-            <input type="text" id="netPortInput" oninput="updateCurrentNetField('port', this.value)" 
-              class="w-full px-2.5 py-1 border border-slate-700 rounded-lg text-emerald-300 bg-slate-900 focus:ring-2 focus:ring-sky-400 font-mono text-[11px]">
+          <div class="space-y-1">
+            <label class="font-semibold text-slate-500">Alto (H px)</label>
+            <input type="number" id="propHInput" oninput="updateCurrentRoomField('h', parseInt(this.value))"
+              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 font-bold">
           </div>
-
-          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
-            <label class="font-bold text-slate-300">Dirección IP y VLAN</label>
-            <input type="text" id="netIpInput" oninput="updateCurrentNetField('ip', this.value)" 
-              class="w-full px-2.5 py-1 border border-slate-700 rounded-lg text-sky-300 bg-slate-900 focus:ring-2 focus:ring-sky-400 font-mono text-[11px]">
+          <div class="space-y-1">
+            <label class="font-semibold text-slate-500">Posición X</label>
+            <input type="number" id="propXInput" oninput="updateCurrentRoomField('x', parseInt(this.value))"
+              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 font-bold">
           </div>
-
-          <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-800/60 space-y-1">
-            <div class="flex items-center justify-between">
-              <label class="font-bold text-slate-300">Estado de Conexión</label>
-              <select id="netStatusSelect" onchange="updateCurrentNetField('status', this.value)" class="text-xs px-2 py-0.5 border border-slate-700 rounded bg-slate-900 text-white font-semibold">
-                <option value="online">🟢 Activo / En Servicio</option>
-                <option value="testing">🟡 En Verificación</option>
-                <option value="offline">🔴 Desconectado</option>
-              </select>
-            </div>
+          <div class="space-y-1">
+            <label class="font-semibold text-slate-500">Posición Y</label>
+            <input type="number" id="propYInput" oninput="updateCurrentRoomField('y', parseInt(this.value))"
+              class="w-full px-2.5 py-1 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 font-bold">
           </div>
         </div>
 
-        <div class="mt-3 pt-3 border-t border-slate-800 flex items-center space-x-2">
-          <button onclick="duplicateCurrentNetDevice()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition">
-            <span>📋 Duplicar</span>
-          </button>
-          <button onclick="confirmDeleteCurrentNetDevice()" class="px-3 py-1.5 bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-800 rounded-xl text-xs font-bold transition">
-            <span>Quitar</span>
-          </button>
+        <!-- Botones de Nudge (+ / -) -->
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-500">Ajuste Fino de Posición</label>
+          <div class="grid grid-cols-3 gap-1">
+            <div></div>
+            <button onclick="nudgeRoom(0, -5)" class="py-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 font-bold text-xs">▲</button>
+            <div></div>
+            <button onclick="nudgeRoom(-5, 0)" class="py-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 font-bold text-xs">◀</button>
+            <button onclick="nudgeRoom(0, 5)" class="py-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 font-bold text-xs">▼</button>
+            <button onclick="nudgeRoom(5, 0)" class="py-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 font-bold text-xs">▶</button>
+          </div>
         </div>
+
+        <!-- Asignación de Turnos -->
+        <div class="space-y-2 pt-2 border-t border-slate-100 text-xs">
+          <label class="font-bold text-slate-700">Asignación del Turno Activo</label>
+          <input type="text" id="propShiftTextInput" oninput="updateActiveShiftText(this.value)"
+            class="w-full px-3 py-1.5 border border-slate-200 rounded-lg font-semibold text-slate-800 bg-slate-50">
+          <select id="propCategorySelect" onchange="updateActiveShiftCategory(this.value)"
+            class="w-full px-3 py-1.5 border border-slate-200 rounded-lg font-semibold text-slate-800 bg-slate-50">
+            <option value="Tecnología">💻 Tecnología</option>
+            <option value="Sociales">⚖️ Sociales</option>
+            <option value="Salud">🏥 Salud</option>
+            <option value="Administración">🏛️ Administración</option>
+            <option value="Pasillos">🚶 Pasillos</option>
+          </select>
+        </div>
+
       </div>
 
     </aside>
 
   </main>
 
-  <!-- MODAL: PLANILLA DE AULAS E INVENTARIO TÉCNICO -->
-  <div id="tableModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 hidden no-print">
-    <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+  <!-- MODAL: INFORME ACADÉMICO OFICIAL COMPLETO (14 PUNTOS CON GOOGLE DOC) -->
+  <div id="formalReportModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-5xl max-h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
       
-      <div class="px-6 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+      <!-- Encabezado del Modal -->
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span class="text-2xl">📋</span>
+          <div>
+            <h3 class="text-base font-bold">Informe Técnico Institucional & Censo Tecnológico</h3>
+            <p class="text-xs text-slate-300">Conforme a las especificaciones oficiales de la cátedra e informe del equipo</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="downloadOfficialReportPDF()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+          </button>
+          <button onclick="printFormalReportPopup()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-semibold transition flex items-center space-x-1.5">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+          <button onclick="closeFormalReportModal()" class="p-1.5 text-slate-400 hover:text-white rounded-lg transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenido del Informe con Scroll -->
+      <div id="formalReportBody" class="p-6 overflow-y-auto flex-1 bg-white text-slate-800 text-sm leading-relaxed space-y-6">
+        <!-- Renderizado dinámico vía generateOfficialReportHTML() -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: PLANILLA DE AULAS E INVENTARIO TÉCNICO -->
+  <div id="tableModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
         <div>
           <h3 class="text-lg font-bold text-slate-900">Planilla Integral e Inventario Técnico</h3>
-          <p class="text-xs text-slate-500">Datos consolidados de asignación de espacios y red Wi-Fi / PoE</p>
+          <p class="text-xs text-slate-500">Aulas (Planta Baja y Planta Alta) & Redes Wi-Fi / Equipamiento Core</p>
         </div>
         <div class="flex items-center space-x-2">
           <div class="bg-slate-200 p-1 rounded-xl flex items-center space-x-1 text-xs">
-            <button onclick="switchModalTab('aulas')" id="modalTabBtnAulas" class="px-3 py-1 rounded-lg font-bold bg-white text-blue-700 shadow-xs">
+            <button onclick="switchModalTab('aulas')" id="modalTabBtnAulas" class="px-3 py-1 rounded-lg font-bold bg-white text-slate-900 shadow-xs">
               🏛️ Aulas y Pasillos
             </button>
             <button onclick="switchModalTab('redes')" id="modalTabBtnRedes" class="px-3 py-1 rounded-lg font-bold text-slate-600 hover:text-slate-900">
-              🔌 Inventario de Redes (Oficial)
+              🔌 Inventario de Redes (19 APs)
             </button>
           </div>
-          <button onclick="toggleTableModal()" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <button onclick="toggleTableModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
       </div>
@@ -595,12 +586,11 @@
         <table class="w-full text-left text-xs border-collapse">
           <thead>
             <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-              <th class="py-2.5 px-3">Espacio / Pasillo</th>
-              <th class="py-2.5 px-3">Tipo</th>
+              <th class="py-2.5 px-3">Piso</th>
+              <th class="py-2.5 px-3">Espacio</th>
               <th class="py-2.5 px-3">Turno Mañana</th>
               <th class="py-2.5 px-3">Turno Tarde</th>
               <th class="py-2.5 px-3">Turno Noche</th>
-              <th class="py-2.5 px-3 text-right">Acción</th>
             </tr>
           </thead>
           <tbody id="summaryTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -612,82 +602,56 @@
           <thead>
             <tr class="bg-slate-900 text-white font-bold border-b border-slate-800">
               <th class="py-2.5 px-3">Dispositivo</th>
-              <th class="py-2.5 px-3">Tipo</th>
-              <th class="py-2.5 px-3">Ubicación / Aula</th>
+              <th class="py-2.5 px-3">Piso</th>
+              <th class="py-2.5 px-3">Ubicación</th>
               <th class="py-2.5 px-3">Boca Switch / Conexión</th>
               <th class="py-2.5 px-3">Dirección IP</th>
               <th class="py-2.5 px-3">Estado</th>
-              <th class="py-2.5 px-3 text-right">Acción</th>
             </tr>
           </thead>
           <tbody id="networkTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
         </table>
       </div>
-
-      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
-        <span id="modalFooterTotal">Total de registros cargados</span>
-        <button onclick="window.print()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-xs">
-          Imprimir Planilla
-        </button>
-      </div>
     </div>
   </div>
 
-  <!-- SCRIPT CON TODA LA LÓGICA DE LAS 2 SECCIONES INTERACTIVAS -->
+  <!-- SCRIPT CON TODA LA LÓGICA INTERACTIVA, CALIBRADOR Y GENERACIÓN DE REPORTES -->
   <script>
-    // BASE DE DATOS DE AULAS
-    const DEFAULT_ROOMS = [{"id": "pasillo_norte", "num": "PASILLO NORTE", "isCorridor": true, "x": 320, "y": 175, "w": 500, "h": 45, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_oeste", "num": "PASILLO OESTE", "isCorridor": true, "x": 150, "y": 175, "w": 55, "h": 335, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_este", "num": "PASILLO ESTE", "isCorridor": true, "x": 935, "y": 175, "w": 55, "h": 335, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_sur", "num": "CIRCULACION SUR", "isCorridor": true, "x": 205, "y": 465, "w": 785, "h": 45, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "pasillo_conector_sur", "num": "CONECTOR SUR", "isCorridor": true, "x": 535, "y": 360, "w": 50, "h": 280, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}}, {"id": "admin_rectoria", "num": "Rectoria", "isCorridor": false, "x": 405, "y": 360, "w": 130, "h": 105, "manana": {"text": "Equipo Directivo", "category": "Administración", "isFree": false}}, {"id": "admin_profesores", "num": "Sala Profesores", "isCorridor": false, "x": 585, "y": 360, "w": 125, "h": 105, "manana": {"text": "Sala de Reuniones", "category": "Administración", "isFree": false}}, {"id": "aula_12", "num": "Aula 12", "isCorridor": false, "x": 710, "y": 360, "w": 150, "h": 105, "manana": {"text": "Cocina 1°", "category": "Gastronomía", "isFree": false}}, {"id": "admin_preceptoria", "num": "Preceptoria", "isCorridor": false, "x": 405, "y": 510, "w": 130, "h": 130, "manana": {"text": "Preceptoría", "category": "Administración", "isFree": false}}, {"id": "admin_kiosco", "num": "Kiosco", "isCorridor": false, "x": 585, "y": 510, "w": 95, "h": 130, "manana": {"text": "Kiosco / Buffet", "category": "Servicios", "isFree": false}}, {"id": "admin_banos_oeste", "num": "Banos Oeste", "isCorridor": false, "x": 320, "y": 360, "w": 85, "h": 105, "manana": {"text": "Sanitarios", "category": "Servicios", "isFree": false}}, {"id": "admin_banos_sur", "num": "Banos Sur", "isCorridor": false, "x": 330, "y": 510, "w": 75, "h": 130, "manana": {"text": "Sanitarios", "category": "Servicios", "isFree": false}}, {"id": "aula_1", "num": "Aula 1", "isCorridor": false, "x": 680, "y": 510, "w": 95, "h": 130, "manana": {"text": "Cocina 3°", "category": "Gastronomía", "isFree": false}}, {"id": "aula_2", "num": "Aula 2", "isCorridor": false, "x": 775, "y": 510, "w": 95, "h": 130, "manana": {"text": "Jurídica 2°", "category": "Sociales", "isFree": false}}, {"id": "aula_3", "num": "Aula 3", "isCorridor": false, "x": 870, "y": 510, "w": 95, "h": 130, "manana": {"text": "Periodismo 1°", "category": "Sociales", "isFree": false}}, {"id": "aula_4", "num": "Aula 4", "isCorridor": false, "x": 965, "y": 510, "w": 200, "h": 130, "manana": {"text": "Hig. y Seg. 1° A", "category": "Seguridad", "isFree": false}}, {"id": "aula_5", "num": "Aula 5", "isCorridor": false, "x": 1030, "y": 425, "w": 135, "h": 85, "manana": {"text": "Hig. y Seg. 1° B", "category": "Seguridad", "isFree": false}}, {"id": "aula_6", "num": "Aula 6", "isCorridor": false, "x": 1030, "y": 340, "w": 135, "h": 85, "manana": {"text": "Prep. Física 3°", "category": "Deportes", "isFree": false}}, {"id": "aula_7", "num": "Aula 7", "isCorridor": false, "x": 1030, "y": 255, "w": 135, "h": 85, "manana": {"text": "Pedagogía 7", "category": "Tecnología", "isFree": true}}, {"id": "aula_8", "num": "Aula 8", "isCorridor": false, "x": 1030, "y": 175, "w": 135, "h": 80, "manana": {"text": "Jurídica 3°", "category": "Sociales", "isFree": false}}, {"id": "aula_9", "num": "Aula 9", "isCorridor": false, "x": 990, "y": 28, "w": 175, "h": 147, "manana": {"text": "Hig. y Seg. 1° C", "category": "Seguridad", "isFree": false}}, {"id": "aula_10", "num": "Aula 10", "isCorridor": false, "x": 820, "y": 28, "w": 170, "h": 147, "manana": {"text": "Enfermería 3°", "category": "Salud", "isFree": false}}, {"id": "aula_11", "num": "Aula 11", "isCorridor": false, "x": 845, "y": 175, "w": 145, "h": 185, "manana": {"text": "Cocina 2°", "category": "Gastronomía", "isFree": false}}, {"id": "admin_taller", "num": "Taller / Computacion", "isCorridor": false, "x": 585, "y": 28, "w": 235, "h": 147, "manana": {"text": "Informática", "category": "Tecnología", "isFree": false}}, {"id": "admin_cocina_inst", "num": "Cocina / Deposito", "isCorridor": false, "x": 35, "y": 28, "w": 285, "h": 147, "manana": {"text": "Cocina", "category": "Gastronomía", "isFree": false}}, {"id": "aula_16", "num": "Aula 16", "isCorridor": false, "x": 205, "y": 175, "w": 115, "h": 145, "manana": {"text": "Software 1°", "category": "Tecnología", "isFree": false}}, {"id": "aula_15", "num": "Aula 15", "isCorridor": false, "x": 205, "y": 320, "w": 115, "h": 145, "manana": {"text": "Hig. y Seg. 3°", "category": "Seguridad", "isFree": false}}, {"id": "aula_17", "num": "Aula 17", "isCorridor": false, "x": 35, "y": 175, "w": 115, "h": 155, "manana": {"text": "Enfermería 2°", "category": "Salud", "isFree": false}}, {"id": "aula_18", "num": "Aula 18", "isCorridor": false, "x": 35, "y": 330, "w": 115, "h": 150, "manana": {"text": "Jurídica 1°", "category": "Sociales", "isFree": false}}, {"id": "aula_19", "num": "Aula 19", "isCorridor": false, "x": 35, "y": 480, "w": 115, "h": 160, "manana": {"text": "Hig. y Seg. 2°", "category": "Seguridad", "isFree": false}}, {"id": "aula_20", "num": "Aula 20", "isCorridor": false, "x": 150, "y": 510, "w": 180, "h": 130, "manana": {"text": "Prep. Física 1°", "category": "Deportes", "isFree": false}}];
+    // DATOS MAESTROS DE AULAS (38 ESPACIOS: PB + PA)
+    const DEFAULT_ROOMS = [{"id": "pasillo_norte", "num": "PASILLO NORTE", "isCorridor": true, "x": 320, "y": 175, "w": 500, "h": 45, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}, "floor": "pb"}, {"id": "pasillo_oeste", "num": "PASILLO OESTE", "isCorridor": true, "x": 150, "y": 175, "w": 55, "h": 335, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}, "floor": "pb"}, {"id": "pasillo_este", "num": "PASILLO ESTE", "isCorridor": true, "x": 935, "y": 175, "w": 55, "h": 335, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}, "floor": "pb"}, {"id": "pasillo_sur", "num": "CIRCULACION SUR", "isCorridor": true, "x": 205, "y": 465, "w": 785, "h": 45, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}, "floor": "pb"}, {"id": "pasillo_conector_sur", "num": "CONECTOR SUR", "isCorridor": true, "x": 535, "y": 360, "w": 50, "h": 280, "manana": {"text": "Circulación", "category": "Pasillos", "isFree": true}, "floor": "pb"}, {"id": "admin_rectoria", "num": "Rectoria", "isCorridor": false, "x": 405, "y": 360, "w": 130, "h": 105, "manana": {"text": "Equipo Directivo", "category": "Administración", "isFree": false}, "floor": "pb"}, {"id": "admin_profesores", "num": "Sala Profesores", "isCorridor": false, "x": 585, "y": 360, "w": 125, "h": 105, "manana": {"text": "Sala de Reuniones", "category": "Administración", "isFree": false}, "floor": "pb"}, {"id": "aula_12", "num": "Aula 12", "isCorridor": false, "x": 710, "y": 360, "w": 150, "h": 105, "manana": {"text": "Cocina 1°", "category": "Gastronomía", "isFree": false}, "floor": "pb"}, {"id": "admin_preceptoria", "num": "Preceptoria", "isCorridor": false, "x": 405, "y": 510, "w": 130, "h": 130, "manana": {"text": "Preceptoría", "category": "Administración", "isFree": false}, "floor": "pb"}, {"id": "admin_kiosco", "num": "Kiosco", "isCorridor": false, "x": 585, "y": 510, "w": 95, "h": 130, "manana": {"text": "Kiosco / Buffet", "category": "Servicios", "isFree": false}, "floor": "pb"}, {"id": "admin_banos_oeste", "num": "Banos Oeste", "isCorridor": false, "x": 320, "y": 360, "w": 85, "h": 105, "manana": {"text": "Sanitarios", "category": "Servicios", "isFree": false}, "floor": "pb"}, {"id": "admin_banos_sur", "num": "Banos Sur", "isCorridor": false, "x": 330, "y": 510, "w": 75, "h": 130, "manana": {"text": "Sanitarios", "category": "Servicios", "isFree": false}, "floor": "pb"}, {"id": "aula_1", "num": "Aula 1", "isCorridor": false, "x": 680, "y": 510, "w": 95, "h": 130, "manana": {"text": "Cocina 3°", "category": "Gastronomía", "isFree": false}, "floor": "pb"}, {"id": "aula_2", "num": "Aula 2", "isCorridor": false, "x": 775, "y": 510, "w": 95, "h": 130, "manana": {"text": "Jurídica 2°", "category": "Sociales", "isFree": false}, "floor": "pb"}, {"id": "aula_3", "num": "Aula 3", "isCorridor": false, "x": 870, "y": 510, "w": 95, "h": 130, "manana": {"text": "Periodismo 1°", "category": "Sociales", "isFree": false}, "floor": "pb"}, {"id": "aula_4", "num": "Aula 4", "isCorridor": false, "x": 965, "y": 510, "w": 200, "h": 130, "manana": {"text": "Hig. y Seg. 1° A", "category": "Seguridad", "isFree": false}, "floor": "pb"}, {"id": "aula_5", "num": "Aula 5", "isCorridor": false, "x": 1030, "y": 425, "w": 135, "h": 85, "manana": {"text": "Hig. y Seg. 1° B", "category": "Seguridad", "isFree": false}, "floor": "pb"}, {"id": "aula_6", "num": "Aula 6", "isCorridor": false, "x": 1030, "y": 340, "w": 135, "h": 85, "manana": {"text": "Prep. Física 3°", "category": "Deportes", "isFree": false}, "floor": "pb"}, {"id": "aula_7", "num": "Aula 7", "isCorridor": false, "x": 1030, "y": 255, "w": 135, "h": 85, "manana": {"text": "Pedagogía 7", "category": "Tecnología", "isFree": true}, "floor": "pb"}, {"id": "aula_8", "num": "Aula 8", "isCorridor": false, "x": 1030, "y": 175, "w": 135, "h": 80, "manana": {"text": "Jurídica 3°", "category": "Sociales", "isFree": false}, "floor": "pb"}, {"id": "aula_9", "num": "Aula 9", "isCorridor": false, "x": 990, "y": 28, "w": 175, "h": 147, "manana": {"text": "Hig. y Seg. 1° C", "category": "Seguridad", "isFree": false}, "floor": "pb"}, {"id": "aula_10", "num": "Aula 10", "isCorridor": false, "x": 820, "y": 28, "w": 170, "h": 147, "manana": {"text": "Enfermería 3°", "category": "Salud", "isFree": false}, "floor": "pb"}, {"id": "aula_11", "num": "Aula 11", "isCorridor": false, "x": 845, "y": 175, "w": 145, "h": 185, "manana": {"text": "Cocina 2°", "category": "Gastronomía", "isFree": false}, "floor": "pb"}, {"id": "admin_taller", "num": "Taller / Computacion", "isCorridor": false, "x": 585, "y": 28, "w": 235, "h": 147, "manana": {"text": "Informática", "category": "Tecnología", "isFree": false}, "floor": "pb"}, {"id": "admin_cocina_inst", "num": "Cocina / Deposito", "isCorridor": false, "x": 35, "y": 28, "w": 285, "h": 147, "manana": {"text": "Cocina", "category": "Gastronomía", "isFree": false}, "floor": "pb"}, {"id": "aula_16", "num": "Aula 16", "isCorridor": false, "x": 205, "y": 175, "w": 115, "h": 145, "manana": {"text": "Software 1°", "category": "Tecnología", "isFree": false}, "floor": "pb"}, {"id": "aula_15", "num": "Aula 15", "isCorridor": false, "x": 205, "y": 320, "w": 115, "h": 145, "manana": {"text": "Hig. y Seg. 3°", "category": "Seguridad", "isFree": false}, "floor": "pb"}, {"id": "aula_17", "num": "Aula 17", "isCorridor": false, "x": 35, "y": 175, "w": 115, "h": 155, "manana": {"text": "Enfermería 2°", "category": "Salud", "isFree": false}, "floor": "pb"}, {"id": "aula_18", "num": "Aula 18", "isCorridor": false, "x": 35, "y": 330, "w": 115, "h": 150, "manana": {"text": "Jurídica 1°", "category": "Sociales", "isFree": false}, "floor": "pb"}, {"id": "aula_19", "num": "Aula 19", "isCorridor": false, "x": 35, "y": 480, "w": 115, "h": 160, "manana": {"text": "Hig. y Seg. 2°", "category": "Seguridad", "isFree": false}, "floor": "pb"}, {"id": "aula_20", "num": "Aula 20", "isCorridor": false, "x": 150, "y": 510, "w": 180, "h": 130, "manana": {"text": "Prep. Física 1°", "category": "Deportes", "isFree": false}, "floor": "pb"}, {"id": "pa_pasillo_distribuidor", "num": "PASILLO DISTRIBUIDOR ALTO", "isCorridor": true, "floor": "pa", "x": 60, "y": 175, "w": 1080, "h": 45, "manana": {"text": "Circulación Planta Alta", "category": "Pasillos", "isFree": true}, "tarde": {"text": "Circulación Planta Alta", "category": "Pasillos", "isFree": true}, "noche": {"text": "Circulación Planta Alta", "category": "Pasillos", "isFree": true}}, {"id": "pa_escalera_conexion", "num": "ESCALERA PRINCIPAL (CONEXIÓN PB)", "isCorridor": true, "floor": "pa", "x": 535, "y": 360, "w": 50, "h": 105, "manana": {"text": "Núcleo de Circulación Vertical", "category": "Pasillos", "isFree": true}, "tarde": {"text": "Núcleo de Circulación Vertical", "category": "Pasillos", "isFree": true}, "noche": {"text": "Núcleo de Circulación Vertical", "category": "Pasillos", "isFree": true}}, {"id": "pa_gabinete_informatica", "num": "Gabinete de Informática (32 PCs)", "isCorridor": false, "floor": "pa", "x": 240, "y": 230, "w": 390, "h": 220, "real_w": 16.0, "real_h": 9.0, "manana": {"text": "Tec. Sup. Desarrollo Software (Comisión A)", "category": "Tecnología", "isFree": false}, "tarde": {"text": "Tec. Sup. Ciencia de Datos e IA", "category": "Tecnología", "isFree": false}, "noche": {"text": "Tec. Sup. Infraestructura TI & Redes", "category": "Tecnología", "isFree": false}}, {"id": "pa_auditorio", "num": "Auditorio Institucional (100 pers - 19.5m × 13.65m)", "isCorridor": false, "floor": "pa", "x": 650, "y": 230, "w": 470, "h": 220, "real_w": 19.5, "real_h": 13.65, "real_alt": 3.95, "manana": {"text": "Conferencias / Jornadas Académicas", "category": "Sociales", "isFree": false}, "tarde": {"text": "Capacitación & Actos Institucionales", "category": "Sociales", "isFree": false}, "noche": {"text": "Defensa de Tesis / Prácticas Profesionalizantes", "category": "Sociales", "isFree": false}}, {"id": "pa_estudio_streaming", "num": "Estudio de Grabación / Transmisión IESNH", "isCorridor": false, "floor": "pa", "x": 60, "y": 230, "w": 165, "h": 105, "real_w": 6.8, "real_h": 4.5, "manana": {"text": "Producción Multimedia Institucional", "category": "Tecnología", "isFree": false}, "tarde": {"text": "Streaming de Clases Magistrales", "category": "Tecnología", "isFree": false}, "noche": {"text": "Grabación de Podcasts & Entrevistas", "category": "Tecnología", "isFree": false}}, {"id": "pa_sala_docente", "num": "Sala Docente / Preceptoría Alta", "isCorridor": false, "floor": "pa", "x": 60, "y": 345, "w": 165, "h": 105, "real_w": 6.8, "real_h": 4.5, "manana": {"text": "Coordinación de Informática", "category": "Administración", "isFree": false}, "tarde": {"text": "Atención Alumnos & Docentes", "category": "Administración", "isFree": false}, "noche": {"text": "Guardia Técnica Nocturna", "category": "Administración", "isFree": false}}, {"id": "pa_balcon_tecnico", "num": "GALERÍA TÉCNICA SUR", "isCorridor": true, "floor": "pa", "x": 60, "y": 460, "w": 1060, "h": 35, "manana": {"text": "Ventilación y Mantenimiento", "category": "Pasillos", "isFree": true}, "tarde": {"text": "Ventilación y Mantenimiento", "category": "Pasillos", "isFree": true}, "noche": {"text": "Ventilación y Mantenimiento", "category": "Pasillos", "isFree": true}}];
 
-    // BASE DE DATOS DE REDES (16 APs + EQUIPAMIENTO CORE)
-    const DEFAULT_APS = [{"id": "AP1", "name": "AP1", "room": "Aula 1", "x": 690, "y": 555, "w": 18, "h": 18, "ip": "192.168.100.11", "port": "Switch POE (P1)", "vlan": "VLAN 50 Wi-Fi", "bx": 640, "by": 530}, {"id": "AP2", "name": "AP2", "room": "Aula 2", "x": 860, "y": 555, "w": 18, "h": 18, "ip": "192.168.100.12", "port": "Switch POE (P2)", "vlan": "VLAN 50 Wi-Fi", "bx": 810, "by": 530}, {"id": "AP3", "name": "AP3", "room": "Aula 4", "x": 985, "y": 530, "w": 18, "h": 18, "ip": "192.168.100.13", "port": "Switch POE (P3)", "vlan": "VLAN 50 Wi-Fi", "bx": 930, "by": 500}, {"id": "AP4", "name": "AP4", "room": "Aula 6", "x": 1035, "y": 355, "w": 18, "h": 18, "ip": "192.168.100.14", "port": "Switch POE (P4)", "vlan": "VLAN 50 Wi-Fi", "bx": 965, "by": 360}, {"id": "AP5", "name": "AP5", "room": "Aula 8", "x": 1075, "y": 245, "w": 18, "h": 18, "ip": "192.168.100.15", "port": "Switch POE (P5)", "vlan": "VLAN 50 Wi-Fi", "bx": 1005, "by": 205}, {"id": "AP6", "name": "AP6", "room": "Aula 9", "x": 995, "y": 145, "w": 18, "h": 18, "ip": "192.168.100.16", "port": "Switch POE (P6)", "vlan": "VLAN 50 Wi-Fi", "bx": 1040, "by": 150}, {"id": "AP7", "name": "AP7", "room": "Aula 11", "x": 895, "y": 260, "w": 18, "h": 18, "ip": "192.168.100.17", "port": "Switch POE (P7)", "vlan": "VLAN 50 Wi-Fi", "bx": 890, "by": 305}, {"id": "AP8", "name": "AP8", "room": "Aula 12", "x": 725, "y": 425, "w": 18, "h": 18, "ip": "192.168.100.18", "port": "Switch POE (P8)", "vlan": "VLAN 50 Wi-Fi", "bx": 735, "by": 330}, {"id": "AP9", "name": "AP9", "room": "Taller / Computacion", "x": 745, "y": 95, "w": 18, "h": 18, "ip": "192.168.100.19", "port": "Switch POE (P9)", "vlan": "VLAN 50 Wi-Fi", "bx": 730, "by": 25}, {"id": "AP10", "name": "AP10", "room": "Rectoria", "x": 525, "y": 370, "w": 18, "h": 18, "ip": "192.168.100.20", "port": "Switch P16 Rectoría (P10)", "vlan": "VLAN 10 Gestión", "bx": 535, "by": 310}, {"id": "AP11", "name": "AP11", "room": "Aula 16", "x": 270, "y": 310, "w": 18, "h": 18, "ip": "192.168.100.21", "port": "Switch P16 Oeste (P11)", "vlan": "VLAN 50 Wi-Fi", "bx": 240, "by": 365}, {"id": "AP12", "name": "AP12", "room": "Cocina / Deposito", "x": 145, "y": 105, "w": 18, "h": 18, "ip": "192.168.100.22", "port": "Switch P16 Oeste (P12)", "vlan": "VLAN 50 Wi-Fi", "bx": 175, "by": 75}, {"id": "AP13", "name": "AP13", "room": "Aula 17", "x": 142, "y": 245, "w": 18, "h": 18, "ip": "192.168.100.23", "port": "Switch P16 Oeste (P13)", "vlan": "VLAN 50 Wi-Fi", "bx": 75, "by": 235}, {"id": "AP14", "name": "AP14", "room": "Aula 20", "x": 155, "y": 535, "w": 18, "h": 18, "ip": "192.168.100.24", "port": "Switch POE (P14)", "vlan": "VLAN 50 Wi-Fi", "bx": 75, "by": 550}, {"id": "AP15", "name": "AP15", "room": "Pasillo Sur (Banos)", "x": 365, "y": 498, "w": 18, "h": 18, "ip": "192.168.100.25", "port": "Switch POE (P15)", "vlan": "VLAN 50 Wi-Fi", "bx": 320, "by": 440}, {"id": "AP16", "name": "AP16", "room": "Preceptoria", "x": 525, "y": 575, "w": 18, "h": 18, "ip": "192.168.100.26", "port": "Switch P8 Preceptoría (P8)", "vlan": "VLAN 10 Gestión", "bx": 575, "by": 615}];
+    // DATOS MAESTROS DE REDES (19 APs: AP1 a AP16 en PB, AP17 a AP19 en PA)
+    const DEFAULT_APS = [{"id": "AP1", "name": "AP1", "room": "Aula 1", "x": 690, "y": 555, "w": 18, "h": 18, "ip": "192.168.100.11", "port": "Switch POE (P1)", "vlan": "VLAN 50 Wi-Fi", "bx": 640, "by": 530, "floor": "pb"}, {"id": "AP2", "name": "AP2", "room": "Aula 2", "x": 860, "y": 555, "w": 18, "h": 18, "ip": "192.168.100.12", "port": "Switch POE (P2)", "vlan": "VLAN 50 Wi-Fi", "bx": 810, "by": 530, "floor": "pb"}, {"id": "AP3", "name": "AP3", "room": "Aula 4", "x": 985, "y": 530, "w": 18, "h": 18, "ip": "192.168.100.13", "port": "Switch POE (P3)", "vlan": "VLAN 50 Wi-Fi", "bx": 930, "by": 500, "floor": "pb"}, {"id": "AP4", "name": "AP4", "room": "Aula 6", "x": 1035, "y": 355, "w": 18, "h": 18, "ip": "192.168.100.14", "port": "Switch POE (P4)", "vlan": "VLAN 50 Wi-Fi", "bx": 965, "by": 360, "floor": "pb"}, {"id": "AP5", "name": "AP5", "room": "Aula 8", "x": 1075, "y": 245, "w": 18, "h": 18, "ip": "192.168.100.15", "port": "Switch POE (P5)", "vlan": "VLAN 50 Wi-Fi", "bx": 1005, "by": 205, "floor": "pb"}, {"id": "AP6", "name": "AP6", "room": "Aula 9", "x": 995, "y": 145, "w": 18, "h": 18, "ip": "192.168.100.16", "port": "Switch POE (P6)", "vlan": "VLAN 50 Wi-Fi", "bx": 1040, "by": 150, "floor": "pb"}, {"id": "AP7", "name": "AP7", "room": "Aula 11", "x": 895, "y": 260, "w": 18, "h": 18, "ip": "192.168.100.17", "port": "Switch POE (P7)", "vlan": "VLAN 50 Wi-Fi", "bx": 890, "by": 305, "floor": "pb"}, {"id": "AP8", "name": "AP8", "room": "Aula 12", "x": 725, "y": 425, "w": 18, "h": 18, "ip": "192.168.100.18", "port": "Switch POE (P8)", "vlan": "VLAN 50 Wi-Fi", "bx": 735, "by": 330, "floor": "pb"}, {"id": "AP9", "name": "AP9", "room": "Taller / Computacion", "x": 745, "y": 95, "w": 18, "h": 18, "ip": "192.168.100.19", "port": "Switch POE (P9)", "vlan": "VLAN 50 Wi-Fi", "bx": 730, "by": 25, "floor": "pb"}, {"id": "AP10", "name": "AP10", "room": "Rectoria", "x": 525, "y": 370, "w": 18, "h": 18, "ip": "192.168.100.20", "port": "Switch P16 Rectoría (P10)", "vlan": "VLAN 10 Gestión", "bx": 535, "by": 310, "floor": "pb"}, {"id": "AP11", "name": "AP11", "room": "Aula 16", "x": 270, "y": 310, "w": 18, "h": 18, "ip": "192.168.100.21", "port": "Switch P16 Oeste (P11)", "vlan": "VLAN 50 Wi-Fi", "bx": 240, "by": 365, "floor": "pb"}, {"id": "AP12", "name": "AP12", "room": "Cocina / Deposito", "x": 145, "y": 105, "w": 18, "h": 18, "ip": "192.168.100.22", "port": "Switch P16 Oeste (P12)", "vlan": "VLAN 50 Wi-Fi", "bx": 175, "by": 75, "floor": "pb"}, {"id": "AP13", "name": "AP13", "room": "Aula 17", "x": 142, "y": 245, "w": 18, "h": 18, "ip": "192.168.100.23", "port": "Switch P16 Oeste (P13)", "vlan": "VLAN 50 Wi-Fi", "bx": 75, "by": 235, "floor": "pb"}, {"id": "AP14", "name": "AP14", "room": "Aula 20", "x": 155, "y": 535, "w": 18, "h": 18, "ip": "192.168.100.24", "port": "Switch POE (P14)", "vlan": "VLAN 50 Wi-Fi", "bx": 75, "by": 550, "floor": "pb"}, {"id": "AP15", "name": "AP15", "room": "Pasillo Sur (Banos)", "x": 365, "y": 498, "w": 18, "h": 18, "ip": "192.168.100.25", "port": "Switch POE (P15)", "vlan": "VLAN 50 Wi-Fi", "bx": 320, "by": 440, "floor": "pb"}, {"id": "AP16", "name": "AP16", "room": "Preceptoria", "x": 525, "y": 575, "w": 18, "h": 18, "ip": "192.168.100.26", "port": "Switch P8 Preceptoría (P8)", "vlan": "VLAN 10 Gestión", "bx": 575, "by": 615, "floor": "pb"}, {"id": "AP17", "name": "AP17", "room": "Gabinete de Informática", "x": 435, "y": 340, "w": 18, "h": 18, "floor": "pa", "ip": "192.168.100.27", "port": "Switch Gabinete (P1)", "vlan": "VLAN 50 Wi-Fi Alta Densidad", "bx": 255, "by": 245}, {"id": "AP18", "name": "AP18", "room": "Auditorio Institucional", "x": 880, "y": 340, "w": 18, "h": 18, "floor": "pa", "ip": "192.168.100.28", "port": "Switch Auditorio (P1)", "vlan": "VLAN 50 Wi-Fi Alta Densidad (100 pers)", "bx": 665, "by": 245}, {"id": "AP19", "name": "AP19", "room": "Estudio de Grabación / Transmisión", "x": 140, "y": 280, "w": 18, "h": 18, "floor": "pa", "ip": "192.168.100.29", "port": "Switch Gabinete (P2)", "vlan": "VLAN 30 Multimedia & Streaming", "bx": 255, "by": 245}];
 
-    const DEFAULT_HARDWARE = [
-      { id: "modem_isp", name: "Modem (ISP)", room: "Rectoria", x: 420, y: 370, w: 26, h: 18, type: "router", ip: "WAN Proveedor", port: "Fibra Óptica ISP", status: "online" },
-      { id: "router_dhcp", name: "Router (DHCP)", room: "Rectoria", x: 450, y: 370, w: 26, h: 18, type: "router", ip: "192.168.1.1 (GW)", port: "WAN Modem -> LAN", status: "online" },
-      { id: "switch_p16_rec", name: "Switch (P16)", room: "Rectoria", x: 480, y: 370, w: 26, h: 18, type: "switch", ip: "192.168.1.2", port: "Switch 16p Gigabit", status: "online" },
-      { id: "rack_kiosco", name: "Rack Central", room: "Kiosco", x: 600, y: 520, w: 22, h: 22, type: "switch", ip: "Gabinete Mural", port: "Punto Centralizado", status: "online" },
-      { id: "firewall_kiosco", name: "FireWall", room: "Kiosco", x: 600, y: 550, w: 26, h: 18, type: "router", ip: "192.168.1.254", port: "Seguridad Perimetral", status: "online" },
-      { id: "switch_poe_kiosco", name: "Switch POE (P16)", room: "Kiosco", x: 600, y: 575, w: 26, h: 18, type: "switch", ip: "192.168.1.3", port: "16 Puertos PoE+ (APs)", status: "online" },
-      { id: "switch_p8_prec", name: "Switch (P 8)", room: "Preceptoria", x: 505, y: 570, w: 24, h: 16, type: "switch", ip: "192.168.1.4", port: "8 Puertos Preceptoría", status: "online" },
-      { id: "switch_p16_oeste", name: "Switch (P16)", room: "Sector Oeste", x: 230, y: 175, w: 26, h: 16, type: "switch", ip: "192.168.1.5", port: "16 Puertos Ala Oeste", status: "online" },
-      { id: "router_wifi_a12", name: "Router (wifi)", room: "Aula 12", x: 780, y: 380, w: 26, h: 18, type: "router", ip: "192.168.12.1", port: "Enlace Switch POE", status: "online" }
+    // DATOS MAESTROS DE HARDWARE CORE
+    const DEFAULT_HARDWARE = [{"id": "modem_isp", "name": "Modem (ISP)", "room": "Rectoria", "x": 420, "y": 370, "w": 26, "h": 18, "type": "router", "ip": "WAN Pública ISP (Fibra)", "port": "Línea Troncal", "status": "online", "floor": "pb"}, {"id": "router_dhcp", "name": "Router (DHCP)", "room": "Rectoria", "x": 450, "y": 370, "w": 26, "h": 18, "type": "router", "ip": "192.168.100.1 /24", "port": "Gateway Core", "status": "online", "floor": "pb"}, {"id": "switch_p16_rec", "name": "Switch (P16)", "room": "Rectoria", "x": 480, "y": 370, "w": 26, "h": 18, "type": "switch", "ip": "192.168.100.2", "port": "Boca Troncal 1", "status": "online", "floor": "pb"}, {"id": "rack_kiosco", "name": "Rack Central", "room": "Kiosco", "x": 600, "y": 520, "w": 22, "h": 22, "type": "switch", "ip": "Gabinete Metálico Mural", "port": "Troncal Fibra/Cobre", "status": "online", "floor": "pb"}, {"id": "firewall_kiosco", "name": "FireWall", "room": "Kiosco", "x": 600, "y": 550, "w": 26, "h": 18, "type": "router", "ip": "192.168.100.254", "port": "Seguridad Perimetral", "status": "online", "floor": "pb"}, {"id": "switch_poe_kiosco", "name": "Switch POE (P16)", "room": "Kiosco", "x": 600, "y": 575, "w": 26, "h": 18, "type": "switch", "ip": "192.168.100.3", "port": "Alimentación APs 1-16", "status": "online", "floor": "pb"}, {"id": "switch_p8_prec", "name": "Switch (P 8)", "room": "Preceptoria", "x": 505, "y": 570, "w": 24, "h": 16, "type": "switch", "ip": "192.168.100.4", "port": "Distribución Administrativa", "status": "online", "floor": "pb"}, {"id": "switch_p16_oeste", "name": "Switch (P16)", "room": "Sector Oeste", "x": 230, "y": 175, "w": 26, "h": 16, "type": "switch", "ip": "192.168.100.5", "port": "Distribución Oeste", "status": "online", "floor": "pb"}, {"id": "router_wifi_a12", "name": "Router (wifi)", "room": "Aula 12", "x": 780, "y": 380, "w": 26, "h": 18, "type": "router", "ip": "192.168.100.6", "port": "Acceso Local", "status": "testing", "floor": "pb"}, {"id": "rack_pa_gabinete", "name": "Rack Gabinete 48P", "room": "Gabinete de Informática", "x": 250, "y": 240, "w": 28, "h": 22, "type": "switch", "ip": "192.168.100.200", "port": "Switch Gigabit 48P + PoE (32 PCs + AP17)", "status": "online", "floor": "pa"}, {"id": "switch_pa_auditorio", "name": "Switch Auditorio 16P", "room": "Auditorio Institucional", "x": 660, "y": 240, "w": 26, "h": 18, "type": "switch", "ip": "192.168.100.201", "port": "Switch 16P (Audio, Proyección & AP18)", "status": "online", "floor": "pa"}, {"id": "backbone_vertical", "name": "Troncal Vertical (PB - PA)", "room": "Escalera Central", "x": 545, "y": 375, "w": 24, "h": 20, "type": "router", "ip": "Enlace 10Gbps Uplink", "port": "Conector Rack Central PB a Rack PA", "status": "online", "floor": "pa"}];
+
+    // PADRÓN DE LAS 32 COMPUTADORAS DEL GABINETE (Datos oficiales del Google Doc)
+    const DEFAULT_PCS = [];
+    const brands = [
+      { brand: 'Banghó', os: 'Windows 11 Pro', count: 8, maestro: 'PC-04', desc: 'Funcionalidades avanzadas de red y dominio' },
+      { brand: 'G-Fast', os: 'Windows 11 Home', count: 4, maestro: 'PC-06', desc: 'Estaciones base para alumnos' },
+      { brand: 'OVER TECH', os: 'Windows 11 Pro', count: 10, maestro: 'PC-15', desc: 'Laboratorio de desarrollo y bases de datos' },
+      { brand: 'Performance', os: 'Windows 11 Pro', count: 10, maestro: 'PC-23', desc: 'Entorno de diseño asistido y virtualización' }
     ];
-
-    const STORAGE_ROOMS_KEY = 'inst_aulas_v9';
-    const STORAGE_APS_KEY = 'inst_aps_v9';
-    const STORAGE_HW_KEY = 'inst_hw_v9';
-
-    let roomsData = [];
-    let apsData = [];
-    let hwData = [];
-
-    try {
-      const sR = localStorage.getItem(STORAGE_ROOMS_KEY);
-      roomsData = sR ? JSON.parse(sR) : JSON.parse(JSON.stringify(DEFAULT_ROOMS));
-    } catch(e) { roomsData = JSON.parse(JSON.stringify(DEFAULT_ROOMS)); }
-
-    try {
-      const sA = localStorage.getItem(STORAGE_APS_KEY);
-      apsData = sA ? JSON.parse(sA) : JSON.parse(JSON.stringify(DEFAULT_APS));
-    } catch(e) { apsData = JSON.parse(JSON.stringify(DEFAULT_APS)); }
-
-    try {
-      const sH = localStorage.getItem(STORAGE_HW_KEY);
-      hwData = sH ? JSON.parse(sH) : JSON.parse(JSON.stringify(DEFAULT_HARDWARE));
-    } catch(e) { hwData = JSON.parse(JSON.stringify(DEFAULT_HARDWARE)); }
-
-    function saveToStorage() {
-      try {
-        localStorage.setItem(STORAGE_ROOMS_KEY, JSON.stringify(roomsData));
-        localStorage.setItem(STORAGE_APS_KEY, JSON.stringify(apsData));
-        localStorage.setItem(STORAGE_HW_KEY, JSON.stringify(hwData));
-        const ind = document.getElementById('savedIndicator');
-        if (ind) {
-          ind.classList.remove('opacity-0');
-          setTimeout(() => ind.classList.add('opacity-0'), 1800);
-        }
-      } catch(e) {}
-    }
+    let pcCounter = 1;
+    brands.forEach((b, bIdx) => {
+      for (let i = 0; i < b.count; i++) {
+        const numStr = pcCounter < 10 ? '0' + pcCounter : '' + pcCounter;
+        DEFAULT_PCS.push({
+          id: 'pc_' + numStr,
+          tag: 'PC-' + numStr,
+          brand: b.brand,
+          os: b.os,
+          ip: '192.168.100.' + (100 + pcCounter),
+          group: 'Grupo ' + (bIdx + 1),
+          maestro: b.maestro,
+          specs: 'Intel Core i5 / 16GB RAM / SSD 480GB',
+          software: 'Office 2016, PSeInt, XAMPP, VS Code, NetBeans, Composer, JDK, AutoCAD 2014, Defender'
+        });
+        pcCounter++;
+      }
+    });
 
     const categoryStyles = {
       "Salud": { fill: "#ffe4e6", stroke: "#f43f5e", text: "#9f1239", icon: "🏥" },
@@ -703,77 +667,559 @@
       "Libre": { fill: "#ffffff", stroke: "#94a3b8", text: "#64748b", icon: "✨" }
     };
 
-    let currentMainSection = 'redes'; // Default to Redes since user is reviewing networks
-    let currentShift = 'manana';
-    let currentCategoryFilter = 'all';
-    let currentNetworkFilter = 'all';
-    let selectedRoomId = 'admin_rectoria';
-    let selectedNetId = 'AP1';
-    let searchQuery = '';
-    let searchNetQuery = '';
-    let dimClassroomsInNetworks = false;
+    // Variables de Estado
+    const STORAGE_KEY_ROOMS = 'inst_aulas_master_v10';
+    const STORAGE_KEY_APS = 'inst_aps_master_v10';
+    const STORAGE_KEY_PA = 'inst_pa_settings_v1';
 
-    // Arrastre
+    let roomsData = [];
+    let apsData = [];
+    let hwData = JSON.parse(JSON.stringify(DEFAULT_HARDWARE));
+    let pcsData = JSON.parse(JSON.stringify(DEFAULT_PCS));
+
+    let currentFloor = 'pb'; // 'pb', 'pa', 'both'
+    let currentMainSection = 'aulas'; // 'aulas' o 'redes'
+    let currentShift = 'manana'; // 'manana', 'tarde', 'noche', 'todos'
+    let selectedRoomId = null;
+    let selectedNetDeviceId = null;
     let isDragging = false;
-    let dragType = null; // 'room' o 'ap'
-    let dragItemId = null;
-    let dragStartX = 0, dragStartY = 0;
-    let itemOrigX = 0, itemOrigY = 0;
+    let dragTarget = null;
+    let dragOffset = { x: 0, y: 0 };
 
-    // Cable segments
-    const redCableSegments = [[[600, 520], [690, 520], [690, 555]], [[600, 485], [980, 485]], [[860, 485], [860, 555]], [[725, 485], [725, 425]], [[980, 485], [1005, 485], [1005, 530]], [[980, 485], [980, 175]], [[980, 355], [1035, 355]], [[980, 260], [895, 260]], [[980, 245], [1075, 245]], [[980, 175], [995, 175], [995, 145]], [[980, 175], [745, 175], [745, 95]], [[600, 485], [150, 485]], [[535, 485], [535, 370], [525, 370]], [[365, 485], [365, 498]], [[150, 485], [155, 485], [155, 535]], [[150, 485], [150, 105]], [[150, 245], [142, 245]], [[150, 175], [270, 175], [270, 310]], [[150, 105], [145, 105]]];
-    const blueCableSegments = [[[420, 365], [525, 365], [860, 365]], [[560, 365], [560, 510]], [[560, 510], [600, 510], [600, 525]], [[560, 510], [525, 510], [525, 575]], [[405, 635], [525, 635], [525, 575]]];
+    // Parámetros de Calibrador de Planta Alta
+    let paSettings = {
+      gabineteW: 16.0,
+      auditorioL: 19.5,
+      scalePA: 100
+    };
 
-    function switchMainSection(section) {
-      currentMainSection = section;
-      const btnAulas = document.getElementById('tab-btn-aulas');
-      const btnRedes = document.getElementById('tab-btn-redes');
-      const toolbarAulas = document.getElementById('toolbar-aulas');
-      const toolbarRedes = document.getElementById('toolbar-redes');
-      const statsAulas = document.getElementById('stats-container-aulas');
-      const statsRedes = document.getElementById('stats-container-redes');
-      const tipAulas = document.getElementById('footer-tip-aulas');
-      const tipRedes = document.getElementById('footer-tip-redes');
-      const inspectorAula = document.getElementById('card-inspector-aula');
-      const inspectorRed = document.getElementById('card-inspector-red');
-      const outerWall = document.getElementById('outerWallBg');
-      const printSub = document.getElementById('printSubheader');
-
-      if (section === 'aulas') {
-        btnAulas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-blue-600 text-white shadow-sm";
-        btnRedes.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60";
-        toolbarAulas.classList.remove('hidden');
-        toolbarRedes.classList.add('hidden');
-        statsAulas.classList.remove('hidden');
-        statsRedes.classList.add('hidden');
-        tipAulas.classList.remove('hidden');
-        tipRedes.classList.add('hidden');
-        inspectorAula.classList.remove('hidden');
-        inspectorRed.classList.add('hidden');
-        outerWall.setAttribute('fill', '#ffffff');
-        printSub.textContent = "Sección 1: Distribución Académica de Aulas y Espacios";
-        document.getElementById('downloadPngDesc').textContent = "Exporta el plano de aulas y turnos";
-      } else {
-        btnRedes.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-rose-600 text-white shadow-sm";
-        btnAulas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60";
-        toolbarAulas.classList.add('hidden');
-        toolbarRedes.classList.remove('hidden');
-        statsAulas.classList.add('hidden');
-        statsRedes.classList.remove('hidden');
-        tipAulas.classList.add('hidden');
-        tipRedes.classList.remove('hidden');
-        inspectorAula.classList.add('hidden');
-        inspectorRed.classList.remove('hidden');
-        outerWall.setAttribute('fill', '#ffffff');
-        printSub.textContent = "Sección 2: Infraestructura y Telecomunicaciones de Red (Anexo 1)";
-        document.getElementById('downloadPngDesc').textContent = "Exporta el plano de redes oficial";
-      }
-
-      renderSvgAll();
-      if (section === 'aulas' && selectedRoomId) selectRoom(selectedRoomId);
-      if (section === 'redes' && selectedNetId) selectNetDevice(selectedNetId);
+    // Carga inicial de LocalStorage
+    try {
+      const sRooms = localStorage.getItem(STORAGE_KEY_ROOMS);
+      roomsData = sRooms ? JSON.parse(sRooms) : JSON.parse(JSON.stringify(DEFAULT_ROOMS));
+      const sAps = localStorage.getItem(STORAGE_KEY_APS);
+      apsData = sAps ? JSON.parse(sAps) : JSON.parse(JSON.stringify(DEFAULT_APS));
+      const sPa = localStorage.getItem(STORAGE_KEY_PA);
+      if (sPa) paSettings = JSON.parse(sPa);
+    } catch (e) {
+      roomsData = JSON.parse(JSON.stringify(DEFAULT_ROOMS));
+      apsData = JSON.parse(JSON.stringify(DEFAULT_APS));
     }
 
+    function saveToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(roomsData));
+        localStorage.setItem(STORAGE_KEY_APS, JSON.stringify(apsData));
+        localStorage.setItem(STORAGE_KEY_PA, JSON.stringify(paSettings));
+      } catch(e) { console.error("Error saving to localStorage", e); }
+    }
+
+    // ==========================================
+    // CAMBIO DE PISO Y CONMUTACIÓN DE SECCIONES
+    // ==========================================
+    function switchFloor(floor) {
+      currentFloor = floor;
+      
+      const btnPb = document.getElementById('floor-btn-pb');
+      const btnPa = document.getElementById('floor-btn-pa');
+      const btnBoth = document.getElementById('floor-btn-both');
+      const badge = document.getElementById('canvasFloorBadge');
+      const title = document.getElementById('blueprintTitle');
+      const quickCalibrator = document.getElementById('pa-quick-calibrator');
+      const sidebarCalibrator = document.getElementById('sidebar-pa-calibrator');
+
+      [btnPb, btnPa, btnBoth].forEach(b => {
+        b.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center space-x-1.5";
+      });
+
+      if (floor === 'pb') {
+        btnPb.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all bg-white text-blue-700 shadow-xs flex items-center space-x-1.5";
+        badge.innerText = "1° Planta Baja";
+        badge.className = "px-2 py-0.5 bg-blue-100 text-blue-800 font-bold rounded-full";
+        title.innerText = "Lienzo SVG Interactivo • Planta Baja (1° Piso)";
+        quickCalibrator.style.opacity = '0.4';
+        quickCalibrator.style.pointerEvents = 'none';
+        sidebarCalibrator.style.display = 'none';
+      } else if (floor === 'pa') {
+        btnPa.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all bg-white text-indigo-700 shadow-xs flex items-center space-x-1.5";
+        badge.innerText = "2° Planta Alta (Gabinete 32 PCs & Auditorio)";
+        badge.className = "px-2 py-0.5 bg-indigo-100 text-indigo-800 font-bold rounded-full";
+        title.innerText = "Lienzo SVG Interactivo • Planta Alta (2° Piso)";
+        quickCalibrator.style.opacity = '1';
+        quickCalibrator.style.pointerEvents = 'auto';
+        sidebarCalibrator.style.display = 'block';
+      } else {
+        btnBoth.className = "px-3 py-1 rounded-lg text-xs font-bold transition-all bg-white text-purple-700 shadow-xs flex items-center space-x-1.5";
+        badge.innerText = "2° Planta Alta + Huella Planta Baja";
+        badge.className = "px-2 py-0.5 bg-purple-100 text-purple-800 font-bold rounded-full";
+        title.innerText = "Lienzo SVG Interactivo • Huella Superpuesta (Alineación de Escalera)";
+        quickCalibrator.style.opacity = '1';
+        quickCalibrator.style.pointerEvents = 'auto';
+        sidebarCalibrator.style.display = 'block';
+      }
+
+      renderAll();
+    }
+
+    function switchMainSection(sec) {
+      currentMainSection = sec;
+      const btnAulas = document.getElementById('tab-btn-aulas');
+      const btnRedes = document.getElementById('tab-btn-redes');
+      const toolAulas = document.getElementById('toolbar-aulas');
+      const toolRedes = document.getElementById('toolbar-redes');
+      const cablesGroup = document.getElementById('dynamic-cables-group');
+      const netsGroup = document.getElementById('dynamic-networks-group');
+
+      if (sec === 'aulas') {
+        btnAulas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-blue-600 text-white shadow-sm";
+        btnRedes.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60";
+        toolAulas.classList.remove('hidden');
+        toolRedes.classList.add('hidden');
+        cablesGroup.style.display = 'none';
+        netsGroup.style.display = 'none';
+      } else {
+        btnRedes.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 bg-sky-600 text-white shadow-sm";
+        btnAulas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-700/60";
+        toolAulas.classList.add('hidden');
+        toolRedes.classList.remove('hidden');
+        cablesGroup.style.display = 'block';
+        netsGroup.style.display = 'block';
+      }
+
+      renderAll();
+    }
+
+    // ==========================================
+    // RENDERIZADO DEL LIENZO SVG
+    // ==========================================
+    function renderAll() {
+      renderRoomsAndCorridors();
+      if (currentFloor === 'pa' || currentFloor === 'both') {
+        renderGabineteDetails();
+        renderAuditorioDetails();
+      } else {
+        document.getElementById('dynamic-gabinete-details-group').innerHTML = '';
+        document.getElementById('dynamic-auditorio-details-group').innerHTML = '';
+      }
+      if (currentMainSection === 'redes') {
+        renderNetworksLayer();
+      }
+      renderResizeHandles();
+    }
+
+    function renderRoomsAndCorridors() {
+      const corridorsGroup = document.getElementById('dynamic-corridors-group');
+      const roomsGroup = document.getElementById('dynamic-rooms-group');
+      const ghostGroup = document.getElementById('pb-ghost-backdrop-group');
+
+      corridorsGroup.innerHTML = '';
+      roomsGroup.innerHTML = '';
+      ghostGroup.innerHTML = '';
+
+      if (currentFloor === 'both') {
+        ghostGroup.style.display = 'block';
+        roomsData.filter(r => r.floor === 'pb').forEach(r => {
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', r.x);
+          rect.setAttribute('y', r.y);
+          rect.setAttribute('width', r.w);
+          rect.setAttribute('height', r.h);
+          rect.setAttribute('fill', '#f1f5f9');
+          rect.setAttribute('stroke', '#cbd5e1');
+          rect.setAttribute('stroke-width', '1.5');
+          rect.setAttribute('stroke-dasharray', '3 3');
+          ghostGroup.appendChild(rect);
+        });
+      } else {
+        ghostGroup.style.display = 'none';
+      }
+
+      const visibleRooms = roomsData.filter(r => {
+        if (currentFloor === 'both') return r.floor === 'pa';
+        return r.floor === currentFloor;
+      });
+
+      visibleRooms.forEach(item => {
+        const isCorridor = item.isCorridor === true;
+        const targetGroup = isCorridor ? corridorsGroup : roomsGroup;
+        const shiftData = currentShift === 'todos' ? item.manana : (item[currentShift] || item.manana);
+        const style = categoryStyles[shiftData.category] || categoryStyles["Libre"];
+
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('id', 'room-g-' + item.id);
+        g.setAttribute('cursor', 'pointer');
+        g.onmousedown = (e) => handleRoomMouseDown(e, item.id);
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('id', 'rect-' + item.id);
+        rect.setAttribute('x', item.x);
+        rect.setAttribute('y', item.y);
+        rect.setAttribute('width', item.w);
+        rect.setAttribute('height', item.h);
+        rect.setAttribute('rx', isCorridor ? '4' : '8');
+        rect.setAttribute('fill', style.fill);
+        rect.setAttribute('stroke', style.stroke);
+        rect.setAttribute('stroke-width', selectedRoomId === item.id ? '3.5' : (isCorridor ? '1.5' : '2'));
+        rect.setAttribute('class', 'room-transition ' + (isCorridor ? 'corridor-hover' : 'room-hover') + (selectedRoomId === item.id ? ' active-room' : ''));
+
+        g.appendChild(rect);
+
+        if (!isCorridor) {
+          const textG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          textG.setAttribute('pointer-events', 'none');
+
+          // Título del Aula (con offset inteligente si tiene rack o es auditorio)
+          const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          const titleX = item.id === 'pa_gabinete_informatica' ? item.x + 52 : (item.x + 14);
+          const titleY = item.y + 22;
+          title.setAttribute('x', titleX);
+          title.setAttribute('y', titleY);
+          title.setAttribute('font-weight', 'bold');
+          title.setAttribute('font-size', item.w > 200 ? '12.5' : '11');
+          title.setAttribute('fill', style.text);
+          title.textContent = (style.icon ? style.icon + ' ' : '') + item.num;
+          textG.appendChild(title);
+
+          if (item.h > 55 && item.id !== 'pa_gabinete_informatica' && item.id !== 'pa_auditorio') {
+            const desc = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            desc.setAttribute('x', item.x + 14);
+            desc.setAttribute('y', item.y + 38);
+            desc.setAttribute('font-size', '10');
+            desc.setAttribute('fill', '#475569');
+            desc.textContent = shiftData.text || '';
+            textG.appendChild(desc);
+          }
+
+          if (item.real_w && item.real_h && item.h > 80) {
+            const dims = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            dims.setAttribute('x', item.x + 14);
+            dims.setAttribute('y', item.y + item.h - 10);
+            dims.setAttribute('font-size', '9.5');
+            dims.setAttribute('font-weight', 'bold');
+            dims.setAttribute('fill', '#64748b');
+            dims.textContent = item.real_w + 'm × ' + item.real_h + 'm' + (item.real_alt ? ' | h: ' + item.real_alt + 'm' : '');
+            textG.appendChild(dims);
+          }
+
+          g.appendChild(textG);
+        } else {
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', item.x + item.w / 2);
+          text.setAttribute('y', item.y + item.h / 2 + 4);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('font-size', '9.5');
+          text.setAttribute('font-weight', 'bold');
+          text.setAttribute('fill', '#64748b');
+          text.setAttribute('pointer-events', 'none');
+          text.textContent = item.num;
+          g.appendChild(text);
+        }
+
+        targetGroup.appendChild(g);
+      });
+    }
+
+    // Dibuja los 32 Puestos de Computadoras y el Pasillo Central de 1.60m dentro del Gabinete
+    function renderGabineteDetails() {
+      const group = document.getElementById('dynamic-gabinete-details-group');
+      group.innerHTML = '';
+
+      const gab = roomsData.find(r => r.id === 'pa_gabinete_informatica');
+      if (!gab) return;
+
+      const gx = gab.x;
+      const gy = gab.y;
+      const gw = gab.w;
+      const gh = gab.h;
+
+      // 1. Rack en esquina superior izquierda
+      const rack = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rack.setAttribute('x', gx + 10);
+      rack.setAttribute('y', gy + 10);
+      rack.setAttribute('width', '36');
+      rack.setAttribute('height', '20');
+      rack.setAttribute('rx', '3');
+      rack.setAttribute('fill', '#1e293b');
+      rack.setAttribute('stroke', '#38bdf8');
+      rack.setAttribute('stroke-width', '2');
+      group.appendChild(rack);
+
+      const rackLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      rackLabel.setAttribute('x', gx + 28);
+      rackLabel.setAttribute('y', gy + 24);
+      rackLabel.setAttribute('text-anchor', 'middle');
+      rackLabel.setAttribute('font-size', '7');
+      rackLabel.setAttribute('font-weight', 'bold');
+      rackLabel.setAttribute('fill', '#ffffff');
+      rackLabel.textContent = 'RACK 48P';
+      group.appendChild(rackLabel);
+
+      // 2. Escritorio Docente al frente
+      const deskDoc = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      deskDoc.setAttribute('x', gx + gw - 65);
+      deskDoc.setAttribute('y', gy + 10);
+      deskDoc.setAttribute('width', '52');
+      deskDoc.setAttribute('height', '20');
+      deskDoc.setAttribute('rx', '3');
+      deskDoc.setAttribute('fill', '#e2e8f0');
+      deskDoc.setAttribute('stroke', '#94a3b8');
+      group.appendChild(deskDoc);
+
+      const docLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      docLabel.setAttribute('x', gx + gw - 39);
+      docLabel.setAttribute('y', gy + 24);
+      docLabel.setAttribute('text-anchor', 'middle');
+      docLabel.setAttribute('font-size', '8');
+      docLabel.setAttribute('font-weight', 'bold');
+      docLabel.setAttribute('fill', '#475569');
+      docLabel.textContent = 'DOCENTE';
+      group.appendChild(docLabel);
+
+      // 3. Distribución de las 4 Filas Dobles (32 PCs) con Pasillo Central de 1.60m
+      const startY = gy + 45;
+      const usableH = gh - 65;
+      const rowH = usableH / 4;
+
+      let pcIndex = 0;
+      for (let r = 0; r < 4; r++) {
+        const rowY = startY + (r * rowH) + (r >= 2 ? 6 : 0);
+        const tableW = gw - 40;
+        const table = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        table.setAttribute('x', gx + 20);
+        table.setAttribute('y', rowY);
+        table.setAttribute('width', tableW);
+        table.setAttribute('height', rowH * 0.65);
+        table.setAttribute('rx', '4');
+        table.setAttribute('fill', '#f8fafc');
+        table.setAttribute('stroke', '#cbd5e1');
+        table.setAttribute('stroke-width', '1');
+        group.appendChild(table);
+
+        const colW = tableW / 4;
+        for (let c = 0; c < 4; c++) {
+          const pcX = gx + 22 + (c * colW);
+
+          if (pcIndex < pcsData.length) {
+            const pc1 = pcsData[pcIndex++];
+            const mon1 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            mon1.setAttribute('x', pcX + 3);
+            mon1.setAttribute('y', rowY + 3);
+            mon1.setAttribute('width', colW - 6);
+            mon1.setAttribute('height', '5');
+            mon1.setAttribute('rx', '1');
+            mon1.setAttribute('fill', pc1.brand === 'Banghó' ? '#3b82f6' : (pc1.brand === 'G-Fast' ? '#10b981' : (pc1.brand === 'OVER TECH' ? '#8b5cf6' : '#f59e0b')));
+            group.appendChild(mon1);
+          }
+
+          if (pcIndex < pcsData.length) {
+            const pc2 = pcsData[pcIndex++];
+            const mon2 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            mon2.setAttribute('x', pcX + 3);
+            mon2.setAttribute('y', rowY + (rowH * 0.65) - 8);
+            mon2.setAttribute('width', colW - 6);
+            mon2.setAttribute('height', '5');
+            mon2.setAttribute('rx', '1');
+            mon2.setAttribute('fill', pc2.brand === 'Banghó' ? '#3b82f6' : (pc2.brand === 'G-Fast' ? '#10b981' : (pc2.brand === 'OVER TECH' ? '#8b5cf6' : '#f59e0b')));
+            group.appendChild(mon2);
+          }
+        }
+
+        const cableLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        cableLine.setAttribute('x1', gx + 20);
+        cableLine.setAttribute('y1', rowY + (rowH * 0.65) / 2);
+        cableLine.setAttribute('x2', gx + 20 + tableW);
+        cableLine.setAttribute('y2', rowY + (rowH * 0.65) / 2);
+        cableLine.setAttribute('stroke', '#64748b');
+        cableLine.setAttribute('stroke-width', '1');
+        cableLine.setAttribute('stroke-dasharray', '2 2');
+        group.appendChild(cableLine);
+      }
+
+      const aisleIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      aisleIndicator.setAttribute('x', gx + gw / 2);
+      aisleIndicator.setAttribute('y', startY + (2 * rowH) + 3);
+      aisleIndicator.setAttribute('text-anchor', 'middle');
+      aisleIndicator.setAttribute('font-size', '8');
+      aisleIndicator.setAttribute('font-weight', 'bold');
+      aisleIndicator.setAttribute('fill', '#2563eb');
+      aisleIndicator.textContent = '↔ PASILLO CENTRAL 1.60m (FLUJO PRINCIPAL)';
+      group.appendChild(aisleIndicator);
+    }
+
+    // Dibuja el Auditorio Institucional (19.5m x 13.65m - 100 Butacas y Escenario)
+    function renderAuditorioDetails() {
+      const group = document.getElementById('dynamic-auditorio-details-group');
+      group.innerHTML = '';
+
+      const aud = roomsData.find(r => r.id === 'pa_auditorio');
+      if (!aud) return;
+
+      const ax = aud.x;
+      const ay = aud.y;
+      const aw = aud.w;
+      const ah = aud.h;
+
+      const stage = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      stage.setAttribute('x', ax + aw - 75);
+      stage.setAttribute('y', ay + 15);
+      stage.setAttribute('width', '60');
+      stage.setAttribute('height', ah - 35);
+      stage.setAttribute('rx', '4');
+      stage.setAttribute('fill', '#f3e8ff');
+      stage.setAttribute('stroke', '#a855f7');
+      stage.setAttribute('stroke-width', '1.5');
+      group.appendChild(stage);
+
+      const stageLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      stageLabel.setAttribute('x', ax + aw - 45);
+      stageLabel.setAttribute('y', ay + ah / 2);
+      stageLabel.setAttribute('text-anchor', 'middle');
+      stageLabel.setAttribute('font-size', '9');
+      stageLabel.setAttribute('font-weight', 'bold');
+      stageLabel.setAttribute('fill', '#7e22ce');
+      stageLabel.setAttribute('transform', 'rotate(90 ' + (ax + aw - 45) + ' ' + (ay + ah / 2) + ')');
+      stageLabel.textContent = 'ESTRADO / DISERTANTE';
+      group.appendChild(stageLabel);
+
+      const seatStartX = ax + 25;
+      const seatStartY = ay + 45;
+      const seatAreaW = aw - 115;
+      const seatAreaH = ah - 75;
+      const cols = 8;
+      const rows = 8;
+      const dx = seatAreaW / cols;
+      const dy = seatAreaH / rows;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const sx = seatStartX + (c * dx);
+          const sy = seatStartY + (r * dy);
+          const seat = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          seat.setAttribute('cx', sx);
+          seat.setAttribute('cy', sy);
+          seat.setAttribute('r', '2.5');
+          seat.setAttribute('fill', '#c084fc');
+          group.appendChild(seat);
+        }
+      }
+    }
+
+    // Capa de Redes y Cableado
+    function renderNetworksLayer() {
+      const cablesGroup = document.getElementById('dynamic-cables-group');
+      const netsGroup = document.getElementById('dynamic-networks-group');
+      cablesGroup.innerHTML = '';
+      netsGroup.innerHTML = '';
+
+      const visibleAps = apsData.filter(a => {
+        if (currentFloor === 'both') return a.floor === 'pa';
+        return a.floor === currentFloor;
+      });
+
+      const visibleHw = hwData.filter(h => {
+        if (currentFloor === 'both') return h.floor === 'pa';
+        return h.floor === currentFloor;
+      });
+
+      visibleAps.forEach(ap => {
+        if (ap.bx && ap.by) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', ap.x);
+          line.setAttribute('y1', ap.y);
+          line.setAttribute('x2', ap.bx);
+          line.setAttribute('y2', ap.by);
+          line.setAttribute('stroke', '#38bdf8');
+          line.setAttribute('stroke-width', '1.5');
+          line.setAttribute('stroke-dasharray', '3 3');
+          cablesGroup.appendChild(line);
+        }
+
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('cursor', 'pointer');
+        g.onclick = () => selectNetDevice(ap.id);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', ap.x);
+        circle.setAttribute('cy', ap.y);
+        circle.setAttribute('r', '9');
+        circle.setAttribute('fill', '#ef4444');
+        circle.setAttribute('stroke', '#ffffff');
+        circle.setAttribute('stroke-width', '2');
+        circle.setAttribute('class', 'ap-hover');
+        g.appendChild(circle);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', ap.x);
+        text.setAttribute('y', ap.y + 16);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '8');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', '#991b1b');
+        text.textContent = ap.name;
+        g.appendChild(text);
+
+        netsGroup.appendChild(g);
+      });
+
+      visibleHw.forEach(hw => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('cursor', 'pointer');
+        g.onclick = () => selectNetDevice(hw.id);
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', hw.x);
+        rect.setAttribute('y', hw.y);
+        rect.setAttribute('width', hw.w || '24');
+        rect.setAttribute('height', hw.h || '18');
+        rect.setAttribute('rx', '3');
+        rect.setAttribute('fill', hw.type === 'switch' ? '#0284c7' : '#059669');
+        rect.setAttribute('stroke', '#ffffff');
+        rect.setAttribute('stroke-width', '1.5');
+        rect.setAttribute('class', 'hw-hover');
+        g.appendChild(rect);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', hw.x + (hw.w || 24) / 2);
+        text.setAttribute('y', hw.y + (hw.h || 18) + 10);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '7.5');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', '#0f172a');
+        text.textContent = hw.name;
+        g.appendChild(text);
+
+        netsGroup.appendChild(g);
+      });
+    }
+
+    function renderResizeHandles() {
+      const group = document.getElementById('dynamic-handles-group');
+      group.innerHTML = '';
+      if (!selectedRoomId) return;
+
+      const room = roomsData.find(r => r.id === selectedRoomId);
+      if (!room) return;
+
+      const handle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      handle.setAttribute('x', room.x + room.w - 7);
+      handle.setAttribute('y', room.y + room.h - 7);
+      handle.setAttribute('width', '14');
+      handle.setAttribute('height', '14');
+      handle.setAttribute('fill', '#2563eb');
+      handle.setAttribute('stroke', '#ffffff');
+      handle.setAttribute('stroke-width', '2');
+      handle.setAttribute('class', 'resize-handle');
+      handle.onmousedown = (e) => {
+        e.stopPropagation();
+        dragTarget = { type: 'resize', id: room.id };
+        isDragging = true;
+      };
+      group.appendChild(handle);
+    }
+
+    // ==========================================
+    // INTERACCIÓN Y EVENTOS DE RATÓN
+    // ==========================================
     function getSvgCoordinates(evt) {
       const svg = document.getElementById('campusSvg');
       const pt = svg.createSVGPoint();
@@ -782,907 +1228,711 @@
       return pt.matrixTransform(svg.getScreenCTM().inverse());
     }
 
-    function handleRoomMouseDown(evt, roomId) {
-      if (evt.button !== 0 || currentMainSection !== 'aulas') return;
+    function handleRoomMouseDown(evt, id) {
+      evt.preventDefault();
+      selectedRoomId = id;
+      selectedNetDeviceId = null;
       isDragging = true;
-      dragType = 'room';
-      dragItemId = roomId;
-      selectRoom(roomId);
-      const svgPt = getSvgCoordinates(evt);
-      dragStartX = svgPt.x;
-      dragStartY = svgPt.y;
-      const room = roomsData.find(r => r.id === roomId);
-      if (room) { itemOrigX = room.x; itemOrigY = room.y; }
-      const g = document.getElementById(`svg-room-${roomId}`);
-      if (g) g.classList.add('room-dragging');
-    }
-
-    function handleNetMouseDown(evt, netId) {
-      if (evt.button !== 0) return;
-      evt.stopPropagation();
-      isDragging = true;
-      dragType = 'ap';
-      dragItemId = netId;
-      selectNetDevice(netId);
-      const svgPt = getSvgCoordinates(evt);
-      dragStartX = svgPt.x;
-      dragStartY = svgPt.y;
-      const ap = apsData.find(a => a.id === netId) || hwData.find(h => h.id === netId);
-      if (ap) { itemOrigX = ap.x; itemOrigY = ap.y; }
-      const g = document.getElementById(`svg-net-${netId}`);
-      if (g) g.classList.add('room-dragging');
+      dragTarget = { type: 'room', id: id };
+      const p = getSvgCoordinates(evt);
+      const room = roomsData.find(r => r.id === id);
+      if (room) {
+        dragOffset = { x: p.x - room.x, y: p.y - room.y };
+        updateSidebarWithRoom(room);
+      }
+      renderAll();
     }
 
     function handleSvgMouseMove(evt) {
-      if (!isDragging || !dragItemId) return;
-      const svgPt = getSvgCoordinates(evt);
-      const dx = svgPt.x - dragStartX;
-      const dy = svgPt.y - dragStartY;
+      if (!isDragging || !dragTarget) return;
+      const p = getSvgCoordinates(evt);
 
-      if (dragType === 'room') {
-        const room = roomsData.find(r => r.id === dragItemId);
+      if (dragTarget.type === 'room') {
+        const room = roomsData.find(r => r.id === dragTarget.id);
         if (room) {
-          room.x = Math.round((itemOrigX + dx) / 5) * 5;
-          room.y = Math.round((itemOrigY + dy) / 5) * 5;
-          renderSvgAll();
-          updateRoomCoordsDisplay(room);
+          room.x = Math.round(p.x - dragOffset.x);
+          room.y = Math.round(p.y - dragOffset.y);
+          updateSidebarWithRoom(room);
+          renderAll();
         }
-      } else if (dragType === 'ap') {
-        const dev = apsData.find(a => a.id === dragItemId) || hwData.find(h => h.id === dragItemId);
-        if (dev) {
-          dev.x = Math.round((itemOrigX + dx) / 5) * 5;
-          dev.y = Math.round((itemOrigY + dy) / 5) * 5;
-          if (dev.bx) {
-            dev.bx = Math.round((dev.bx + dx / 5)) * 5;
-            dev.by = Math.round((dev.by + dy / 5)) * 5;
-          }
-          renderSvgAll();
-          updateNetCoordsDisplay(dev);
+      } else if (dragTarget.type === 'resize') {
+        const room = roomsData.find(r => r.id === dragTarget.id);
+        if (room) {
+          const newW = Math.max(50, Math.round(p.x - room.x));
+          const newH = Math.max(30, Math.round(p.y - room.y));
+          room.w = newW;
+          room.h = newH;
+          updateSidebarWithRoom(room);
+          renderAll();
         }
       }
     }
 
     function handleSvgMouseUp(evt) {
       if (isDragging) {
-        if (dragType === 'room') {
-          const g = document.getElementById(`svg-room-${dragItemId}`);
-          if (g) g.classList.remove('room-dragging');
-        } else if (dragType === 'ap') {
-          const g = document.getElementById(`svg-net-${dragItemId}`);
-          if (g) g.classList.remove('room-dragging');
-        }
         isDragging = false;
-        dragItemId = null;
-        dragType = null;
+        dragTarget = null;
         saveToStorage();
       }
-    }
-
-    function renderSvgAll() {
-      renderCorridorsAndRooms();
-      renderNetworksLayer();
-      updateStats();
-    }
-
-    function renderCorridorsAndRooms() {
-      const corridorsGroup = document.getElementById('dynamic-corridors-group');
-      const roomsGroup = document.getElementById('dynamic-rooms-group');
-      corridorsGroup.innerHTML = '';
-      roomsGroup.innerHTML = '';
-      const isNetworksMode = (currentMainSection === 'redes');
-
-      roomsData.forEach(item => {
-        const isCorridor = item.isCorridor === true;
-        const targetGroup = isCorridor ? corridorsGroup : roomsGroup;
-        const shiftData = currentShift === 'todos' ? item.manana : item[currentShift];
-        const style = categoryStyles[shiftData.category] || (isCorridor ? categoryStyles['Pasillos'] : categoryStyles['Libre']);
-
-        let isDimmed = false;
-        if (!isNetworksMode) {
-          const matchesCategory = currentCategoryFilter === 'all' || 
-            (currentCategoryFilter === 'Pasillos' ? isCorridor : 
-              (currentCategoryFilter === 'Libre' ? shiftData.isFree : shiftData.category === currentCategoryFilter));
-          const matchesSearch = searchQuery === '' || 
-            item.num.toLowerCase().includes(searchQuery) ||
-            item.manana.text.toLowerCase().includes(searchQuery);
-          isDimmed = !(matchesCategory && matchesSearch);
-        } else {
-          isDimmed = dimClassroomsInNetworks;
-        }
-
-        const isSelected = (!isNetworksMode && item.id === selectedRoomId);
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.setAttribute("class", `room-transition ${isCorridor ? 'corridor-hover' : 'room-hover'} ${isSelected ? 'active-room' : ''} ${isDimmed ? 'dimmed-element' : ''}`);
-        g.setAttribute("id", `svg-room-${item.id}`);
-        g.setAttribute("onmousedown", `handleRoomMouseDown(event, '${item.id}')`);
-
-        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.setAttribute("x", item.x);
-        rect.setAttribute("y", item.y);
-        rect.setAttribute("width", item.w);
-        rect.setAttribute("height", item.h);
-        rect.setAttribute("rx", isCorridor ? "2" : "4");
-
-        rect.setAttribute("fill", isCorridor ? "url(#corridorGrad)" : style.fill);
-        rect.setAttribute("stroke", isSelected ? "#2563eb" : (isCorridor ? "#94a3b8" : style.stroke));
-        rect.setAttribute("stroke-width", isSelected ? "3.5" : "1.5");
-        if (isCorridor) rect.setAttribute("stroke-dasharray", isSelected ? "none" : "4 2");
-        else rect.setAttribute("filter", "url(#cardShadow)");
-        g.appendChild(rect);
-
-        // Text
-        const textTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        if (isCorridor) {
-          const isVertical = item.h > item.w * 1.6;
-          const cx = item.x + item.w / 2;
-          const cy = item.y + item.h / 2;
-          textTitle.setAttribute("x", cx);
-          textTitle.setAttribute("y", cy);
-          textTitle.setAttribute("text-anchor", "middle");
-          textTitle.setAttribute("dominant-baseline", "middle");
-          textTitle.setAttribute("fill", isSelected ? "#1d4ed8" : "#94a3b8");
-          textTitle.setAttribute("font-size", "10");
-          textTitle.setAttribute("font-weight", "bold");
-          textTitle.setAttribute("letter-spacing", "1.5");
-          if (isVertical) textTitle.setAttribute("transform", `rotate(-90 ${cx} ${cy})`);
-          textTitle.textContent = item.num;
-        } else {
-          textTitle.setAttribute("x", item.x + 8);
-          textTitle.setAttribute("y", item.y + 18);
-          textTitle.setAttribute("fill", "#0f172a");
-          textTitle.setAttribute("font-size", "10.5");
-          textTitle.setAttribute("font-weight", "bold");
-          textTitle.textContent = `${style.icon ? style.icon + ' ' : ''}${item.num}`;
-        }
-        g.appendChild(textTitle);
-
-        if (isSelected) {
-          const handle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-          handle.setAttribute("class", "resize-handle");
-          handle.setAttribute("x", item.x + item.w - 11);
-          handle.setAttribute("y", item.y + item.h - 11);
-          handle.setAttribute("width", "11");
-          handle.setAttribute("height", "11");
-          handle.setAttribute("fill", "#2563eb");
-          handle.setAttribute("stroke", "#ffffff");
-          g.appendChild(handle);
-        }
-
-        targetGroup.appendChild(g);
-      });
-    }
-
-    function renderNetworksLayer() {
-      const netGroup = document.getElementById('dynamic-networks-group');
-      netGroup.innerHTML = '';
-      if (currentMainSection !== 'redes') return;
-
-      // 1. Blue Cable (Backbone)
-      blueCableSegments.forEach(seg => {
-        const polyGlow = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        polyGlow.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
-        polyGlow.setAttribute("fill", "none");
-        polyGlow.setAttribute("stroke", "#1d4ed8");
-        polyGlow.setAttribute("stroke-width", "7");
-        polyGlow.setAttribute("stroke-linecap", "round");
-        polyGlow.setAttribute("stroke-linejoin", "round");
-        polyGlow.setAttribute("opacity", "0.25");
-        netGroup.appendChild(polyGlow);
-
-        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        poly.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
-        poly.setAttribute("fill", "none");
-        poly.setAttribute("stroke", "#2563eb");
-        poly.setAttribute("stroke-width", "4");
-        poly.setAttribute("stroke-linecap", "round");
-        poly.setAttribute("stroke-linejoin", "round");
-        netGroup.appendChild(poly);
-      });
-
-      // 2. Red Cable (PoE APs)
-      redCableSegments.forEach(seg => {
-        const polyGlow = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        polyGlow.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
-        polyGlow.setAttribute("fill", "none");
-        polyGlow.setAttribute("stroke", "#dc2626");
-        polyGlow.setAttribute("stroke-width", "5");
-        polyGlow.setAttribute("stroke-linecap", "round");
-        polyGlow.setAttribute("stroke-linejoin", "round");
-        polyGlow.setAttribute("opacity", "0.2");
-        netGroup.appendChild(polyGlow);
-
-        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-        poly.setAttribute("points", seg.map(p => `${p[0]},${p[1]}`).join(" "));
-        poly.setAttribute("fill", "none");
-        poly.setAttribute("stroke", "#ef4444");
-        poly.setAttribute("stroke-width", "3");
-        poly.setAttribute("stroke-linecap", "round");
-        poly.setAttribute("stroke-linejoin", "round");
-        netGroup.appendChild(poly);
-      });
-
-      // 3. 16 APs
-      apsData.forEach(ap => {
-        const matchesFilter = (currentNetworkFilter === 'all' || currentNetworkFilter === 'ap');
-        const matchesSearch = searchNetQuery === '' || ap.name.toLowerCase().includes(searchNetQuery) || ap.room.toLowerCase().includes(searchNetQuery);
-        const isDimmed = !(matchesFilter && matchesSearch);
-        const isSelected = (ap.id === selectedNetId);
-
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.setAttribute("id", `svg-net-${ap.id}`);
-        g.setAttribute("class", `ap-hover ${isDimmed ? 'dimmed-element' : ''} ${isSelected ? 'active-net-device' : ''}`);
-        g.setAttribute("onmousedown", `handleNetMouseDown(event, '${ap.id}')`);
-
-        // Dome circle AP
-        const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circ.setAttribute("cx", ap.x);
-        circ.setAttribute("cy", ap.y);
-        circ.setAttribute("r", "10");
-        circ.setAttribute("fill", "#0f172a");
-        circ.setAttribute("stroke", isSelected ? "#facc15" : "#ef4444");
-        circ.setAttribute("stroke-width", isSelected ? "2.5" : "2");
-        circ.setAttribute("filter", "url(#apGlow)");
-        g.appendChild(circ);
-
-        // Wi-Fi waves
-        const wave1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        wave1.setAttribute("d", `M ${ap.x-5.5} ${ap.y-2.5} A 5.5 5.5 0 0 1 ${ap.x+5.5} ${ap.y-2.5}`);
-        wave1.setAttribute("fill", "none");
-        wave1.setAttribute("stroke", "#ffffff");
-        wave1.setAttribute("stroke-width", "1.4");
-        wave1.setAttribute("stroke-linecap", "round");
-        g.appendChild(wave1);
-
-        const wave2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        wave2.setAttribute("d", `M ${ap.x-3} ${ap.y-0.2} A 3 3 0 0 1 ${ap.x+3} ${ap.y-0.2}`);
-        wave2.setAttribute("fill", "none");
-        wave2.setAttribute("stroke", "#ffffff");
-        wave2.setAttribute("stroke-width", "1.4");
-        wave2.setAttribute("stroke-linecap", "round");
-        g.appendChild(wave2);
-
-        // PoE LED
-        const led = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        led.setAttribute("cx", ap.x);
-        led.setAttribute("cy", ap.y + 3.5);
-        led.setAttribute("r", "1.8");
-        led.setAttribute("fill", "#22c55e");
-        g.appendChild(led);
-
-        // Bubble Callout
-        const bx = ap.bx || (ap.x + 20);
-        const by = ap.by || (ap.y - 20);
-
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", ap.x);
-        line.setAttribute("y1", ap.y);
-        line.setAttribute("x2", bx + 23);
-        line.setAttribute("y2", by + 9);
-        line.setAttribute("stroke", "#b91c1c");
-        line.setAttribute("stroke-width", "1.2");
-        line.setAttribute("stroke-dasharray", "2 2");
-        g.appendChild(line);
-
-        const bBox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        bBox.setAttribute("x", bx);
-        bBox.setAttribute("y", by);
-        bBox.setAttribute("width", "46");
-        bBox.setAttribute("height", "18");
-        bBox.setAttribute("rx", "4");
-        bBox.setAttribute("fill", "#0f172a");
-        bBox.setAttribute("stroke", isSelected ? "#facc15" : "#22c55e");
-        bBox.setAttribute("stroke-width", isSelected ? "2" : "1.4");
-        g.appendChild(bBox);
-
-        const bBadge = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        bBadge.setAttribute("x", bx);
-        bBadge.setAttribute("y", by);
-        bBadge.setAttribute("width", "14");
-        bBadge.setAttribute("height", "18");
-        bBadge.setAttribute("rx", "4");
-        bBadge.setAttribute("fill", "#dc2626");
-        g.appendChild(bBadge);
-
-        const bIcon = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        bIcon.setAttribute("x", bx + 7);
-        bIcon.setAttribute("y", by + 12.5);
-        bIcon.setAttribute("text-anchor", "middle");
-        bIcon.setAttribute("fill", "#ffffff");
-        bIcon.setAttribute("font-size", "7");
-        bIcon.setAttribute("font-weight", "900");
-        bIcon.textContent = "📡";
-        g.appendChild(bIcon);
-
-        const bText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        bText.setAttribute("x", bx + 29);
-        bText.setAttribute("y", by + 13);
-        bText.setAttribute("text-anchor", "middle");
-        bText.setAttribute("fill", "#ffffff");
-        bText.setAttribute("font-size", "8");
-        bText.setAttribute("font-weight", "bold");
-        bText.textContent = ap.name;
-        g.appendChild(bText);
-
-        netGroup.appendChild(g);
-      });
-
-      // 4. Hardware Devices Callouts
-      // Rectoría (Patio Izquierdo)
-      const gRec = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      gRec.setAttribute("class", "hw-hover");
-      gRec.setAttribute("onmousedown", "handleNetMouseDown(event, 'modem_isp')");
-      gRec.innerHTML = `
-        <line x1="420" y1="335" x2="420" y2="360" stroke="#2563eb" stroke-width="2"/>
-        <rect x="330" y="228" width="180" height="106" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8"/>
-        <rect x="330" y="228" width="180" height="22" rx="6" fill="#0284c7"/>
-        <text x="420" y="243" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="bold" letter-spacing="0.5">NODO CENTRAL (RECTORÍA)</text>
-        <circle cx="348" cy="264" r="7" fill="#0284c7"/>
-        <text x="348" y="267" text-anchor="middle" fill="#ffffff" font-size="8">🌐</text>
-        <text x="362" y="267" fill="#f8fafc" font-size="9" font-weight="bold">Modem Fibra (ISP)</text>
-        <circle cx="348" cy="286" r="7" fill="#6366f1"/>
-        <text x="348" y="289" text-anchor="middle" fill="#ffffff" font-size="8">🔀</text>
-        <text x="362" y="289" fill="#f8fafc" font-size="9" font-weight="bold">Router Gateway (DHCP)</text>
-        <circle cx="348" cy="308" r="7" fill="#10b981"/>
-        <text x="348" y="311" text-anchor="middle" fill="#ffffff" font-size="8">⚡</text>
-        <text x="362" y="311" fill="#f8fafc" font-size="9" font-weight="bold">Switch 16P (Gestión)</text>
-      `;
-      netGroup.appendChild(gRec);
-
-      // Simbología Patio Derecho
-      const gSim = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      gSim.innerHTML = `
-        <rect x="655" y="228" width="195" height="114" rx="6" fill="#0f172a" stroke="#22c55e" stroke-width="1.8"/>
-        <rect x="655" y="228" width="195" height="22" rx="6" fill="#166534"/>
-        <text x="752" y="243" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="bold" letter-spacing="0.5">SIMBOLOGÍA OFICIAL (ANEXO 1)</text>
-        <circle cx="672" cy="263" r="6" fill="#0f172a" stroke="#ef4444" stroke-width="1.5"/>
-        <circle cx="672" cy="263" r="2" fill="#22c55e"/>
-        <text x="686" y="266" fill="#f8fafc" font-size="8.5">Puntos de Acceso (AP1 - AP16)</text>
-        <rect x="667" y="275" width="11" height="8" rx="2" fill="#0f172a" stroke="#22c55e" stroke-width="1"/>
-        <text x="686" y="282" fill="#f8fafc" font-size="8.5">Switch POE 16P (Alimentación)</text>
-        <rect x="667" y="291" width="11" height="10" rx="1.5" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
-        <text x="686" y="299" fill="#f8fafc" font-size="8.5">Rack 42U / Firewall UTM</text>
-        <line x1="666" y1="315" x2="678" y2="315" stroke="#ef4444" stroke-width="3.5"/>
-        <text x="686" y="318" fill="#fca5a5" font-size="8.5" font-weight="bold">Línea Roja: Tendido PoE UTP</text>
-        <line x1="666" y1="329" x2="678" y2="329" stroke="#2563eb" stroke-width="3.5"/>
-        <text x="686" y="332" fill="#93c5fd" font-size="8.5" font-weight="bold">Línea Azul: Troncal Backbone / ISP</text>
-      `;
-      netGroup.appendChild(gSim);
-
-      // Kiosco
-      const gKio = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      gKio.setAttribute("class", "hw-hover");
-      gKio.setAttribute("onmousedown", "handleNetMouseDown(event, 'switch_poe_kiosco')");
-      gKio.innerHTML = `
-        <rect x="596" y="535" width="58" height="42" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
-        <line x1="600" y1="544" x2="650" y2="544" stroke="#475569" stroke-width="1"/>
-        <line x1="600" y1="552" x2="650" y2="552" stroke="#475569" stroke-width="1"/>
-        <circle cx="604" cy="540" r="1.5" fill="#22c55e"/>
-        <circle cx="609" cy="540" r="1.5" fill="#38bdf8"/>
-        <circle cx="614" cy="540" r="1.5" fill="#ef4444"/>
-        <text x="625" y="565" text-anchor="middle" fill="#38bdf8" font-size="6.5" font-weight="bold">RACK 42U</text>
-        <rect x="594" y="582" width="62" height="17" rx="3" fill="#0f172a" stroke="#22c55e" stroke-width="1.2"/>
-        <text x="625" y="594" text-anchor="middle" fill="#a7f3d0" font-size="7.5" font-weight="bold">⚡ Sw POE 16P</text>
-        <rect x="594" y="604" width="62" height="17" rx="3" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
-        <text x="625" y="616" text-anchor="middle" fill="#fde68a" font-size="7.5" font-weight="bold">🛡️ Firewall</text>
-      `;
-      netGroup.appendChild(gKio);
-
-      // Preceptoría
-      const gPrec = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      gPrec.setAttribute("class", "hw-hover");
-      gPrec.setAttribute("onmousedown", "handleNetMouseDown(event, 'switch_p8_prec')");
-      gPrec.innerHTML = `
-        <rect x="435" y="585" width="105" height="20" rx="4" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
-        <text x="445" y="598" fill="#22c55e" font-size="8.5">🔀</text>
-        <text x="457" y="599" fill="#ffffff" font-size="8" font-weight="bold">Switch 8P (Precept.)</text>
-      `;
-      netGroup.appendChild(gPrec);
-
-      // Sector Oeste
-      const gOeste = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      gOeste.setAttribute("class", "hw-hover");
-      gOeste.setAttribute("onmousedown", "handleNetMouseDown(event, 'switch_p16_oeste')");
-      gOeste.innerHTML = `
-        <rect x="65" y="178" width="105" height="20" rx="4" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
-        <text x="75" y="191" fill="#38bdf8" font-size="8.5">🔀</text>
-        <text x="87" y="192" fill="#ffffff" font-size="8" font-weight="bold">Switch 16P (Oeste)</text>
-      `;
-      netGroup.appendChild(gOeste);
-
-      // Aula 12
-      const gA12 = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      gA12.setAttribute("class", "hw-hover");
-      gA12.setAttribute("onmousedown", "handleNetMouseDown(event, 'router_wifi_a12')");
-      gA12.innerHTML = `
-        <rect x="835" y="435" width="100" height="20" rx="4" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
-        <text x="843" y="448" fill="#38bdf8" font-size="8.5">📶</text>
-        <text x="856" y="449" fill="#ffffff" font-size="8" font-weight="bold">Router (Wi-Fi 12)</text>
-      `;
-      netGroup.appendChild(gA12);
     }
 
     function selectNetDevice(id) {
-      selectedNetId = id;
+      selectedNetDeviceId = id;
       const dev = apsData.find(a => a.id === id) || hwData.find(h => h.id === id);
-      if (!dev) return;
-
-      const isAp = dev.type === 'ap';
-      const badge = document.getElementById('netTypeBadge');
-      badge.textContent = isAp ? "PUNTO DE ACCESO WI-FI (AP)" : "EQUIPO DE RED / CORE";
-      badge.className = isAp 
-        ? "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 inline-block mb-1"
-        : "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 inline-block mb-1";
-
-      document.getElementById('netNameInput').value = dev.name;
-      document.getElementById('netRoomInput').value = dev.room || '';
-      document.getElementById('netPortInput').value = dev.port || '';
-      document.getElementById('netIpInput').value = dev.ip || '';
-      document.getElementById('netStatusSelect').value = dev.status || 'online';
-
-      updateNetCoordsDisplay(dev);
-      renderSvgAll();
-    }
-
-    function updateNetCoordsDisplay(dev) {
-      const el = document.getElementById('netCoordsIndicator');
-      if (el) el.textContent = `(${dev.x}, ${dev.y})`;
-    }
-
-    function updateCurrentNetField(field, val) {
-      const dev = apsData.find(a => a.id === selectedNetId) || hwData.find(h => h.id === selectedNetId);
-      if (!dev) return;
-      dev[field] = val;
-      saveToStorage();
-      renderSvgAll();
-    }
-
-    function nudgeNetDevice(dx, dy) {
-      const dev = apsData.find(a => a.id === selectedNetId) || hwData.find(h => h.id === selectedNetId);
-      if (!dev) return;
-      dev.x += dx;
-      dev.y += dy;
-      if (dev.bx) { dev.bx += dx; dev.by += dy; }
-      updateNetCoordsDisplay(dev);
-      saveToStorage();
-      renderSvgAll();
-    }
-
-    function addNewApQuick() {
-      const num = apsData.length + 1;
-      const newId = `AP${num}`;
-      const newAp = {
-        id: newId,
-        name: `AP${num}`,
-        room: `Nueva Aula`,
-        x: 600,
-        y: 280,
-        w: 18,
-        h: 18,
-        type: "ap",
-        ip: `192.168.100.${20 + num}`,
-        port: `Switch POE (P${num})`,
-        vlan: "VLAN 50 Wi-Fi",
-        bx: 625,
-        by: 250
-      };
-      apsData.push(newAp);
-      saveToStorage();
-      selectNetDevice(newId);
-    }
-
-    function duplicateCurrentNetDevice() {
-      const dev = apsData.find(a => a.id === selectedNetId);
-      if (!dev) return;
-      const clone = JSON.parse(JSON.stringify(dev));
-      clone.id = `AP${apsData.length + 1}`;
-      clone.name = clone.id;
-      clone.x += 25;
-      clone.y += 25;
-      if (clone.bx) { clone.bx += 25; clone.by += 25; }
-      apsData.push(clone);
-      saveToStorage();
-      selectNetDevice(clone.id);
-    }
-
-    function confirmDeleteCurrentNetDevice() {
-      const dev = apsData.find(a => a.id === selectedNetId);
-      if (!dev) return;
-      if (confirm(`¿Eliminar ${dev.name}?`)) {
-        apsData = apsData.filter(a => a.id !== selectedNetId);
-        saveToStorage();
-        if (apsData.length > 0) selectNetDevice(apsData[0].id);
-        renderSvgAll();
+      if (dev) {
+        alert('Dispositivo: ' + dev.name + '\nUbicación: ' + dev.room + '\nDirección IP: ' + dev.ip + '\nPuerto: ' + (dev.port || 'Troncal'));
       }
     }
 
-    function filterNetworkType(type) {
-      currentNetworkFilter = type;
-      document.querySelectorAll('.net-pill').forEach(btn => {
-        btn.classList.remove('bg-blue-600', 'text-white');
-        btn.classList.add('bg-slate-700', 'text-slate-300');
-      });
-      const activeBtn = document.getElementById(`net-filter-${type}`);
-      if (activeBtn) {
-        activeBtn.classList.remove('bg-slate-700', 'text-slate-300');
-        activeBtn.classList.add('bg-blue-600', 'text-white');
+    // ==========================================
+    // ACTUALIZACIÓN DE PROPIEDADES EN PANEL
+    // ==========================================
+    function updateSidebarWithRoom(r) {
+      document.getElementById('propNameInput').value = r.num || '';
+      document.getElementById('propXInput').value = r.x;
+      document.getElementById('propYInput').value = r.y;
+      document.getElementById('propWInput').value = r.w;
+      document.getElementById('propHInput').value = r.h;
+      document.getElementById('selectedTypeBadge').innerText = r.floor === 'pa' ? 'Planta Alta' : 'Planta Baja';
+
+      const shiftData = r[currentShift] || r.manana;
+      if (shiftData) {
+        document.getElementById('propShiftTextInput').value = shiftData.text || '';
+        document.getElementById('propCategorySelect').value = shiftData.category || 'Tecnología';
       }
-      renderSvgAll();
-    }
-
-    function handleNetworkSearch() {
-      searchNetQuery = document.getElementById('searchNetworkInput').value.trim().toLowerCase();
-      renderSvgAll();
-    }
-
-    function toggleClassroomBackdrop() {
-      dimClassroomsInNetworks = !dimClassroomsInNetworks;
-      document.getElementById('backdropToggleLabel').textContent = dimClassroomsInNetworks ? "Resaltar Aulas" : "Atenuar Aulas";
-      renderSvgAll();
-    }
-
-    // AULAS FUNCTIONS
-    function selectRoom(id) {
-      selectedRoomId = id;
-      const r = roomsData.find(rm => rm.id === id);
-      if (!r) return;
-      document.getElementById('selectedTypeBadge').textContent = r.isCorridor ? "Pasillo" : "Aula";
-      document.getElementById('directNumInput').value = r.num;
-      document.getElementById('directTextM').value = r.manana.text;
-      document.getElementById('directCatM').value = r.manana.category;
-      document.getElementById('directTextT').value = r.tarde ? r.tarde.text : r.manana.text;
-      document.getElementById('directCatT').value = r.tarde ? r.tarde.category : r.manana.category;
-      document.getElementById('directTextN').value = r.noche ? r.noche.text : r.manana.text;
-      document.getElementById('directCatN').value = r.noche ? r.noche.category : r.manana.category;
-      updateRoomCoordsDisplay(r);
-      renderSvgAll();
-    }
-
-    function updateRoomCoordsDisplay(r) {
-      const el = document.getElementById('coordsIndicator');
-      if (el) el.textContent = `(${r.x}, ${r.y}) • ${r.w}x${r.h}`;
     }
 
     function updateCurrentRoomField(field, val) {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r) return;
-      r[field] = val;
-      saveToStorage();
-      renderSvgAll();
+      if (!selectedRoomId) return;
+      const room = roomsData.find(r => r.id === selectedRoomId);
+      if (room) {
+        room[field] = val;
+        renderAll();
+        saveToStorage();
+      }
     }
 
-    function updateCurrentShiftText(shift, val) {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r || !r[shift]) return;
-      r[shift].text = val;
-      saveToStorage();
-      renderSvgAll();
+    function updateActiveShiftText(val) {
+      if (!selectedRoomId) return;
+      const room = roomsData.find(r => r.id === selectedRoomId);
+      if (room) {
+        if (!room[currentShift]) room[currentShift] = {};
+        room[currentShift].text = val;
+        renderAll();
+        saveToStorage();
+      }
     }
 
-    function updateCurrentShiftCat(shift, val) {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r || !r[shift]) return;
-      r[shift].category = val;
-      saveToStorage();
-      renderSvgAll();
+    function updateActiveShiftCategory(cat) {
+      if (!selectedRoomId) return;
+      const room = roomsData.find(r => r.id === selectedRoomId);
+      if (room) {
+        if (!room[currentShift]) room[currentShift] = {};
+        room[currentShift].category = cat;
+        renderAll();
+        saveToStorage();
+      }
     }
 
     function nudgeRoom(dx, dy) {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r) return;
-      r.x += dx;
-      r.y += dy;
-      updateRoomCoordsDisplay(r);
-      saveToStorage();
-      renderSvgAll();
-    }
-
-    function resizeRoom(dw, dh) {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r) return;
-      r.w += dw;
-      r.h += dh;
-      updateRoomCoordsDisplay(r);
-      saveToStorage();
-      renderSvgAll();
-    }
-
-    function adjustFontSize(delta) {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r) return;
-      r.fontScale = (r.fontScale || 1.0) + delta;
-      saveToStorage();
-      renderSvgAll();
-    }
-
-    function resetFontSize() {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r) return;
-      r.fontScale = 1.0;
-      saveToStorage();
-      renderSvgAll();
-    }
-
-    function addNewRoomQuick() {
-      const num = roomsData.filter(r => !r.isCorridor).length + 1;
-      const newRoom = {
-        id: `aula_${Date.now()}`,
-        num: `Aula ${num}`,
-        isCorridor: false,
-        x: 450, y: 240, w: 120, h: 95,
-        manana: { text: "Libre", category: "Libre", isFree: true },
-        tarde: { text: "Libre", category: "Libre", isFree: true },
-        noche: { text: "Libre", category: "Libre", isFree: true }
-      };
-      roomsData.push(newRoom);
-      saveToStorage();
-      selectRoom(newRoom.id);
-    }
-
-    function addNewCorridorQuick() {
-      const newC = {
-        id: `pasillo_${Date.now()}`,
-        num: `PASILLO`,
-        isCorridor: true,
-        x: 400, y: 200, w: 250, h: 45,
-        manana: { text: "Circulación", category: "Pasillos", isFree: true }
-      };
-      roomsData.push(newC);
-      saveToStorage();
-      selectRoom(newC.id);
-    }
-
-    function duplicateCurrentRoom() {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r) return;
-      const clone = JSON.parse(JSON.stringify(r));
-      clone.id = `space_clone_${Date.now()}`;
-      clone.num += " (Copia)";
-      clone.x += 25; clone.y += 25;
-      roomsData.push(clone);
-      saveToStorage();
-      selectRoom(clone.id);
-    }
-
-    function confirmDeleteCurrentRoom() {
-      const r = roomsData.find(rm => rm.id === selectedRoomId);
-      if (!r) return;
-      if (confirm(`¿Eliminar ${r.num}?`)) {
-        roomsData = roomsData.filter(rm => rm.id !== selectedRoomId);
+      if (!selectedRoomId) return;
+      const room = roomsData.find(r => r.id === selectedRoomId);
+      if (room) {
+        room.x += dx;
+        room.y += dy;
+        updateSidebarWithRoom(room);
+        renderAll();
         saveToStorage();
-        if (roomsData.length > 0) selectRoom(roomsData[0].id);
-        renderSvgAll();
       }
     }
 
-    function confirmResetDefaults() {
-      if (confirm("¿Restablecer todo al plano original por defecto?")) {
-        roomsData = JSON.parse(JSON.stringify(DEFAULT_ROOMS));
-        apsData = JSON.parse(JSON.stringify(DEFAULT_APS));
-        hwData = JSON.parse(JSON.stringify(DEFAULT_HARDWARE));
-        localStorage.removeItem(STORAGE_ROOMS_KEY);
-        localStorage.removeItem(STORAGE_APS_KEY);
-        localStorage.removeItem(STORAGE_HW_KEY);
+    // ==========================================
+    // CALIBRADOR DINÁMICO DE PLANTA ALTA
+    // ==========================================
+    function handleGabineteSlider(val) {
+      const realW = parseFloat(val);
+      paSettings.gabineteW = realW;
+      document.getElementById('labelGabineteW').innerText = realW.toFixed(1) + ' m';
+      document.getElementById('quickGabineteW').value = realW.toFixed(1);
+
+      const gab = roomsData.find(r => r.id === 'pa_gabinete_informatica');
+      if (gab) {
+        gab.real_w = realW;
+        gab.w = Math.round(realW * 24.375);
+        renderAll();
         saveToStorage();
-        selectRoom('admin_rectoria');
-        selectNetDevice('AP1');
-        renderSvgAll();
       }
     }
 
+    function updateGabineteWidthReal(val) {
+      handleGabineteSlider(val);
+      document.getElementById('sliderGabineteW').value = val;
+    }
+
+    function handleAuditorioSlider(val) {
+      const realL = parseFloat(val);
+      paSettings.auditorioL = realL;
+      document.getElementById('labelAuditorioL').innerText = realL.toFixed(1) + ' m';
+
+      const aud = roomsData.find(r => r.id === 'pa_auditorio');
+      if (aud) {
+        aud.real_w = realL;
+        aud.w = Math.round(realL * 24.1);
+        renderAll();
+        saveToStorage();
+      }
+    }
+
+    function handlePaScaleSlider(val) {
+      const scale = parseInt(val);
+      paSettings.scalePA = scale;
+      document.getElementById('labelScalePA').innerText = scale + '%';
+
+      const factor = scale / 100;
+      const defaultPa = DEFAULT_ROOMS.filter(r => r.floor === 'pa');
+
+      defaultPa.forEach(d => {
+        const target = roomsData.find(r => r.id === d.id);
+        if (target) {
+          target.w = Math.round(d.w * factor);
+          target.h = Math.round(d.h * factor);
+        }
+      });
+
+      renderAll();
+      saveToStorage();
+    }
+
+    function resetPaDimensions() {
+      paSettings.gabineteW = 16.0;
+      paSettings.auditorioL = 19.5;
+      paSettings.scalePA = 100;
+
+      document.getElementById('sliderGabineteW').value = '16.0';
+      document.getElementById('labelGabineteW').innerText = '16.0 m';
+      document.getElementById('quickGabineteW').value = '16.0';
+      document.getElementById('sliderAuditorioL').value = '19.5';
+      document.getElementById('labelAuditorioL').innerText = '19.5 m';
+      document.getElementById('sliderScalePA').value = '100';
+      document.getElementById('labelScalePA').innerText = '100%';
+
+      const defaultPa = DEFAULT_ROOMS.filter(r => r.floor === 'pa');
+      defaultPa.forEach(d => {
+        const target = roomsData.find(r => r.id === d.id);
+        if (target) {
+          target.x = d.x;
+          target.y = d.y;
+          target.w = d.w;
+          target.h = d.h;
+          target.real_w = d.real_w;
+          target.real_h = d.real_h;
+        }
+      });
+
+      renderAll();
+      saveToStorage();
+    }
+
+    // ==========================================
+    // FILTROS Y BÚSQUEDAS
+    // ==========================================
     function setShift(shift) {
       currentShift = shift;
-      document.querySelectorAll('.shift-btn').forEach(btn => {
-        btn.classList.remove('bg-white', 'text-blue-700', 'shadow-xs');
-        btn.classList.add('text-slate-600');
+      ['manana', 'tarde', 'noche', 'todos'].forEach(s => {
+        const b = document.getElementById('btn-' + s);
+        if (b) {
+          if (s === shift) {
+            b.className = "shift-btn px-2 py-1 rounded-md font-semibold transition bg-white text-blue-700 shadow-xs";
+          } else {
+            b.className = "shift-btn px-2 py-1 rounded-md font-semibold transition text-slate-600 hover:text-slate-900";
+          }
+        }
       });
-      const active = document.getElementById(`btn-${shift}`);
-      if (active) {
-        active.classList.add('bg-white', 'text-blue-700', 'shadow-xs');
-        active.classList.remove('text-slate-600');
-      }
-      renderSvgAll();
+      renderAll();
     }
 
     function filterCategory(cat) {
-      currentCategoryFilter = cat;
-      document.querySelectorAll('.cat-pill').forEach(btn => {
-        btn.classList.remove('bg-slate-800', 'text-white');
-        btn.classList.add('bg-slate-100', 'text-slate-700');
+      const chips = document.querySelectorAll('.cat-chip');
+      chips.forEach(c => {
+        c.className = "cat-chip px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200";
       });
-      const active = document.getElementById(`cat-${cat}`);
-      if (active) {
-        active.classList.remove('bg-slate-100', 'text-slate-700');
-        active.classList.add('bg-slate-800', 'text-white');
+      if (cat === 'all') {
+        chips[0].className = "cat-chip px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-600 text-white";
+        renderAll();
+        return;
       }
-      renderSvgAll();
+      roomsData.forEach(r => {
+        const rect = document.getElementById('rect-' + r.id);
+        if (rect) {
+          const shiftData = currentShift === 'todos' ? r.manana : (r[currentShift] || r.manana);
+          if (shiftData.category === cat) {
+            rect.classList.remove('dimmed-element');
+          } else {
+            rect.classList.add('dimmed-element');
+          }
+        }
+      });
     }
 
     function handleSearch() {
-      searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
-      renderSvgAll();
-    }
-
-    function updateStats() {
-      const shiftKey = currentShift === 'todos' ? 'manana' : currentShift;
-      let occ = 0, free = 0, corr = 0;
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderAll();
+        return;
+      }
       roomsData.forEach(r => {
-        if (r.isCorridor) corr++;
-        else {
-          if (r[shiftKey] && r[shiftKey].isFree) free++;
-          else occ++;
+        const rect = document.getElementById('rect-' + r.id);
+        if (rect) {
+          const match = r.num.toLowerCase().includes(q) || (r.manana && r.manana.text.toLowerCase().includes(q));
+          if (match) rect.classList.remove('dimmed-element');
+          else rect.classList.add('dimmed-element');
         }
       });
-      document.getElementById('statOccupied').textContent = occ;
-      document.getElementById('statFree').textContent = free;
-      document.getElementById('statCorridors').textContent = corr;
-      document.getElementById('statAps').textContent = apsData.length;
     }
 
-    // MODAL PLANILLA
+    function filterNetworkType(type) {
+      renderAll();
+    }
+
+    // ==========================================
+    // MODALES Y PLANILLAS
+    // ==========================================
     function toggleTableModal() {
       const m = document.getElementById('tableModal');
       m.classList.toggle('hidden');
       if (!m.classList.contains('hidden')) {
-        populateSummaryTable();
-        populateNetworkTable();
+        populateSummaryTables();
       }
     }
 
     function switchModalTab(tab) {
-      const vA = document.getElementById('modalViewAulas');
-      const vR = document.getElementById('modalViewRedes');
       const bA = document.getElementById('modalTabBtnAulas');
       const bR = document.getElementById('modalTabBtnRedes');
+      const vA = document.getElementById('modalViewAulas');
+      const vR = document.getElementById('modalViewRedes');
 
       if (tab === 'aulas') {
+        bA.className = "px-3 py-1 rounded-lg font-bold bg-white text-slate-900 shadow-xs";
+        bR.className = "px-3 py-1 rounded-lg font-bold text-slate-600 hover:text-slate-900";
         vA.classList.remove('hidden');
         vR.classList.add('hidden');
-        bA.className = "px-3 py-1 rounded-lg font-bold bg-white text-blue-700 shadow-xs";
-        bR.className = "px-3 py-1 rounded-lg font-bold text-slate-600 hover:text-slate-900";
-        document.getElementById('modalFooterTotal').textContent = `Total espacios: ${roomsData.length}`;
       } else {
-        vA.classList.add('hidden');
-        vR.classList.remove('hidden');
-        bR.className = "px-3 py-1 rounded-lg font-bold bg-slate-900 text-white shadow-xs";
+        bR.className = "px-3 py-1 rounded-lg font-bold bg-white text-slate-900 shadow-xs";
         bA.className = "px-3 py-1 rounded-lg font-bold text-slate-600 hover:text-slate-900";
-        document.getElementById('modalFooterTotal').textContent = `Total red: ${apsData.length} APs + ${hwData.length} equipos core`;
+        vR.classList.remove('hidden');
+        vA.classList.add('hidden');
       }
     }
 
-    function populateSummaryTable() {
-      const tb = document.getElementById('summaryTableBody');
-      tb.innerHTML = '';
+    function populateSummaryTables() {
+      const tbodyA = document.getElementById('summaryTableBody');
+      tbodyA.innerHTML = '';
       roomsData.forEach(r => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50";
+        tr.className = "border-b border-slate-100 hover:bg-slate-50";
         tr.innerHTML = `
-          <td class="py-2.5 px-3 font-bold text-slate-900">${r.num}</td>
-          <td class="py-2.5 px-3 text-slate-500">${r.isCorridor ? '🚶 Pasillo' : '🏢 Aula'}</td>
-          <td class="py-2.5 px-3">${r.manana ? r.manana.text : '-'}</td>
-          <td class="py-2.5 px-3">${r.tarde ? r.tarde.text : '-'}</td>
-          <td class="py-2.5 px-3">${r.noche ? r.noche.text : '-'}</td>
-          <td class="py-2.5 px-3 text-right">
-            <button onclick="switchMainSection('aulas'); selectRoom('${r.id}'); toggleTableModal();" class="text-blue-600 font-bold">Ver</button>
-          </td>
+          <td class="py-2 px-3 font-bold text-slate-500">${r.floor === 'pa' ? '2° Planta Alta' : '1° Planta Baja'}</td>
+          <td class="py-2 px-3 font-bold text-slate-800">${r.num}</td>
+          <td class="py-2 px-3 text-slate-600">${r.manana ? r.manana.text : '-'}</td>
+          <td class="py-2 px-3 text-slate-600">${r.tarde ? r.tarde.text : '-'}</td>
+          <td class="py-2 px-3 text-slate-600">${r.noche ? r.noche.text : '-'}</td>
         `;
-        tb.appendChild(tr);
+        tbodyA.appendChild(tr);
+      });
+
+      const tbodyR = document.getElementById('networkTableBody');
+      tbodyR.innerHTML = '';
+      apsData.forEach(a => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-slate-100 hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="py-2 px-3 font-bold text-red-600">${a.name}</td>
+          <td class="py-2 px-3 font-bold text-slate-500">${a.floor === 'pa' ? '2° Planta Alta' : '1° Planta Baja'}</td>
+          <td class="py-2 px-3 text-slate-800">${a.room}</td>
+          <td class="py-2 px-3 font-mono text-slate-600">${a.port || 'Switch PoE'}</td>
+          <td class="py-2 px-3 font-mono text-blue-600">${a.ip}</td>
+          <td class="py-2 px-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[10px]">Activo</span></td>
+        `;
+        tbodyR.appendChild(tr);
+      });
+
+      hwData.forEach(h => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-slate-100 hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="py-2 px-3 font-bold text-sky-700">${h.name}</td>
+          <td class="py-2 px-3 font-bold text-slate-500">${h.floor === 'pa' ? '2° Planta Alta' : '1° Planta Baja'}</td>
+          <td class="py-2 px-3 text-slate-800">${h.room}</td>
+          <td class="py-2 px-3 font-mono text-slate-600">${h.port || 'Core'}</td>
+          <td class="py-2 px-3 font-mono text-slate-700">${h.ip}</td>
+          <td class="py-2 px-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[10px]">Operativo</span></td>
+        `;
+        tbodyR.appendChild(tr);
       });
     }
 
-    function populateNetworkTable() {
-      const tb = document.getElementById('networkTableBody');
-      tb.innerHTML = '';
-      apsData.forEach(ap => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50";
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 font-bold text-slate-900">${ap.name}</td>
-          <td class="py-2.5 px-3 text-rose-600 font-bold text-xs">PUNTO ACCESO WI-FI</td>
-          <td class="py-2.5 px-3 font-medium text-slate-800">${ap.room}</td>
-          <td class="py-2.5 px-3 font-mono text-emerald-700 text-xs">${ap.port}</td>
-          <td class="py-2.5 px-3 font-mono text-sky-700 text-xs">${ap.ip}</td>
-          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">● ${ap.status || 'online'}</span></td>
-          <td class="py-2.5 px-3 text-right">
-            <button onclick="switchMainSection('redes'); selectNetDevice('${ap.id}'); toggleTableModal();" class="text-sky-600 font-bold">Ver</button>
-          </td>
-        `;
-        tb.appendChild(tr);
-      });
-      hwData.forEach(hw => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50";
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 font-bold text-slate-900">${hw.name}</td>
-          <td class="py-2.5 px-3 text-emerald-600 font-bold text-xs uppercase">${hw.type}</td>
-          <td class="py-2.5 px-3 font-medium text-slate-800">${hw.room}</td>
-          <td class="py-2.5 px-3 font-mono text-emerald-700 text-xs">${hw.port}</td>
-          <td class="py-2.5 px-3 font-mono text-sky-700 text-xs">${hw.ip}</td>
-          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">● online</span></td>
-          <td class="py-2.5 px-3 text-right">
-            <button onclick="switchMainSection('redes'); selectNetDevice('${hw.id}'); toggleTableModal();" class="text-sky-600 font-bold">Ver</button>
-          </td>
-        `;
-        tb.appendChild(tr);
-      });
+    // ==========================================
+    // GENERADOR DE INFORME OFICIAL (14 PUNTOS)
+    // ==========================================
+    function openFormalReportModal() {
+      const body = document.getElementById('formalReportBody');
+      body.innerHTML = generateOfficialReportHTML();
+      document.getElementById('formalReportModal').classList.remove('hidden');
+    }
+
+    function closeFormalReportModal() {
+      document.getElementById('formalReportModal').classList.add('hidden');
+    }
+
+    function generateOfficialReportHTML() {
+      return `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px;">
+          
+          <!-- 1. CARÁTULA Y METADATOS FORMALES -->
+          <div style="border-bottom: 3px solid #1e3a8a; padding-bottom: 16px; margin-bottom: 24px; text-align: center;">
+            <div style="font-size: 11pt; font-weight: bold; color: #1e3a8a; text-transform: uppercase; letter-spacing: 1.5px;">
+              Instituto de Educación Superior "Nuevo Horizonte" (IESNH)
+            </div>
+            <h1 style="font-size: 20pt; font-weight: 800; color: #0f172a; margin: 8px 0 4px 0;">
+              INFORME TÉCNICO OFICIAL DE PRÁCTICA PROFESIONALIZANTE
+            </h1>
+            <div style="font-size: 13pt; font-weight: 600; color: #2563eb; margin-bottom: 12px;">
+              Estandarización, Mapeo Estructurado y Puesta en Valor del Parque Informático & Telecomunicaciones
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 9pt; color: #475569; background: #f8fafc; padding: 10px 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+              <div><strong>Sector Auditado:</strong> Planta Alta (Gabinete 32 PCs & Auditorio) y Planta Baja</div>
+              <div><strong>Fecha de Ejecución:</strong> Agosto - Septiembre 2026</div>
+              <div><strong>Estado:</strong> 100% Homologado & En Servicio</div>
+            </div>
+          </div>
+
+          <!-- INTEGRANTES OFICIALES DEL PROYECTO (GOOGLE DOC) -->
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+            <h3 style="font-size: 11pt; font-weight: 700; color: #166534; margin: 0 0 8px 0;">
+              👥 Equipo Responsable de Proyecto & Ejecución Técnica (IESNH):
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 9.5pt; color: #1e293b;">
+              <div>• <strong>Moreno Leandro</strong> — Gestión de proyectos & Planificación</div>
+              <div>• <strong>Argañaraz Bruno</strong> — Gestión de proyectos & Planificación</div>
+              <div>• <strong>Velazquez Nicolas</strong> — Gestión de proyectos & Planificación</div>
+              <div>• <strong>Murquite Leandro</strong> — Gestión de proyectos & Planificación</div>
+              <div>• <strong>Mustang Cristian</strong> — Ingeniería & Implementación de Redes</div>
+              <div>• <strong>Subelza Jonathan</strong> — Ingeniería & Despliegue de Imágenes</div>
+              <div>• <strong>Lopez Alejandro</strong> — Ingeniería & Clonación Sergei Strelec</div>
+              <div>• <strong>Gonzalo Narvaez</strong> — Diseño de Entorno & Personalización Visual</div>
+            </div>
+          </div>
+
+          <!-- 2. OBJETIVOS Y ALCANCE DE LA INTERVENCIÓN -->
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 13pt; font-weight: 700; color: #1e3a8a; border-left: 4px solid #2563eb; padding-left: 8px; margin-bottom: 8px;">
+              1. OBJETIVOS Y ALCANCE DE LA INTERVENCIÓN
+            </h2>
+            <p style="font-size: 10pt; text-align: justify; margin-bottom: 6px;">
+              <strong>Objetivo General:</strong> Estandarizar, homologar y poner en funcionamiento productivo el parque informático del Laboratorio de Informática del IES "Nuevo Horizonte" (Planta Alta recientemente construida), mediante el despliegue de sistemas operativos estables, stack de desarrollo curricular unificado y optimización del cableado estructurado.
+            </p>
+            <p style="font-size: 10pt; text-align: justify;">
+              <strong>Alcance:</strong> Intervención física y lógica de 32 puestos de trabajo distribuidos en 4 filas de doble estación, configuración de políticas de grupo (GPO), clonación masiva vía WinPE Sergei Strelec, acondicionamiento de la troncal vertical PB-PA y auditoría de los 19 puntos de acceso Wi-Fi de alta densidad.
+            </p>
+          </div>
+
+          <!-- 3. MAPEO DEL AULA INFORMÁTICA Y MEDIDAS (GOOGLE DOC) -->
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 13pt; font-weight: 700; color: #1e3a8a; border-left: 4px solid #2563eb; padding-left: 8px; margin-bottom: 8px;">
+              2. MAPEO DEL AULA INFORMÁTICA & DIMENSIONES ESTRUCTURALES
+            </h2>
+            <p style="font-size: 10pt; text-align: justify; margin-bottom: 10px;">
+              El aula informática está estructurada sobre una disposición ergonómica en <strong>4 islas / filas dobles de escritorios</strong>, optimizada para la circulación pedagógica y el paso del tendido estructurado bajo norma ANSI/TIA-568:
+            </p>
+            <ul style="font-size: 9.5pt; margin-left: 20px; line-height: 1.6;">
+              <li><strong>Rack de Comunicaciones:</strong> Esquina superior izquierda del aula (Switch 48P Gigabit PoE + Patch Panels).</li>
+              <li><strong>Fila 1 (Entrada):</strong> 4 puestos dobles (8 puestos) con paso libre a la entrada de <strong>1,10 m</strong>.</li>
+              <li><strong>Pasillo 1-2:</strong> Separación de <strong>1,20 m</strong> para circulación de alumnos.</li>
+              <li><strong>Fila 2:</strong> 4 puestos dobles (8 puestos de trabajo).</li>
+              <li><strong>Pasillo Central (2-3):</strong> Separación principal de <strong>1,60 m</strong> para mayor fluidez de tránsito.</li>
+              <li><strong>Fila 3:</strong> 4 puestos dobles (8 puestos de trabajo).</li>
+              <li><strong>Pasillo 3-4:</strong> Separación de <strong>1,20 m</strong>.</li>
+              <li><strong>Fila 4:</strong> 4 puestos dobles (8 puestos) con margen contra pared de <strong>1,10 m</strong>.</li>
+              <li><strong>Capacidad Instalada:</strong> <strong>32 computadoras completas</strong> alimentadas mediante bajadas perpendiculares de 2,20m por isla.</li>
+            </ul>
+          </div>
+
+          <!-- 4. SEGMENTACIÓN DE HARDWARE EN 4 GRUPOS -->
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 13pt; font-weight: 700; color: #1e3a8a; border-left: 4px solid #2563eb; padding-left: 8px; margin-bottom: 8px;">
+              3. SEGMENTACIÓN DE HARDWARE & CLONACIÓN POR IMÁGENES MAESTRAS
+            </h2>
+            <p style="font-size: 10pt; margin-bottom: 10px;">
+              Para garantizar 100% de compatibilidad en drivers y HAL, se generaron 4 imágenes maestras Sysprep:
+            </p>
+            <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+              <thead>
+                <tr style="background: #1e293b; color: #ffffff;">
+                  <th style="padding: 8px; border: 1px solid #cbd5e1;">Grupo</th>
+                  <th style="padding: 8px; border: 1px solid #cbd5e1;">Modelo / Marca</th>
+                  <th style="padding: 8px; border: 1px solid #cbd5e1;">Rango de PCs</th>
+                  <th style="padding: 8px; border: 1px solid #cbd5e1;">SO Instalado</th>
+                  <th style="padding: 8px; border: 1px solid #cbd5e1;">Equipo Maestro</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background: #f8fafc;">
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold;">Grupo 1</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Banghó</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">PC-01 a PC-05, PC-08, PC-09, PC-11, PC-13</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Windows 11 Profesional (x64)</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold; color: #2563eb;">PC-04</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold;">Grupo 2</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">G-Fast</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">PC-06, PC-07, PC-10, PC-12</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Windows 11 Home (x64)</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold; color: #2563eb;">PC-06</td>
+                </tr>
+                <tr style="background: #f8fafc;">
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold;">Grupo 3</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">OVER TECH</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">PC-15, PC-18, PC-19, PC-20, PC-21, PC-22, PC-24</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Windows 11 Profesional (x64)</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold; color: #2563eb;">PC-15</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold;">Grupo 4</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Performance</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">PC-14, PC-16, PC-17, PC-23, PC-25, PC-27 a PC-31</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">Windows 11 Profesional (x64)</td>
+                  <td style="padding: 6px 8px; border: 1px solid #cbd5e1; font-weight: bold; color: #2563eb;">PC-23</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 5. STACK DE SOFTWARE BASE INSTALADO -->
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 13pt; font-weight: 700; color: #1e3a8a; border-left: 4px solid #2563eb; padding-left: 8px; margin-bottom: 8px;">
+              4. STACK DE APLICACIONES BASE HOMOGENEIZADAS EN TODAS LAS COMPUTADORAS
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 9.5pt;">
+              <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <strong>Ofimática & Lectura:</strong> Microsoft Office 2016 + Adobe Acrobat Reader DC.
+              </div>
+              <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <strong>Lógica & Algoritmia:</strong> PSeInt configurado en perfil estricto IESNH.
+              </div>
+              <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <strong>Desarrollo Web & Bases de Datos:</strong> XAMPP (Apache, MySQL, PHP + phpMyAdmin).
+              </div>
+              <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <strong>Entornos de Desarrollo (IDEs):</strong> Visual Studio Code + NetBeans (Java).
+              </div>
+              <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <strong>Runtimes & Dependencias:</strong> JDK configurado con <code>JAVA_HOME</code> + Composer para PHP.
+              </div>
+              <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <strong>Diseño Asistido por Computadora:</strong> Autodesk AutoCAD 2014 x64 (2D & 3D).
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. AUDITORIO Y ESTUDIO STREAMING (PLANTA ALTA) -->
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 13pt; font-weight: 700; color: #1e3a8a; border-left: 4px solid #2563eb; padding-left: 8px; margin-bottom: 8px;">
+              5. RELEVAMIENTO DE ESPACIOS ANEXOS (PLANTA ALTA RECIÉN CONSTRUIDA)
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; font-size: 9.5pt;">
+              <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background: #faf5ff;">
+                <h4 style="font-size: 11pt; color: #6b21a8; margin: 0 0 6px 0; font-weight: bold;">Auditorio Institucional</h4>
+                <p>• <strong>Capacidad:</strong> 100 personas sentadas.</p>
+                <p>• <strong>Dimensiones Reales:</strong> Largo: 19,5 m | Ancho: 13,65 m | Altura: 3,95 m.</p>
+                <p>• <strong>Equipamiento:</strong> Proyector HD, estrado docente, AP18 Wi-Fi alta densidad y Switch 16P.</p>
+              </div>
+              <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background: #eff6ff;">
+                <h4 style="font-size: 11pt; color: #1e40af; margin: 0 0 6px 0; font-weight: bold;">Estudio de Streaming / Grabación</h4>
+                <p>• <strong>Puesto Técnico:</strong> Triple monitor con soporte articulado y luces LED perimetrales.</p>
+                <p>• <strong>Audio:</strong> Micrófono condensador en brazo con filtro anti-pop.</p>
+                <p>• <strong>Acústica:</strong> Paneles fonoabsorbentes piramidales y AP19 dedicado.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. TELECOMUNICACIONES (19 APs + CORE) -->
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 13pt; font-weight: 700; color: #1e3a8a; border-left: 4px solid #2563eb; padding-left: 8px; margin-bottom: 8px;">
+              6. PADRÓN INTEGRAL DE TELECOMUNICACIONES (19 ACCESS POINTS)
+            </h2>
+            <p style="font-size: 10pt; margin-bottom: 8px;">
+              Red Wi-Fi corporativa con roaming 802.11k/v/r y PoE 802.3at:
+            </p>
+            <ul style="font-size: 9pt; columns: 2; line-height: 1.6;">
+              <li><strong>AP 1:</strong> Bufe Central (PB)</li>
+              <li><strong>AP 2:</strong> Aula 2 (PB)</li>
+              <li><strong>AP 3:</strong> Aula Central (PB)</li>
+              <li><strong>AP 4:</strong> Aula 6 (PB)</li>
+              <li><strong>AP 5:</strong> Aula 7 (PB)</li>
+              <li><strong>AP 6:</strong> Aula 9 (PB)</li>
+              <li><strong>AP 7:</strong> Aula 11 (PB)</li>
+              <li><strong>AP 8:</strong> Aula 12 (PB)</li>
+              <li><strong>AP 9:</strong> Laboratorio (PB)</li>
+              <li><strong>AP 10:</strong> Rectoría (PB)</li>
+              <li><strong>AP 11:</strong> Aula 15 (PB)</li>
+              <li><strong>AP 12:</strong> Cocina (PB)</li>
+              <li><strong>AP 13:</strong> Aula 17 (PB)</li>
+              <li><strong>AP 14:</strong> Aula 19 (PB)</li>
+              <li><strong>AP 15:</strong> Baños Mujeres Este (PB)</li>
+              <li><strong>AP 16:</strong> Preceptoría (PB)</li>
+              <li><strong style="color: #2563eb;">AP 17:</strong> Gabinete de Informática (PA)</li>
+              <li><strong style="color: #7c3aed;">AP 18:</strong> Auditorio Institucional (PA)</li>
+              <li><strong style="color: #059669;">AP 19:</strong> Estudio Streaming (PA)</li>
+            </ul>
+          </div>
+
+          <!-- 8. PROPUESTA ESTRATÉGICA & RECOMENDACIONES -->
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 13pt; font-weight: 700; color: #1e3a8a; border-left: 4px solid #2563eb; padding-left: 8px; margin-bottom: 8px;">
+              7. PROPUESTA ESTRATÉGICA Y RECOMENDACIONES FUTURAS
+            </h2>
+            <ol style="font-size: 9.5pt; margin-left: 20px; line-height: 1.6;">
+              <li><strong>Congelamiento de Disco:</strong> Implementar Deep Freeze o Reboot Restore Rx en las particiones de sistema para evitar persistencia de software no autorizado.</li>
+              <li><strong>Imágenes Maestras por Carrera:</strong> Segmentar perfiles de laboratorio para Desarrollo de Software (Docker, Git, Android Studio), Gestión/Salud (SPSS, historias clínicas) y Traducción (SDL Trados).</li>
+              <li><strong>Mejoras al Estudio Multimedia:</strong> Instalación de zócalos pasacables tipo torreta, aire acondicionado ultra silencioso NC-25 y switcher tipo ATEM.</li>
+            </ol>
+          </div>
+
+          <!-- 9. ACTA DE VALIDACIÓN Y FIRMAS -->
+          <div style="border-top: 2px solid #cbd5e1; padding-top: 20px; margin-top: 30px;">
+            <div style="display: flex; justify-content: space-around; text-align: center; font-size: 9pt; color: #475569;">
+              <div style="width: 200px; border-top: 1px solid #94a3b8; padding-top: 6px;">
+                <strong>Equipo Técnico IESNH</strong><br>Alumnos Responsables
+              </div>
+              <div style="width: 200px; border-top: 1px solid #94a3b8; padding-top: 6px;">
+                <strong>Docente de Cátedra</strong><br>Práctica Profesionalizante
+              </div>
+              <div style="width: 200px; border-top: 1px solid #94a3b8; padding-top: 6px;">
+                <strong>Rectoría / Dirección</strong><br>IES "Nuevo Horizonte"
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // EXPORTACIÓN A PDF Y PRINT POPUP
+    // ==========================================
+    function downloadOfficialReportPDF() {
+      const element = document.createElement('div');
+      element.innerHTML = generateOfficialReportHTML();
+      element.style.background = '#ffffff';
+      element.style.color = '#0f172a';
+
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'informe_gabinete_iesnh_oficial.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      if (window.html2pdf) {
+        html2pdf().set(opt).from(element).save();
+      } else {
+        printFormalReportPopup();
+      }
+    }
+
+    function printFormalReportPopup() {
+      const printWin = window.open('', '_blank', 'width=1100,height=900');
+      if (!printWin) {
+        alert('Por favor, permite ventanas emergentes en tu navegador para imprimir el informe.');
+        return;
+      }
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Informe Oficial Gabinete & Telecomunicaciones - IES Nuevo Horizonte</title>
+          <style>
+            @page { size: A4 portrait; margin: 12mm; }
+            body { margin: 0; padding: 0; background: #ffffff; color: #000000; font-family: 'Segoe UI', Arial, sans-serif; }
+            @media print {
+              .no-print { display: none !important; }
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="no-print" style="background: #1e293b; color: #fff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11pt; font-weight: bold;">Vista Previa de Impresión A4 Oficial</span>
+            <div>
+              <button onclick="window.print()" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 8px;">
+                🖨️ Imprimir / Guardar como PDF
+              </button>
+              <button onclick="window.close()" style="background: #475569; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer;">
+                Cerrar
+              </button>
+            </div>
+          </div>
+          ${generateOfficialReportHTML()}
+        </body>
+        </html>
+      `);
+      printWin.document.close();
     }
 
     function toggleDownloadMenu() {
-      document.getElementById('downloadMenu').classList.toggle('hidden');
+      document.getElementById('downloadDropdownMenu').classList.toggle('hidden');
     }
 
-    document.addEventListener('click', (e) => {
-      const c = document.getElementById('downloadDropdownContainer');
-      if (c && !c.contains(e.target)) document.getElementById('downloadMenu').classList.add('hidden');
-    });
-
-    function downloadSelfContainedHtml() {
-      const htmlContent = document.documentElement.outerHTML;
-      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'plano_institucional_interactivo.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toggleDownloadMenu();
-    }
+    window.onclick = function(e) {
+      if (!e.target.closest('#btnDownloadDropdown') && !e.target.closest('#downloadDropdownMenu')) {
+        const dd = document.getElementById('downloadDropdownMenu');
+        if (dd && !dd.classList.contains('hidden')) dd.classList.add('hidden');
+      }
+    };
 
     function downloadSvgVector() {
       const svg = document.getElementById('campusSvg');
-      const serializer = new XMLSerializer();
-      let source = serializer.serializeToString(svg);
-      source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-      const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+      const xml = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([xml], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `plano_${currentMainSection}_oficial.svg`;
-      document.body.appendChild(a);
+      a.download = 'plano_iesnh_' + currentFloor + '.svg';
       a.click();
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toggleDownloadMenu();
     }
 
     function downloadPngImage() {
       const svg = document.getElementById('campusSvg');
-      const serializer = new XMLSerializer();
-      const svgStr = serializer.serializeToString(svg);
+      const xml = new XMLSerializer().serializeToString(svg);
       const canvas = document.createElement('canvas');
-      canvas.width = 1650;
-      canvas.height = 900;
+      canvas.width = 2500;
+      canvas.height = 1340;
       const ctx = canvas.getContext('2d');
       const img = new Image();
-      const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+      const svgBlob = new Blob([xml], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
-
       img.onload = function() {
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         URL.revokeObjectURL(url);
-
-        canvas.toBlob(function(blob) {
-          const pngUrl = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = pngUrl;
-          a.download = `plano_${currentMainSection}_oficial.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(pngUrl);
-        });
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = 'plano_iesnh_' + currentFloor + '_hd.png';
+        a.click();
       };
       img.src = url;
-      toggleDownloadMenu();
     }
 
+    // INICIALIZACIÓN
     window.addEventListener('DOMContentLoaded', () => {
-      switchMainSection('redes');
-      selectNetDevice('AP1');
+      switchFloor(currentFloor);
     });
+
   </script>
 </body>
 </html>
