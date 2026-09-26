@@ -20,6 +20,8 @@
   </script>
 
   <style>
+    .hidden { display: none !important; }
+
     @media print {
       .no-print { display: none !important; }
       body { background: white !important; color: black !important; padding: 0 !important; }
@@ -124,10 +126,11 @@
 
         <!-- Botón Ver Informe Oficial Completo (14 Puntos) -->
         <!-- Botón Ver Renders 3D Cutaway -->
-        <button onclick="toggleRendersModal()" 
-          class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm border border-amber-400/40">
+        <button id="btn-renders-3d" onclick="toggleRendersModal()" 
+          class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm border border-amber-400/40"
+          title="Ver Renders 3D Arquitectónicos y Cortes Isométricos">
           <span>📸</span>
-          <span class="hidden sm:inline">Renders 3D</span>
+          <span>Renders 3D</span>
         </button>
         <button onclick="openFormalReportModal()" 
           class="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
@@ -620,6 +623,106 @@
       </div>
     </div>
   </div>
+
+
+  <!-- MODAL: RENDERS 3D ARQUITECTÓNICOS (CORTE ISOMÉTRICO DESPIEZADO) -->
+  <div id="modal-renders-3d" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center hidden p-4" style="display: none;" onclick="if(event.target===this) toggleRendersModal(false)">
+    <div class="glass-card max-w-5xl w-full max-h-[92vh] rounded-3xl overflow-hidden flex flex-col border border-slate-700 shadow-2xl bg-slate-900/95 text-white">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+            🏛️
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-white flex items-center gap-2">
+              <span>Renders 3D Arquitectónicos • Corte Isométrico Despiezado</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Oficial</span>
+            </h3>
+            <p class="text-xs text-slate-400">Instituto de Educación Superior "Nuevo Horizonte" • Parcela 60m × 40m</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <a href="simulador_3d_interactivo.html" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow">
+            <span>🎮</span>
+            <span>Abrir en Simulador 3D</span>
+          </a>
+          <button onclick="toggleRendersModal(false)" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition text-lg leading-none" title="Cerrar modal">
+            ✕
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6 overflow-y-auto space-y-6 text-slate-200">
+        <!-- Render 1: General Cutaway -->
+        <div class="space-y-2.5 bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h4 class="font-bold text-sm text-cyan-300 flex items-center gap-1.5">
+                <span>1. Vista General Axonométrica Despiezada</span>
+                <span class="text-xs font-normal text-cyan-400/80">(Cutaway 3D Parcela 60m × 40m)</span>
+              </h4>
+              <p class="text-xs text-slate-400">Huella en "C", Patio Central Descubierto (368 m²) y Bloque Planta Alta (31m × 21m)</p>
+            </div>
+            <a href="assets/renders_3d/corte_isometrico_instituto.jpg" target="_blank" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-lg text-xs font-semibold border border-cyan-500/30 flex items-center gap-1 transition">
+              🔍 <span>Ver HD Pantalla Completa</span>
+            </a>
+          </div>
+          <div class="rounded-2xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-xl group relative">
+            <a href="assets/renders_3d/corte_isometrico_instituto.jpg" target="_blank">
+              <img src="assets/renders_3d/corte_isometrico_instituto.jpg" class="w-full h-auto max-h-[420px] object-cover hover:scale-[1.01] transition duration-300" alt="Corte Isométrico General">
+            </a>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Visualización integral de la parcela de 60m × 40m (2.400 m²): Planta Baja perimetral en "C" con patio abierto de ~368 m², techos originales de chapa metálica trapezoidal a la vista en alas norte y este, y Planta Alta seccionada de 31m × 21m conteniendo el Auditorio (10m × 21m), vestíbulo central y ala tecnológica (Gabinete de 31 PCs y Sala de Streaming).
+          </p>
+        </div>
+
+        <!-- Render 2 & 3 Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <!-- Render 2: Escalera y Gabinete -->
+          <div class="space-y-2.5 bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <h4 class="font-bold text-xs text-amber-300">2. Articulación: Escalera en 'U' & Gabinete (31 PCs)</h4>
+                <a href="assets/renders_3d/detalle_escalera_gabinete.jpg" target="_blank" class="text-[11px] text-amber-400 hover:underline">
+                  🔍 HD
+                </a>
+              </div>
+              <div class="rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-lg">
+                <a href="assets/renders_3d/detalle_escalera_gabinete.jpg" target="_blank">
+                  <img src="assets/renders_3d/detalle_escalera_gabinete.jpg" class="w-full h-52 object-cover hover:scale-[1.02] transition duration-300" alt="Escalera y Gabinete">
+                </a>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Escalera estructural de dos tramos con descanso intermedio y barandas de caño tubular blanco, ubicada en el patio junto al Aula 13 / Sala de Profesores, enlazando directamente al vestíbulo alto y al Gabinete Tecnológico con 31 puestos de PC y estudio de streaming.
+            </p>
+          </div>
+
+          <!-- Render 3: Auditorio -->
+          <div class="space-y-2.5 bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <h4 class="font-bold text-xs text-purple-300">3. Auditorio Institucional (10m × 21m • 100 Personas)</h4>
+                <a href="assets/renders_3d/corte_auditorio_principal.jpg" target="_blank" class="text-[11px] text-purple-400 hover:underline">
+                  🔍 HD
+                </a>
+              </div>
+              <div class="rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-lg">
+                <a href="assets/renders_3d/corte_auditorio_principal.jpg" target="_blank">
+                  <img src="assets/renders_3d/corte_auditorio_principal.jpg" class="w-full h-52 object-cover hover:scale-[1.02] transition duration-300" alt="Auditorio Principal">
+                </a>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Gran salón de conferencias con estrado elevado al norte, atril, telón oscuro, butacas azul marino con pasillo central amplio y doble acceso desde el pasillo central y la Sala Previa.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- SCRIPT CON TODA LA LÓGICA INTERACTIVA, CALIBRADOR Y GENERACIÓN DE REPORTES -->
   <script>
@@ -1862,9 +1965,23 @@
     // ==========================================
     // GENERADOR DE INFORME OFICIAL (14 PUNTOS)
     // ==========================================
-    function toggleRendersModal() {
+    function toggleRendersModal(forceState) {
       const m = document.getElementById('modal-renders-3d');
-      if (m) m.classList.toggle('hidden');
+      if (!m) return;
+      let shouldOpen;
+      if (typeof forceState === 'boolean') {
+        shouldOpen = forceState;
+      } else {
+        const isHidden = m.classList.contains('hidden') || m.style.display === 'none' || window.getComputedStyle(m).display === 'none';
+        shouldOpen = isHidden;
+      }
+      if (shouldOpen) {
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+      } else {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
     }
 
     function openFormalReportModal() {
