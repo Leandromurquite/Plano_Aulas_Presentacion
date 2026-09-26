@@ -3093,17 +3093,43 @@
         camera.position.x += moveVector.x * speed * delta;
         camera.position.z += moveVector.z * speed * delta;
 
-        // Subida suave por la escalera
-        if (camera.position.x >= 3.0 && camera.position.x <= 10.0 && camera.position.z >= -24.0 && camera.position.z <= -15.0) {
-          const t = (camera.position.z - (-24.0)) / 9.0;
-          playerTargetY = 1.7 + (1.0 - Math.max(0, Math.min(1, t))) * paConfig.elevY;
-        } else if (camera.position.y > 3.0) {
-          playerTargetY = paConfig.elevY + 1.7;
+        // Detección física y subida/bajada fluida por la escalera y permanencia en Planta Alta
+        const px = camera.position.x;
+        const pz = camera.position.z;
+        const paFloorY = (paConfig.elevY || 3.4) + 1.7; // Altura de ojos en Planta Alta (~5.1m)
+        const pbFloorY = 1.7; // Altura de ojos en Planta Baja
+
+        // Zona de la escalera en 'U' (x: -11.5 a -4.5, z: 1.0 a 8.5)
+        const inStairArea = (px >= -11.5 && px <= -4.5 && pz >= 1.0 && pz <= 8.5);
+        // Zona de Planta Alta (x: -27.0 a +6.5, z: -1.0 a 22.0)
+        const inPAArea = (px >= -27.0 && px <= +6.5 && pz >= -1.0 && pz <= 22.0);
+
+        if (inStairArea) {
+          // Si está en el Tramo 1 (oeste, x < -8.0, subiendo hacia el descanso al norte)
+          if (px <= -7.8) {
+            const t1 = Math.max(0, Math.min(1, (pz - 1.5) / 5.5)); // 0 en z=1.5, 1 en z=7.0
+            playerTargetY = pbFloorY + t1 * ((paFloorY - pbFloorY) * 0.5); // Sube hasta el descanso medio
+          } 
+          // Si está en el Descanso intermedio (norte, z > 6.8)
+          else if (pz >= 6.8) {
+            playerTargetY = pbFloorY + (paFloorY - pbFloorY) * 0.5; // Mitad de altura
+          }
+          // Si está en el Tramo 2 (este, x > -7.8, subiendo hacia el sur/desembarco a PA)
+          else {
+            const t2 = Math.max(0, Math.min(1, (7.0 - pz) / 5.5)); // 0 en z=7.0, 1 en z=1.5
+            playerTargetY = pbFloorY + (paFloorY - pbFloorY) * 0.5 + t2 * ((paFloorY - pbFloorY) * 0.5); // Sube hasta PA
+          }
+        } else if (inPAArea && camera.position.y > 3.0) {
+          // Ya está arriba caminando en Planta Alta
+          playerTargetY = paFloorY;
         } else {
-          playerTargetY = 1.7;
+          // En Planta Baja
+          playerTargetY = pbFloorY;
         }
 
-        playerY += (playerTargetY - playerY) * 0.12;
+        // Suavizado de altura y aplicación
+        playerY += (playerTargetY - playerY) * 0.2;
+        camera.position.y = playerY;
         camera.position.y = playerY;
 
         camera.position.x = Math.max(-60, Math.min(60, camera.position.x));
