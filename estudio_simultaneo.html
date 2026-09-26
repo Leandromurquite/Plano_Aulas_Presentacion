@@ -53,7 +53,7 @@
     <div class="flex items-center space-x-2">
       <button onclick="openReportInNewTab()" class="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow">
         <i class="fa-solid fa-file-invoice"></i>
-        <span>Informe Oficial (10 Pts)</span>
+        <span>Informe Oficial (14 Pts Maestro)</span>
       </button>
       <a href="index.html" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-slate-700">
         <i class="fa-solid fa-house"></i>
@@ -99,6 +99,33 @@
 
   <script>
     let currentMode = 'split';
+
+    // Forwarding bidireccional directo entre los iframes 2D y 3D
+    window.addEventListener('message', (evt) => {
+      if (!evt.data) return;
+      const ifr2D = document.getElementById('iframe-2d');
+      const ifr3D = document.getElementById('iframe-3d');
+      
+      if (evt.source === ifr2D?.contentWindow && ifr3D?.contentWindow) {
+        ifr3D.contentWindow.postMessage(evt.data, '*');
+      } else if (evt.source === ifr3D?.contentWindow && ifr2D?.contentWindow) {
+        ifr2D.contentWindow.postMessage(evt.data, '*');
+      }
+
+      // Notificación flotante en el estudio maestro
+      if (evt.data.type === 'ROOMS_SYNC' || evt.data.type === 'ROOM_CHANGE') {
+        const toast = document.getElementById('sync-notification');
+        const msg = document.getElementById('sync-msg');
+        if (toast && msg) {
+          const detail = evt.data.type === 'ROOMS_SYNC' ? 'Plano Completo Guardado' : (evt.data.room ? (evt.data.room.num || evt.data.room.id) : 'Espacio');
+          msg.innerHTML = `💾 Sincronizado en tiempo real: <b class="text-white">${detail}</b>`;
+          toast.style.opacity = '1';
+          clearTimeout(toast._timer);
+          toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2200);
+        }
+      }
+    });
+
 
     function setViewMode(mode) {
       currentMode = mode;

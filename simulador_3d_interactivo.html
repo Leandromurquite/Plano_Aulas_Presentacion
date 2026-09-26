@@ -54,6 +54,60 @@
       }
     });
 
+    
+    // =============================================================
+    // SINCRONIZACIÓN MAESTRA CON EL PLANO 2D
+    // =============================================================
+    function syncFrom2D(silent, incomingData) {
+      try {
+        let data = incomingData;
+        if (!data) {
+          const raw = localStorage.getItem('iesnh_synced_rooms_v1');
+          if (raw) data = JSON.parse(raw);
+        }
+        if (!data || !Array.isArray(data)) {
+          if (!silent) alert("No se detectaron datos sincronizados aún. En el Plano 2D hacé clic en 'Guardar & Sincronizar'.");
+          return;
+        }
+        data.forEach(up => {
+          let targetList = (up.floor === 'pa' || up.floor === 2) ? initialRoomsPA : initialRoomsPB;
+          let r = targetList.find(x => x.id === up.id);
+          if (r) {
+            r.x = up.x; r.y = up.y; r.w = up.w; r.h = up.h;
+            if (up.real_w) r.real_w = up.real_w;
+            if (up.real_h) r.real_h = up.real_h;
+            if (up.rot !== undefined) r.rot = up.rot;
+          }
+        });
+        allRooms = [...initialRoomsPB, ...initialRoomsPA];
+        buildSchool3D();
+        if (!silent) showLiveSyncIndicator("Plano Completo Actualizado desde 2D");
+      } catch(err) {
+        console.error("Error al sincronizar escena 3D:", err);
+      }
+    }
+
+    // Escuchar mensajes por window.parent / iframe (estudio_simultaneo.html)
+    window.addEventListener('message', function(evt) {
+      if (!evt.data) return;
+      if (evt.data.type === 'ROOMS_SYNC' && evt.data.allRooms) {
+        syncFrom2D(false, evt.data.allRooms);
+      } else if (evt.data.type === 'ROOM_CHANGE' && evt.data.room) {
+        const up = evt.data.room;
+        let targetList = (up.floor === 'pa' || up.floor === 2) ? initialRoomsPA : initialRoomsPB;
+        let r = targetList.find(x => x.id === up.id);
+        if (r) {
+          r.x = up.x; r.y = up.y; r.w = up.w; r.h = up.h;
+          if (up.real_w) r.real_w = up.real_w;
+          if (up.real_h) r.real_h = up.real_h;
+          if (up.rot !== undefined) r.rot = up.rot;
+          allRooms = [...initialRoomsPB, ...initialRoomsPA];
+          buildSchool3D();
+          showLiveSyncIndicator(r.num || r.id);
+        }
+      }
+    });
+
     function showLiveSyncIndicator(roomName) {
       let badge = document.getElementById('live-sync-toast');
       if (!badge) {
@@ -204,6 +258,14 @@
         title="Modificar tamaño y dimensiones del 2° piso en tiempo real">
         <i class="fa-solid fa-ruler-combined text-amber-400 text-sm"></i>
         <span>Dimensiones 2° Piso</span>
+      </button>
+
+            <!-- Botón Sincronizar desde Plano 2D -->
+      <button onclick="syncFrom2D()" 
+        class="glass px-3.5 py-2 rounded-2xl text-xs font-bold text-emerald-300 hover:text-emerald-100 hover:bg-emerald-600/30 transition flex items-center space-x-2 shadow-xl border border-emerald-500/30"
+        title="Actualizar y reconstruir la escena 3D con la última versión guardada del Plano 2D">
+        <i class="fa-solid fa-rotate text-emerald-400 text-sm"></i>
+        <span>Actualizar desde 2D</span>
       </button>
 
       <!-- GENERADOR DE INFORMES BUTTON -->
@@ -898,6 +960,10 @@
 
     // PLANTA BAJA ROOMS (23 Aulas + Servicios + Patio abierto)
     let initialRoomsPB = [
+      { id: "pasillo_acceso_central", floor: 1, num: "HALL CENTRAL / ACCESO PATIO", x: 525, y: 28, w: 60, h: 147, cat: "Pasillos", icon: "🚪", isCorridor: true },
+      { id: "admin_secretaria", floor: 1, num: "SECRETARÍA / RECTORÍA", x: 385, y: 28, w: 140, h: 147, cat: "Administración", icon: "📋", m: "Secretaría y Atención", t: "Secretaría", n: "Secretaría", doorWall: "south", doorRatio: 0.5 },
+      { id: "admin_buffet", floor: 1, num: "BUFFET CENTRAL / KIOSCO", x: 585, y: 28, w: 140, h: 147, cat: "Servicios", icon: "☕", m: "Buffet & Redes (Firewall/PoE)", t: "Buffet Central", n: "Buffet Central", doorWall: "south", doorRatio: 0.5 },
+
       { id: "deposito", floor: 1, num: "Depósito", x: 35, y: 28, w: 90, h: 220, cat: "Servicios", icon: "📦", m: "Depósito", t: "Depósito", n: "Depósito", doorWall: "east", doorRatio: 0.5 },
       { id: "cocina", floor: 1, num: "Cocina", x: 130, y: 28, w: 130, h: 145, cat: "Gastronomía", icon: "🍳", m: "Cocina 2°", t: "Servicio de Salud 1°", n: "Gastronomía 3°", doorWall: "south", doorRatio: 0.5 },
       { id: "aula_16", floor: 1, num: "Aula 16", x: 175, y: 180, w: 85, h: 95, cat: "Tecnología", icon: "💻", m: "Libre", t: "Software 1°", n: "Hemoterapia 3°", doorWall: "west", doorRatio: 0.5 },
@@ -942,143 +1008,161 @@
     // PLANTA ALTA ROOMS (Medidas exactas del documento oficial del IES Nuevo Horizonte)
     // PLANTA ALTA ROOMS (Medidas exactas de la Página 6 del Informe Oficial del IESNH)
     let DEFAULT_ROOMS_PA_OFFICIAL = [
-    {
-        "id": "pa_gabinete",
-        "floor": 2,
-        "num": "GABINETE (32 PCs)",
-        "x": 340,
-        "y": 340,
-        "w": 118,
-        "h": 115,
-        "cat": "Tecnología",
-        "icon": "💻",
-        "m": "Tec. Sup. Desarrollo de Software (3° 1°)",
-        "t": "Tec. Sup. Desarrollo de Software",
-        "n": "Tec. Sup. Infraestructura y Redes",
-        "isGabinete": true,
-        "desc": "Laboratorio informático con 32 PCs en 4 filas dobles de 8 puestos (pasillo central de 1,60 m). Rack Mural SOHO 6U en esquina superior izquierda con switches Hikvision 24P.",
-        "doorWall": "east",
-        "doorRatio": 0.8,
-        "real_w": 11.85,
-        "real_h": 11.5
-    },
-    {
-        "id": "pa_streaming",
-        "floor": 2,
-        "num": "SALA DE STREAMING",
-        "x": 340,
-        "y": 458,
-        "w": 118,
-        "h": 55,
-        "cat": "Tecnología",
-        "icon": "🎙️",
-        "m": "Producción Audiovisual & Clases",
-        "t": "Transmisiones en Vivo & Entrevistas",
-        "n": "Grabación de Podcasts",
-        "isStreaming": true,
-        "desc": "Estudio multimedia institucional IESNH: puesto técnico de control ergonómico con triple monitor, micrófono en brazo articulado con filtro anti-pop, mesa de conductores y paneles acústicos.",
-        "doorWall": "east",
-        "doorRatio": 0.5,
-        "real_w": 11.85,
-        "real_h": 5.5
-    },
-    {
-        "id": "pa_sector_titulos",
-        "floor": 2,
-        "num": "SECTOR TÍTULOS / AULA",
-        "x": 340,
-        "y": 515,
-        "w": 118,
-        "h": 40,
-        "cat": "Administración",
-        "icon": "📜",
-        "m": "Gestión y Entrega de Títulos",
-        "t": "Organización Documental y Certificados",
-        "n": "Resguardo y Archivo",
-        "desc": "Área administrativa para resguardo y archivo de títulos, actas de examen y legajos académicos.",
-        "doorWall": "east",
-        "doorRatio": 0.5,
-        "real_w": 11.85,
-        "real_h": 4.0
-    },
-    {
-        "id": "pa_escalera",
-        "floor": 2,
-        "num": "ESCALERA (Llegada PB)",
-        "x": 460,
-        "y": 340,
-        "w": 55,
-        "h": 60,
-        "cat": "Pasillos",
-        "icon": "🪜",
-        "m": "Circulación Vertical Planta Baja - Planta Alta",
-        "t": "Circulación Vertical",
-        "n": "Circulación Vertical",
-        "desc": "Llegada directa de la escalera en 'U' desde el patio de Planta Baja.",
-        "doorWall": "south",
-        "doorRatio": 0.5,
-        "real_w": 5.5,
-        "real_h": 6.0
-    },
-    {
-        "id": "pa_banos",
-        "floor": 2,
-        "num": "Baños Damas y Caballeros",
-        "x": 460,
-        "y": 400,
-        "w": 55,
-        "h": 55,
-        "cat": "Servicios",
-        "icon": "🚻",
-        "m": "Sanitarios Diferenciados D/C",
-        "t": "Sanitarios D/C",
-        "n": "Sanitarios D/C",
-        "desc": "Batería de sanitarios para damas y caballeros.",
-        "doorWall": "east",
-        "doorRatio": 0.5,
-        "real_w": 5.5,
-        "real_h": 5.5
-    },
-    {
-        "id": "pa_sala_previa",
-        "floor": 2,
-        "num": "SALA PREVIA / FOYER",
-        "x": 460,
-        "y": 455,
-        "w": 55,
-        "h": 95,
-        "cat": "Sociales",
-        "icon": "🛋️",
-        "m": "Recepción y Foyer Auditorio",
-        "t": "Encuentros y Entrevistas",
-        "n": "Preparación de Actos",
-        "desc": "Espacio de antesala y recepción protocolar previo al ingreso al Auditorio.",
-        "doorWall": "east",
-        "doorRatio": 0.5,
-        "real_w": 5.5,
-        "real_h": 9.5
-    },
-    {
-        "id": "pa_auditorio",
-        "floor": 2,
-        "num": "AUDITORIO INSTITUCIONAL",
-        "x": 515,
-        "y": 345,
-        "w": 135,
-        "h": 195,
-        "cat": "Sociales",
-        "icon": "🎭",
-        "m": "Conferencias, Presentaciones y Actos (100 pers)",
-        "t": "Capacitaciones y Eventos",
-        "n": "Defensas de Tesis",
-        "isAuditorio": true,
-        "desc": "Auditorio institucional de 19,5 m × 13,65 m × 3,95 m de altura. Estrado elevado al norte con pantalla de proyección y platea para 100 personas.",
-        "doorWall": "west",
-        "doorRatio": 0.3,
-        "real_w": 13.65,
-        "real_h": 19.5,
-        "real_alt": 3.95
-    }
+  {
+    "id": "pa_gabinete",
+    "floor": 2,
+    "num": "GABINETE (32 PCs)",
+    "x": 340,
+    "y": 340,
+    "w": 118,
+    "h": 115,
+    "cat": "Tecnología",
+    "icon": "💻",
+    "m": "Tec. Sup. Desarrollo de Software (3° 1°)",
+    "t": "Tec. Sup. Desarrollo de Software",
+    "n": "Tec. Sup. Infraestructura y Redes",
+    "isGabinete": true,
+    "desc": "Laboratorio informático con 32 PCs en 4 filas dobles de 8 puestos (pasillo central de 1,60 m). Rack Mural SOHO 6U en esquina superior izquierda con switches Hikvision 24P.",
+    "doorWall": "east",
+    "doorRatio": 0.8,
+    "real_w": 11.85,
+    "real_h": 11.5
+  },
+  {
+    "id": "pa_streaming",
+    "floor": 2,
+    "num": "SALA DE STREAMING",
+    "x": 340,
+    "y": 455,
+    "w": 118,
+    "h": 55,
+    "cat": "Tecnología",
+    "icon": "🎙️",
+    "m": "Producción Audiovisual & Clases",
+    "t": "Transmisiones en Vivo & Entrevistas",
+    "n": "Grabación de Podcasts",
+    "isStreaming": true,
+    "desc": "Estudio multimedia institucional IESNH: puesto técnico con triple monitor, micrófono profesional, cámara y paneles fonoabsorbentes piramidales.",
+    "doorWall": "east",
+    "doorRatio": 0.5,
+    "real_w": 11.85,
+    "real_h": 5.5
+  },
+  {
+    "id": "pa_sector_titulos",
+    "floor": 2,
+    "num": "SECTOR TÍTULOS / AULA",
+    "x": 340,
+    "y": 510,
+    "w": 118,
+    "h": 40,
+    "cat": "Administración",
+    "icon": "📁",
+    "m": "Gestión y Entrega de Títulos",
+    "t": "Organización Documental y Certificados",
+    "n": "Resguardo y Archivo",
+    "desc": "Área administrativa para resguardo y archivo de títulos, actas de examen, libros matrices y documentación de egresados.",
+    "doorWall": "east",
+    "doorRatio": 0.5,
+    "real_w": 11.85,
+    "real_h": 4.0
+  },
+  {
+    "id": "pa_escalera",
+    "floor": 2,
+    "num": "ESCALERA (Llegada PB)",
+    "x": 458,
+    "y": 340,
+    "w": 54,
+    "h": 50,
+    "cat": "Pasillos",
+    "icon": "🪜",
+    "m": "Circulación Vertical Planta Baja - Planta Alta",
+    "t": "Circulación Vertical",
+    "n": "Circulación Vertical",
+    "desc": "Llegada directa de la escalera en 'U' desde el patio de Planta Baja. Desembarco a nivel +3,40 m.",
+    "doorWall": "south",
+    "doorRatio": 0.5,
+    "real_w": 5.4,
+    "real_h": 5.0
+  },
+  {
+    "id": "pa_pasillo_distribuidor",
+    "floor": 2,
+    "num": "PASILLO DISTRIBUIDOR",
+    "x": 458,
+    "y": 390,
+    "w": 26,
+    "h": 160,
+    "cat": "Pasillos",
+    "icon": "🚶",
+    "m": "Circulación y Distribución Central PA",
+    "t": "Circulación Central",
+    "n": "Circulación Central",
+    "isCorridor": true,
+    "desc": "Pasillo distribuidor central de Planta Alta de 2,60 m de ancho. Conecta directamente la llegada de escalera con el Gabinete, Estudio de Streaming, Sanitarios, Foyer y Auditorio.",
+    "real_w": 2.6,
+    "real_h": 16.0
+  },
+  {
+    "id": "pa_banos",
+    "floor": 2,
+    "num": "Baños Damas y Caballeros",
+    "x": 484,
+    "y": 390,
+    "w": 28,
+    "h": 50,
+    "cat": "Servicios",
+    "icon": "🚻",
+    "m": "Sanitarios Diferenciados D/C",
+    "t": "Sanitarios D/C",
+    "n": "Sanitarios D/C",
+    "desc": "Batería de sanitarios para damas y caballeros.",
+    "doorWall": "east",
+    "doorRatio": 0.5,
+    "real_w": 2.8,
+    "real_h": 5.0
+  },
+  {
+    "id": "pa_sala_previa",
+    "floor": 2,
+    "num": "SALA PREVIA / FOYER",
+    "x": 484,
+    "y": 440,
+    "w": 28,
+    "h": 110,
+    "cat": "Sociales",
+    "icon": "🏛️",
+    "m": "Recepción y Foyer Auditorio",
+    "t": "Encuentros y Entrevistas",
+    "n": "Preparación de Actos",
+    "desc": "Espacio de antesala y recepción protocolar previo al ingreso al Auditorio.",
+    "doorWall": "east",
+    "doorRatio": 0.5,
+    "real_w": 2.8,
+    "real_h": 11.0
+  },
+  {
+    "id": "pa_auditorio",
+    "floor": 2,
+    "num": "AUDITORIO INSTITUCIONAL",
+    "x": 512,
+    "y": 340,
+    "w": 138,
+    "h": 195,
+    "cat": "Sociales",
+    "icon": "🎭",
+    "m": "Conferencias, Presentaciones y Actos (100 pers)",
+    "t": "Capacitaciones y Eventos",
+    "n": "Defensas de Tesis",
+    "isAuditorio": true,
+    "desc": "Auditorio institucional de 19,5 m × 13,65 m × 3,95 m de altura. Estrado elevado al norte con pantalla de proyección y platea para 100 personas.",
+    "doorWall": "west",
+    "doorRatio": 0.3,
+    "real_w": 13.65,
+    "real_h": 19.5,
+    "real_alt": 3.95
+  }
 ];
 
     // Cargar calibraciones guardadas o usar valores oficiales
@@ -1420,7 +1504,11 @@
         floorMesh.userData = { isRoom: true, data: r, floor: 1 };
         roomMeshGroup.add(floorMesh);
 
-        if (!r.isPatio) {
+        if (r.rot) {
+          roomMeshGroup.rotation.y = (r.rot * Math.PI) / 180;
+        }
+
+        if (!r.isPatio && !r.isCorridor && r.cat !== 'Pasillos') {
           const wallThick = 0.25;
           const hasDoorSouth = (r.y < 200 || (r.y >= 350 && r.y < 480));
           const hasDoorNorth = (r.y >= 480);
@@ -1594,7 +1682,12 @@
         fMesh.userData = { isRoom: true, data: r, floor: 2 };
         paGroup.add(fMesh);
 
-        // Muros con puertas transitables
+        if (r.rot) {
+          paGroup.rotation.y = (r.rot * Math.PI) / 180;
+        }
+
+        // Muros con puertas transitables (solo para habitaciones cerradas, no pasillos)
+        if (!r.isCorridor && r.cat !== 'Pasillos') {
         const wallThick = 0.25;
         const isGab = r.isGabinete;
         const isStr = r.isStreaming;
@@ -1615,6 +1708,7 @@
         const wEast = createWallWithDoor(d3D, h3D, wallThick, r.num === 'AULA' || r.num === 'SALA DE DOCENTE', 0.5, wallMaterialPA, false);
         wEast.position.set(w3D/2 - wallThick/2, 0, 0);
         paGroup.add(wEast);
+        }
 
         // Escenario en el Auditorio
         if (r.isAuditorio) {
