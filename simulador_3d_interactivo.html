@@ -887,8 +887,8 @@
         "id": "pa_gabinete",
         "floor": 2,
         "num": "GABINETE (32 PCs)",
-        "x": 120,
-        "y": 280,
+        "x": 340,
+        "y": 340,
         "w": 118,
         "h": 115,
         "cat": "Tecnología",
@@ -897,20 +897,20 @@
         "t": "Tec. Sup. Desarrollo de Software",
         "n": "Tec. Sup. Infraestructura y Redes",
         "isGabinete": true,
-        "desc": "Laboratorio informático con 32 computadoras en 4 filas dobles de 8 puestos (pasillo central de 1,60 m). Rack Mural SOHO 6U en esquina superior izquierda con switches Hikvision 24P.",
+        "desc": "Laboratorio informático con 32 PCs en 4 filas dobles de 8 puestos (pasillo central de 1,60 m). Rack Mural SOHO 6U en esquina superior izquierda con switches Hikvision 24P.",
         "doorWall": "east",
         "doorRatio": 0.8,
-        "real_w": 11.8,
+        "real_w": 11.85,
         "real_h": 11.5
     },
     {
         "id": "pa_streaming",
         "floor": 2,
         "num": "SALA DE STREAMING",
-        "x": 120,
-        "y": 398,
+        "x": 340,
+        "y": 458,
         "w": 118,
-        "h": 52,
+        "h": 55,
         "cat": "Tecnología",
         "icon": "🎙️",
         "m": "Producción Audiovisual & Clases",
@@ -920,17 +920,17 @@
         "desc": "Estudio multimedia institucional IESNH: puesto técnico de control ergonómico con triple monitor, micrófono en brazo articulado con filtro anti-pop, mesa de conductores y paneles acústicos.",
         "doorWall": "east",
         "doorRatio": 0.5,
-        "real_w": 11.8,
-        "real_h": 5.2
+        "real_w": 11.85,
+        "real_h": 5.5
     },
     {
         "id": "pa_sector_titulos",
         "floor": 2,
         "num": "SECTOR TÍTULOS / AULA",
-        "x": 120,
-        "y": 452,
+        "x": 340,
+        "y": 515,
         "w": 118,
-        "h": 38,
+        "h": 40,
         "cat": "Administración",
         "icon": "📜",
         "m": "Gestión y Entrega de Títulos",
@@ -939,15 +939,15 @@
         "desc": "Área administrativa para resguardo y archivo de títulos, actas de examen y legajos académicos.",
         "doorWall": "east",
         "doorRatio": 0.5,
-        "real_w": 11.8,
-        "real_h": 3.8
+        "real_w": 11.85,
+        "real_h": 4.0
     },
     {
         "id": "pa_escalera",
         "floor": 2,
         "num": "ESCALERA (Llegada PB)",
-        "x": 240,
-        "y": 280,
+        "x": 460,
+        "y": 340,
         "w": 55,
         "h": 60,
         "cat": "Pasillos",
@@ -965,8 +965,8 @@
         "id": "pa_banos",
         "floor": 2,
         "num": "Baños Damas y Caballeros",
-        "x": 240,
-        "y": 342,
+        "x": 460,
+        "y": 400,
         "w": 55,
         "h": 55,
         "cat": "Servicios",
@@ -984,10 +984,10 @@
         "id": "pa_sala_previa",
         "floor": 2,
         "num": "SALA PREVIA / FOYER",
-        "x": 240,
-        "y": 400,
+        "x": 460,
+        "y": 455,
         "w": 55,
-        "h": 90,
+        "h": 95,
         "cat": "Sociales",
         "icon": "🛋️",
         "m": "Recepción y Foyer Auditorio",
@@ -997,16 +997,16 @@
         "doorWall": "east",
         "doorRatio": 0.5,
         "real_w": 5.5,
-        "real_h": 9.0
+        "real_h": 9.5
     },
     {
         "id": "pa_auditorio",
         "floor": 2,
         "num": "AUDITORIO INSTITUCIONAL",
-        "x": 297,
-        "y": 280,
-        "w": 133,
-        "h": 210,
+        "x": 515,
+        "y": 345,
+        "w": 135,
+        "h": 195,
         "cat": "Sociales",
         "icon": "🎭",
         "m": "Conferencias, Presentaciones y Actos (100 pers)",
@@ -1016,8 +1016,8 @@
         "desc": "Auditorio institucional de 19,5 m × 13,65 m × 3,95 m de altura. Estrado elevado al norte con pantalla de proyección y platea para 100 personas.",
         "doorWall": "west",
         "doorRatio": 0.3,
-        "real_w": 13.3,
-        "real_h": 21.0,
+        "real_w": 13.65,
+        "real_h": 19.5,
         "real_alt": 3.95
     }
 ];
@@ -1109,12 +1109,12 @@
           if (i === 23) notes = "Equipo Maestro de Clonación (Grupo 4 Performance).";
         }
 
-        // 4 filas x 8 puestos adentro de x: 120..238, y: 280..395
+        // 4 filas x 8 puestos adentro del Gabinete (x: 340..458, y: 340..455)
         const rowIdx = Math.floor((i - 1) / 8); // 0, 1, 2, 3
         const colIdx = (i - 1) % 8;             // 0..7
 
-        const rowYs = [295, 320, 355, 380]; // Pasillo central de 1.60m entre fila 2 y 3
-        const colXs = [130, 142, 155, 168, 185, 198, 210, 222];
+        const rowYs = [355, 378, 410, 435]; // Pasillo central de 1.60m entre fila 2 y 3
+        const colXs = [350, 362, 375, 388, 405, 418, 430, 442];
 
         list.push({
           id: `pc_gab_${i < 10 ? '0' : ''}${i}`,
@@ -1407,7 +1407,7 @@
       // Conexión vertical auténtica según plano XML (arranca junto a Aula 13 / Sala de Profesores en el patio)
       const stairsGroup = new THREE.Group();
       // Ubicación en coordenadas de patio contiguo a Ala Oeste
-      stairsGroup.position.set(0.5, 0, -11.5);
+      stairsGroup.position.set(-8.0, 0, 5.0);
 
       const stairWidth = 2.6;
       const numStepsFlight = 10;
@@ -1579,10 +1579,10 @@
         floor2Group.add(paGroup);
       });
 
-            // Losa base de Planta Alta: exactamente 31.0 m de ancho x 21.0 m de fondo
+                  // Losa base de Planta Alta: exactamente 31.0 m de ancho x 21.0 m de fondo
       const paSlabGeo = new THREE.BoxGeometry(31 * paConfig.scaleX, 0.25, 21 * paConfig.scaleZ);
       const paSlabMesh = new THREE.Mesh(paSlabGeo, floorSlabMaterial);
-      paSlabMesh.position.set(-32.5 * paConfig.scaleX, paElevY - 0.125, 4.5 * paConfig.scaleZ);
+      paSlabMesh.position.set(-10.5 * paConfig.scaleX, paElevY - 0.125, 10.5 * paConfig.scaleZ);
       paSlabMesh.receiveShadow = true;
       floor2Group.add(paSlabMesh);
 
