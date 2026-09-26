@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Institucional de Gestión & Generador de Informes | IES "Nuevo Horizonte"</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    .glass-header { background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .glass-sidebar { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-right: 1px solid rgba(255, 255, 255, 0.08); }
+    .doc-page {
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; }
+      header, aside, #top-controls-bar, .no-print { display: none !important; }
+      main { width: 100% !important; margin: 0 !important; padding: 0 !important; height: auto !important; overflow: visible !important; }
+      .doc-page { box-shadow: none !important; border: none !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+      @page { size: A4 portrait; margin: 15mm; }
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-slate-100 antialiased overflow-hidden">
+
+  <!-- ========================================================================= -->
+  <!-- HEADER PRINCIPAL DEL SISTEMA INSTITUCIONAL -->
+  <!-- ========================================================================= -->
+  <header class="glass-header z-30 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-blue-500/20">
+        🏛️
+      </div>
+      <div>
+        <h1 class="font-extrabold text-sm sm:text-base text-white flex items-center gap-2">
+          <span>Sistema Generador de Informes Institucionales</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-bold">
+            SIGI • IESNH 2026
+          </span>
+        </h1>
+        <p class="text-[11px] text-slate-400">
+          Plataforma oficial de auditoría edilicia, ocupación académica y dictámenes institucionales
+        </p>
+      </div>
+    </div>
+
+    <!-- Center View Mode Pills -->
+    <div class="flex items-center bg-slate-900/90 p-1 rounded-2xl border border-slate-800 text-xs font-semibold shadow-inner">
+      <button id="btn-view-doc" onclick="setViewMode('doc')" class="px-3.5 py-1.5 rounded-xl bg-blue-600 text-white transition flex items-center space-x-1.5 shadow font-bold">
+        <i class="fa-solid fa-file-lines"></i>
+        <span>Vista Documento (A4)</span>
+      </button>
+      <button id="btn-view-metrics" onclick="setViewMode('metrics')" class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard Métricas</span>
+      </button>
+      <button id="btn-view-editor" onclick="setViewMode('editor')" class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+        <i class="fa-solid fa-table"></i>
+        <span>Planilla de Aulas</span>
+      </button>
+    </div>
+
+    <!-- Right Quick Actions -->
+    <div class="flex items-center space-x-2">
+      <button onclick="printCurrentDocument()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-md border border-blue-400/30">
+        <i class="fa-solid fa-print"></i>
+        <span>Imprimir / PDF</span>
+      </button>
+      <button onclick="downloadDocumentHTML()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-md border border-emerald-400/30">
+        <i class="fa-solid fa-download"></i>
+        <span>Descargar HTML</span>
+      </button>
+      <button onclick="exportToCSV()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition flex items-center space-x-1 border border-slate-700">
+        <i class="fa-solid fa-file-excel text-emerald-400"></i>
+        <span>Excel (.csv)</span>
+      </button>
+      <div class="h-4 w-px bg-slate-800 my-auto"></div>
+      <a href="index.html" class="px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition flex items-center space-x-1 border border-slate-700" title="Volver al Portal Principal">
+        <i class="fa-solid fa-house"></i>
+        <span>Inicio</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- CONTENEDOR PRINCIPAL: PANEL LATERAL DE CONTROL + ÁREA DE TRABAJO -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex w-full h-[calc(100vh-60px)] overflow-hidden">
+    
+    <!-- BARRA LATERAL DE CONFIGURACIÓN Y PARÁMETROS (SIDEBAR) -->
+    <aside class="glass-sidebar w-80 md:w-96 flex flex-col shrink-0 overflow-y-auto custom-scrollbar border-r border-slate-800 p-4 space-y-5">
+      
+      <!-- 1. SELECTOR DE TIPO DE INFORME -->
+      <div class="space-y-2">
+        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>1. Tipo de Informe Institucional</span>
+          <span class="text-[10px] text-cyan-400 font-mono">6 MÓDULOS</span>
+        </label>
+        
+        <div class="space-y-1.5" id="report-types-container">
+          <!-- Card 1: Directivo -->
+          <div onclick="selectReportType('directivo')" id="card-rep-directivo" class="p-3 rounded-2xl cursor-pointer border border-blue-500/50 bg-blue-600/20 text-white transition flex items-start space-x-3 shadow-md">
+            <span class="text-xl mt-0.5">🏛️</span>
+            <div>
+              <div class="font-black text-xs text-white">General Institucional (Directivo)</div>
+              <div class="text-[11px] text-slate-300 leading-snug">Visión global: autoridades, edificio, capacidad, 14 tecnicaturas y firmas.</div>
+            </div>
+          </div>
+
+          <!-- Card 2: Académico -->
+          <div onclick="selectReportType('academico')" id="card-rep-academico" class="p-3 rounded-2xl cursor-pointer border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 transition flex items-start space-x-3">
+            <span class="text-xl mt-0.5">🎓</span>
+            <div>
+              <div class="font-black text-xs text-white">Académico & Ocupación Áulica</div>
+              <div class="text-[11px] text-slate-400 leading-snug">Censo aula por aula, asignación por turnos M/T/N y espacios especiales.</div>
+            </div>
+          </div>
+
+          <!-- Card 3: Infraestructura -->
+          <div onclick="selectReportType('infraestructura')" id="card-rep-infraestructura" class="p-3 rounded-2xl cursor-pointer border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 transition flex items-start space-x-3">
+            <span class="text-xl mt-0.5">🏢</span>
+            <div>
+              <div class="font-black text-xs text-white">Infraestructura & Edificio</div>
+              <div class="text-[11px] text-slate-400 leading-snug">Relevamiento arquitectónico, 2.400 m² PB, 651 m² PA, pasillos y escalera.</div>
+            </div>
+          </div>
+
+          <!-- Card 4: Seguridad -->
+          <div onclick="selectReportType('seguridad')" id="card-rep-seguridad" class="p-3 rounded-2xl cursor-pointer border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 transition flex items-start space-x-3">
+            <span class="text-xl mt-0.5">🛡️</span>
+            <div>
+              <div class="font-black text-xs text-white">Seguridad & Autoprotección</div>
+              <div class="text-[11px] text-slate-400 leading-snug">Ley 19.587, vías de escape al patio (368 m²), matafuegos y aforos.</div>
+            </div>
+          </div>
+
+          <!-- Card 5: Telecomunicaciones IT -->
+          <div onclick="selectReportType('it')" id="card-rep-it" class="p-3 rounded-2xl cursor-pointer border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 transition flex items-start space-x-3">
+            <span class="text-xl mt-0.5">💻</span>
+            <div>
+              <div class="font-black text-xs text-white">Tecnología & Redes IT</div>
+              <div class="text-[11px] text-slate-400 leading-snug">Gabinete (32 PCs), 16 APs Wi-Fi, Streaming, Rack 6U y Sergei Strelec.</div>
+            </div>
+          </div>
+
+          <!-- Card 6: Resumen Ejecutivo -->
+          <div onclick="selectReportType('ejecutivo')" id="card-rep-ejecutivo" class="p-3 rounded-2xl cursor-pointer border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 transition flex items-start space-x-3">
+            <span class="text-xl mt-0.5">📄</span>
+            <div>
+              <div class="font-black text-xs text-white">Resumen Ejecutivo (Ministerio)</div>
+              <div class="text-[11px] text-slate-400 leading-snug">Ficha técnica sintética One-Page para elevación a supervisión de nivel superior.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. PARÁMETROS INSTITUCIONALES EDITABLES -->
+      <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span>2. Parámetros de la Institución</span>
+          <i class="fa-solid fa-pen-to-square text-cyan-400 text-xs"></i>
+        </label>
+
+        <div class="space-y-2 text-xs">
+          <div>
+            <span class="text-[10px] font-semibold text-slate-400">Institución:</span>
+            <input id="cfg-inst-name" type="text" value="INSTITUTO DE EDUCACIÓN SUPERIOR &quot;NUEVO HORIZONTE&quot;" 
+              oninput="onParamChange()" 
+              class="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[10px] font-semibold text-slate-400">CUE Oficial:</span>
+              <input id="cfg-inst-cue" type="text" value="3800985-00" 
+                oninput="onParamChange()" 
+                class="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono font-bold text-cyan-300 focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <span class="text-[10px] font-semibold text-slate-400">Ciclo Lectivo:</span>
+              <input id="cfg-inst-year" type="text" value="2026" 
+                oninput="onParamChange()" 
+                class="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-blue-500">
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] font-semibold text-slate-400">Domicilio / Localidad:</span>
+            <input id="cfg-inst-address" type="text" value="Manuel Castellano 3323, B° 47 Hectáreas, Alto Comedero, Jujuy" 
+              oninput="onParamChange()" 
+              class="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <span class="text-[10px] font-semibold text-slate-400">Autoridad Firmante / Rectoría:</span>
+            <input id="cfg-inst-auth" type="text" value="Lic. Rector / Equipo de Gestión Institucional" 
+              oninput="onParamChange()" 
+              class="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. FILTROS Y ALCANCE DEL INFORME -->
+      <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          3. Alcance y Opciones de Visualización
+        </label>
+        
+        <div class="space-y-2 text-xs">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[10px] font-semibold text-slate-400">Planta:</span>
+              <select id="cfg-filter-floor" onchange="onParamChange()" class="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none">
+                <option value="all">Todo (PB + PA)</option>
+                <option value="pb">Solo PB (2.400 m²)</option>
+                <option value="pa">Solo PA (651 m²)</option>
+              </select>
+            </div>
+            <div>
+              <span class="text-[10px] font-semibold text-slate-400">Turno:</span>
+              <select id="cfg-filter-turn" onchange="onParamChange()" class="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none">
+                <option value="all">Todos los Turnos</option>
+                <option value="m">Turno Mañana</option>
+                <option value="t">Turno Tarde</option>
+                <option value="n">Turno Noche</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-1 space-y-1.5 text-xs text-slate-300">
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="cfg-opt-renders" checked onchange="onParamChange()" class="rounded bg-slate-950 border-slate-700 text-blue-600 focus:ring-0">
+              <span>Incluir Renders 3D e Isométricas</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="cfg-opt-tables" checked onchange="onParamChange()" class="rounded bg-slate-950 border-slate-700 text-blue-600 focus:ring-0">
+              <span>Incluir Planillas Detalladas de Aulas</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="cfg-opt-signatures" checked onchange="onParamChange()" class="rounded bg-slate-950 border-slate-700 text-blue-600 focus:ring-0">
+              <span>Incluir Bloques Formales de Firmas</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ENLACE Y SINCRONIZACIÓN CON EL PLANO -->
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950/40 border border-indigo-500/30 space-y-2.5">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-indigo-300 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>Conexión en Vivo</span>
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono" id="sync-timestamp">Sincronizado</span>
+        </div>
+        <p class="text-[11px] text-slate-300 leading-snug">
+          Los datos del informe se leen en tiempo real de la base institucional y reflejan las medidas de las aulas modificadas.
+        </p>
+        <button onclick="reloadFromStorage()" class="w-full py-2 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-400/40 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>Recargar desde Plano 2D</span>
+        </button>
+      </div>
+
+      <!-- Quick links to 2D & 3D -->
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+        <a href="plano_institucional_interactivo.html" target="_blank" class="p-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 text-center font-bold transition flex items-center justify-center space-x-1">
+          <i class="fa-solid fa-map text-cyan-400"></i>
+          <span>Plano 2D</span>
+        </a>
+        <a href="simulador_3d_interactivo.html" target="_blank" class="p-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 text-center font-bold transition flex items-center justify-center space-x-1">
+          <i class="fa-solid fa-cube text-indigo-400"></i>
+          <span>Simulador 3D</span>
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- ÁREA DE TRABAJO PRINCIPAL (DOCUMENT CANVAS / METRICS / EDITOR) -->
+    <main class="flex-1 flex flex-col h-full bg-slate-900/60 overflow-hidden relative">
+      
+      <!-- Top Status Notification Strip -->
+      <div id="top-controls-bar" class="px-6 py-2 bg-slate-950/60 border-b border-slate-800/80 flex items-center justify-between text-xs text-slate-400 shrink-0">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          <span id="doc-title-badge" class="font-bold text-white uppercase tracking-wider text-[11px]">
+            Informe General Institucional & Rectoral
+          </span>
+        </div>
+        <div class="flex items-center space-x-4 text-[11px]">
+          <span>Estado: <strong class="text-emerald-400">Documento Oficial Validado</strong></span>
+          <span>Formato: <strong class="text-slate-300">Hoja A4 Membretada</strong></span>
+        </div>
+      </div>
+
+      <!-- VIEW 1: VISTA PREVIA DE DOCUMENTO (HOJA A4 OFICIAL) -->
+      <section id="view-document" class="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center custom-scrollbar">
+        <div id="document-canvas" class="doc-page w-full max-w-4xl p-8 sm:p-12 text-slate-900 text-sm leading-relaxed my-auto min-h-[900px]">
+          <!-- Renderizado dinámico vía generateSelectedDocumentHTML() -->
+        </div>
+      </section>
+
+      <!-- VIEW 2: DASHBOARD DE MÉTRICAS & INDICADORES CLAVE -->
+      <section id="view-metrics" class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar hidden">
+        <div class="max-w-5xl mx-auto space-y-6">
+          
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-black text-white">Dashboard Institucional & Métricas de Infraestructura</h2>
+              <p class="text-xs text-slate-400">Indicadores clave de capacidad física, ocupación áulica y recursos tecnológicos</p>
+            </div>
+            <span class="px-3 py-1 rounded-xl bg-blue-500/20 text-blue-300 border border-blue-500/40 text-xs font-bold font-mono">
+              IESNH 2026
+            </span>
+          </div>
+
+          <!-- KPI Cards Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Superficie Total</span>
+              <div class="text-xl font-black text-cyan-400 mt-1">2.400 m²</div>
+              <span class="text-[10px] text-slate-500">Lote 60×40 m</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Aulas Activas</span>
+              <div id="kpi-rooms" class="text-xl font-black text-white mt-1">28</div>
+              <span class="text-[10px] text-slate-500">PB + Planta Alta</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Aforo Simultáneo</span>
+              <div id="kpi-capacity" class="text-xl font-black text-emerald-400 mt-1">~720</div>
+              <span class="text-[10px] text-slate-500">Asientos / Turno</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Matrícula Estimada</span>
+              <div class="text-xl font-black text-indigo-400 mt-1">~2.040</div>
+              <span class="text-[10px] text-slate-500">En los 3 Turnos</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Puestos IT Cableados</span>
+              <div class="text-xl font-black text-purple-400 mt-1">32 PCs</div>
+              <span class="text-[10px] text-slate-500">Gabinete 4 Islas</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Puntos Wi-Fi</span>
+              <div class="text-xl font-black text-amber-400 mt-1">16 APs</div>
+              <span class="text-[10px] text-emerald-400">100% Operativo</span>
+            </div>
+          </div>
+
+          <!-- Charts & Progress Grids -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Tasa de ocupación por turno -->
+            <div class="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+              <h3 class="font-bold text-sm text-white flex items-center justify-between">
+                <span>Tasa de Ocupación por Turno</span>
+                <span class="text-xs text-slate-400 font-normal">Capacidad utilizada</span>
+              </h3>
+              <div class="space-y-3 text-xs">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Turno Mañana (Carreras de Tecnología & Salud)</span>
+                    <span class="font-bold text-cyan-400">88%</span>
+                  </div>
+                  <div class="w-full h-2.5 rounded-full bg-slate-950 overflow-hidden">
+                    <div class="h-full bg-cyan-500 rounded-full" style="width: 88%;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Turno Tarde (Carreras Jurídicas & Humanísticas)</span>
+                    <span class="font-bold text-indigo-400">82%</span>
+                  </div>
+                  <div class="w-full h-2.5 rounded-full bg-slate-950 overflow-hidden">
+                    <div class="h-full bg-indigo-500 rounded-full" style="width: 82%;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Turno Noche (Demanda Laboral Estudiantil)</span>
+                    <span class="font-bold text-purple-400">96%</span>
+                  </div>
+                  <div class="w-full h-2.5 rounded-full bg-slate-950 overflow-hidden">
+                    <div class="h-full bg-purple-500 rounded-full" style="width: 96%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Distribución de Superficies -->
+            <div class="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+              <h3 class="font-bold text-sm text-white flex items-center justify-between">
+                <span>Distribución Espacial Edilicia</span>
+                <span class="text-xs text-slate-400 font-normal">Superficies relativas</span>
+              </h3>
+              <div class="space-y-3 text-xs">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Planta Baja Cubierta (Aulas, Pasillos & Servicios)</span>
+                    <span class="font-bold text-emerald-400">2.032 m² (84.6%)</span>
+                  </div>
+                  <div class="w-full h-2.5 rounded-full bg-slate-950 overflow-hidden">
+                    <div class="h-full bg-emerald-500 rounded-full" style="width: 84.6%;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Planta Alta (Gabinete, Streaming & Auditorio)</span>
+                    <span class="font-bold text-blue-400">651 m² (27.1%)</span>
+                  </div>
+                  <div class="w-full h-2.5 rounded-full bg-slate-950 overflow-hidden">
+                    <div class="h-full bg-blue-500 rounded-full" style="width: 27.1%;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Patio Central Descubierto (Área Verde & Zona Segura)</span>
+                    <span class="font-bold text-amber-400">368 m² (15.4%)</span>
+                  </div>
+                  <div class="w-full h-2.5 rounded-full bg-slate-950 overflow-hidden">
+                    <div class="h-full bg-amber-500 rounded-full" style="width: 15.4%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW 3: PLANILLA DE AULAS (EDITOR EN VIVO) -->
+      <section id="view-editor" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar hidden">
+        <div class="max-w-6xl mx-auto space-y-4">
+          
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+            <div>
+              <h2 class="text-base font-bold text-white">Planilla Maestra de Aulas & Asignaciones de Carreras</h2>
+              <p class="text-xs text-slate-400">Editá en tiempo real las asignaciones por turno y observá cómo se actualizan los informes institucionales.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="saveCustomRoomsToStorage()" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Guardar Cambios</span>
+              </button>
+              <button onclick="resetRoomsToDefaults()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition border border-slate-700">
+                Restablecer
+              </button>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto border border-slate-800 rounded-2xl bg-slate-950 shadow-xl">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-900 text-slate-300 border-b border-slate-800">
+                  <th class="p-3">Código</th>
+                  <th class="p-3">Nombre Espacio</th>
+                  <th class="p-3">Planta</th>
+                  <th class="p-3">Capacidad</th>
+                  <th class="p-3">Turno Mañana</th>
+                  <th class="p-3">Turno Tarde</th>
+                  <th class="p-3">Turno Noche</th>
+                  <th class="p-3 text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="editor-table-body" class="divide-y divide-slate-800/60 text-slate-200">
+                <!-- Rellenado dinámico por JS -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT: MOTOR INSTITUCIONAL DE GESTIÓN Y REPORTES -->
+  <!-- ========================================================================= -->
+  <script>
+    // Master defaults
+    const OFFICIAL_DEFAULT_ROOMS = [
+  {
+    "id": "pasillo_acceso_central",
+    "num": "HALL CENTRAL DE ACCESO",
+    "isCorridor": true,
+    "x": 525,
+    "y": 28,
+    "w": 60,
+    "h": 147,
+    "cat": "Pasillos",
+    "icon": "🚪",
+    "m": "Acceso Principal Directo al Patio Central",
+    "t": "Acceso Principal",
+    "n": "Acceso Principal",
+    "desc": "Pasillo central de acceso institucional directo desde el frente hacia el patio central descubierto.",
+    "floor": "pb"
+  },
+  {
+    "id": "admin_secretaria",
+    "num": "SECRETARÍA / RECTORÍA",
+    "x": 385,
+    "y": 28,
+    "w": 140,
+    "h": 147,
+    "cat": "Administración",
+    "icon": "📋",
+    "m": "Secretaría y Atención al Alumno",
+    "t": "Secretaría y Atención",
+    "n": "Secretaría y Atención",
+    "desc": "Secretaría institucional y despacho de rectoría ubicado a la izquierda del pasillo de acceso principal.",
+    "floor": "pb"
+  },
+  {
+    "id": "admin_buffet",
+    "num": "BUFFET CENTRAL / KIOSCO",
+    "x": 585,
+    "y": 28,
+    "w": 140,
+    "h": 147,
+    "cat": "Servicios",
+    "icon": "☕",
+    "m": "Buffet Central & Sector de Redes",
+    "t": "Buffet Central",
+    "n": "Buffet Central",
+    "desc": "Buffet y cafetería institucional a la derecha del acceso. Aloja el Firewall perimetral y el Switch PoE de 16 bocas que alimenta los 16 APs de Planta Baja.",
+    "floor": "pb"
+  },
+  {
+    "id": "pasillo_norte",
+    "num": "PASILLO NORTE",
+    "isCorridor": true,
+    "x": 320,
+    "y": 175,
+    "w": 500,
+    "h": 45,
+    "manana": {
+      "text": "Circulación",
+      "category": "Pasillos",
+      "isFree": true
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "pasillo_oeste",
+    "num": "PASILLO OESTE",
+    "isCorridor": true,
+    "x": 150,
+    "y": 175,
+    "w": 55,
+    "h": 335,
+    "manana": {
+      "text": "Circulación",
+      "category": "Pasillos",
+      "isFree": true
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "pasillo_este",
+    "num": "PASILLO ESTE",
+    "isCorridor": true,
+    "x": 935,
+    "y": 175,
+    "w": 55,
+    "h": 335,
+    "manana": {
+      "text": "Circulación",
+      "category": "Pasillos",
+      "isFree": true
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "pasillo_sur",
+    "num": "CIRCULACION SUR",
+    "isCorridor": true,
+    "x": 205,
+    "y": 465,
+    "w": 785,
+    "h": 45,
+    "manana": {
+      "text": "Circulación",
+      "category": "Pasillos",
+      "isFree": true
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "pasillo_conector_sur",
+    "num": "CONECTOR SUR",
+    "isCorridor": true,
+    "x": 535,
+    "y": 360,
+    "w": 50,
+    "h": 280,
+    "manana": {
+      "text": "Circulación",
+      "category": "Pasillos",
+      "isFree": true
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_rectoria",
+    "num": "Rectoria",
+    "isCorridor": false,
+    "x": 405,
+    "y": 360,
+    "w": 130,
+    "h": 105,
+    "manana": {
+      "text": "Equipo Directivo",
+      "category": "Administración",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_profesores",
+    "num": "Sala Profesores",
+    "isCorridor": false,
+    "x": 585,
+    "y": 360,
+    "w": 125,
+    "h": 105,
+    "manana": {
+      "text": "Sala de Reuniones",
+      "category": "Administración",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_12",
+    "num": "Aula 12",
+    "isCorridor": false,
+    "x": 710,
+    "y": 360,
+    "w": 150,
+    "h": 105,
+    "manana": {
+      "text": "Cocina 1°",
+      "category": "Gastronomía",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_preceptoria",
+    "num": "Preceptoria",
+    "isCorridor": false,
+    "x": 405,
+    "y": 510,
+    "w": 130,
+    "h": 130,
+    "manana": {
+      "text": "Preceptoría",
+      "category": "Administración",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_kiosco",
+    "num": "Kiosco",
+    "isCorridor": false,
+    "x": 585,
+    "y": 510,
+    "w": 95,
+    "h": 130,
+    "manana": {
+      "text": "Kiosco / Buffet",
+      "category": "Servicios",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_banos_oeste",
+    "num": "Banos Oeste",
+    "isCorridor": false,
+    "x": 320,
+    "y": 360,
+    "w": 85,
+    "h": 105,
+    "manana": {
+      "text": "Sanitarios",
+      "category": "Servicios",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_banos_sur",
+    "num": "Banos Sur",
+    "isCorridor": false,
+    "x": 330,
+    "y": 510,
+    "w": 75,
+    "h": 130,
+    "manana": {
+      "text": "Sanitarios",
+      "category": "Servicios",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_1",
+    "num": "Aula 1",
+    "isCorridor": false,
+    "x": 680,
+    "y": 510,
+    "w": 95,
+    "h": 130,
+    "manana": {
+      "text": "Cocina 3°",
+      "category": "Gastronomía",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_2",
+    "num": "Aula 2",
+    "isCorridor": false,
+    "x": 775,
+    "y": 510,
+    "w": 95,
+    "h": 130,
+    "manana": {
+      "text": "Jurídica 2°",
+      "category": "Sociales",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_3",
+    "num": "Aula 3",
+    "isCorridor": false,
+    "x": 870,
+    "y": 510,
+    "w": 95,
+    "h": 130,
+    "manana": {
+      "text": "Periodismo 1°",
+      "category": "Sociales",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_4",
+    "num": "Aula 4",
+    "isCorridor": false,
+    "x": 965,
+    "y": 510,
+    "w": 200,
+    "h": 130,
+    "manana": {
+      "text": "Hig. y Seg. 1° A",
+      "category": "Seguridad",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_5",
+    "num": "Aula 5",
+    "isCorridor": false,
+    "x": 1030,
+    "y": 425,
+    "w": 135,
+    "h": 85,
+    "manana": {
+      "text": "Hig. y Seg. 1° B",
+      "category": "Seguridad",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_6",
+    "num": "Aula 6",
+    "isCorridor": false,
+    "x": 1030,
+    "y": 340,
+    "w": 135,
+    "h": 85,
+    "manana": {
+      "text": "Prep. Física 3°",
+      "category": "Deportes",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_7",
+    "num": "Aula 7",
+    "isCorridor": false,
+    "x": 1030,
+    "y": 255,
+    "w": 135,
+    "h": 85,
+    "manana": {
+      "text": "Pedagogía 7",
+      "category": "Tecnología",
+      "isFree": true
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_8",
+    "num": "Aula 8",
+    "isCorridor": false,
+    "x": 1030,
+    "y": 175,
+    "w": 135,
+    "h": 80,
+    "manana": {
+      "text": "Jurídica 3°",
+      "category": "Sociales",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_9",
+    "num": "Aula 9",
+    "isCorridor": false,
+    "x": 990,
+    "y": 28,
+    "w": 175,
+    "h": 147,
+    "manana": {
+      "text": "Hig. y Seg. 1° C",
+      "category": "Seguridad",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_10",
+    "num": "Aula 10",
+    "isCorridor": false,
+    "x": 820,
+    "y": 28,
+    "w": 170,
+    "h": 147,
+    "manana": {
+      "text": "Enfermería 3°",
+      "category": "Salud",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_11",
+    "num": "Aula 11",
+    "isCorridor": false,
+    "x": 845,
+    "y": 175,
+    "w": 145,
+    "h": 185,
+    "manana": {
+      "text": "Cocina 2°",
+      "category": "Gastronomía",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_taller",
+    "num": "Taller / Computacion",
+    "isCorridor": false,
+    "x": 585,
+    "y": 28,
+    "w": 235,
+    "h": 147,
+    "manana": {
+      "text": "Informática",
+      "category": "Tecnología",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "admin_cocina_inst",
+    "num": "Cocina / Deposito",
+    "isCorridor": false,
+    "x": 35,
+    "y": 28,
+    "w": 285,
+    "h": 147,
+    "manana": {
+      "text": "Cocina",
+      "category": "Gastronomía",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_16",
+    "num": "Aula 16",
+    "isCorridor": false,
+    "x": 205,
+    "y": 175,
+    "w": 115,
+    "h": 145,
+    "manana": {
+      "text": "Software 1°",
+      "category": "Tecnología",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_15",
+    "num": "Aula 15",
+    "isCorridor": false,
+    "x": 205,
+    "y": 320,
+    "w": 115,
+    "h": 145,
+    "manana": {
+      "text": "Hig. y Seg. 3°",
+      "category": "Seguridad",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_17",
+    "num": "Aula 17",
+    "isCorridor": false,
+    "x": 35,
+    "y": 175,
+    "w": 115,
+    "h": 155,
+    "manana": {
+      "text": "Enfermería 2°",
+      "category": "Salud",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_18",
+    "num": "Aula 18",
+    "isCorridor": false,
+    "x": 35,
+    "y": 330,
+    "w": 115,
+    "h": 150,
+    "manana": {
+      "text": "Jurídica 1°",
+      "category": "Sociales",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_19",
+    "num": "Aula 19",
+    "isCorridor": false,
+    "x": 35,
+    "y": 480,
+    "w": 115,
+    "h": 160,
+    "manana": {
+      "text": "Hig. y Seg. 2°",
+      "category": "Seguridad",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "aula_20",
+    "num": "Aula 20",
+    "isCorridor": false,
+    "x": 150,
+    "y": 510,
+    "w": 180,
+    "h": 130,
+    "manana": {
+      "text": "Prep. Física 1°",
+      "category": "Deportes",
+      "isFree": false
+    },
+    "floor": "pb"
+  },
+  {
+    "id": "pa_gabinete",
+    "floor": "pa",
+    "num": "GABINETE (32 PCs)",
+    "x": 340,
+    "y": 340,
+    "w": 118,
+    "h": 115,
+    "cat": "Tecnología",
+    "icon": "💻",
+    "m": "Tec. Sup. Desarrollo de Software (3° 1°)",
+    "t": "Tec. Sup. Desarrollo de Software",
+    "n": "Tec. Sup. Infraestructura y Redes",
+    "isGabinete": true,
+    "desc": "Laboratorio informático con 32 PCs en 4 filas dobles de 8 puestos (Fila 1 a 4). Pasillo central de 1,60m y pasillos secundarios de 1,20m. Rack de comunicaciones mural SOHO 6U en esquina superior izquierda con switch Gigabit y pachera Cat6.",
+    "real_w": 11.85,
+    "real_h": 11.5,
+    "doorWall": "east",
+    "doorRatio": 0.8
+  },
+  {
+    "id": "pa_streaming",
+    "floor": "pa",
+    "num": "SALA DE STREAMING",
+    "x": 340,
+    "y": 455,
+    "w": 118,
+    "h": 55,
+    "cat": "Tecnología",
+    "icon": "🎙️",
+    "m": "Producción Audiovisual & Clases",
+    "t": "Transmisiones en Vivo & Entrevistas",
+    "n": "Grabación de Podcasts",
+    "isStreaming": true,
+    "desc": "Estudio multimedia institucional IESNH: puesto técnico de control con triple monitor y marco LED, micrófono profesional en brazo articulado, cámara en trípode, brazo robótico y paneles acústicos piramidales. Con 5 propuestas de mejora: cajas pass-through, blackout motorizado con AC silencioso NC-25, truss aéreo de iluminación, teleprompter de retorno y switcher multicanal ATEM.",
+    "real_w": 11.85,
+    "real_h": 5.5,
+    "doorWall": "east",
+    "doorRatio": 0.5
+  },
+  {
+    "id": "pa_sector_titulos",
+    "floor": "pa",
+    "num": "SECTOR TÍTULOS / ARCHIVO",
+    "x": 340,
+    "y": 510,
+    "w": 118,
+    "h": 40,
+    "cat": "Administración",
+    "icon": "📁",
+    "m": "Gestión y Entrega de Títulos",
+    "t": "Organización Documental y Certificados",
+    "n": "Resguardo y Archivo",
+    "desc": "Área administrativa para resguardo y archivo de títulos, actas de examen, libros matrices y documentación de egresados.",
+    "real_w": 11.85,
+    "real_h": 4.0,
+    "doorWall": "east",
+    "doorRatio": 0.5
+  },
+  {
+    "id": "pa_escalera",
+    "floor": "pa",
+    "num": "ESCALERA (Llegada PB)",
+    "x": 458,
+    "y": 340,
+    "w": 54,
+    "h": 50,
+    "cat": "Pasillos",
+    "icon": "🪜",
+    "m": "Circulación Vertical PB - PA",
+    "t": "Circulación Vertical",
+    "n": "Circulación Vertical",
+    "desc": "Llegada directa de la escalera en 'U' desde el patio de Planta Baja. Desembarco a nivel +3,40m con pasamanos reglamentarios tubulares dobles.",
+    "real_w": 5.4,
+    "real_h": 5.0,
+    "doorWall": "south",
+    "doorRatio": 0.5
+  },
+  {
+    "id": "pa_pasillo_distribuidor",
+    "floor": "pa",
+    "num": "PASILLO DISTRIBUIDOR",
+    "x": 458,
+    "y": 390,
+    "w": 26,
+    "h": 160,
+    "cat": "Pasillos",
+    "icon": "🚶",
+    "m": "Circulación y Distribución Central PA",
+    "t": "Circulación Central",
+    "n": "Circulación Central",
+    "isCorridor": true,
+    "desc": "Pasillo distribuidor central de Planta Alta de 2,60 m de ancho. Conecta la llegada de escalera con el Gabinete, Estudio de Streaming, Sanitarios, Foyer y Auditorio.",
+    "real_w": 2.6,
+    "real_h": 16.0
+  },
+  {
+    "id": "pa_banos",
+    "floor": "pa",
+    "num": "SANITARIOS DAMAS / CAB",
+    "x": 484,
+    "y": 390,
+    "w": 28,
+    "h": 50,
+    "cat": "Servicios",
+    "icon": "🚻",
+    "m": "Sanitarios Diferenciados D/C",
+    "t": "Sanitarios D/C",
+    "n": "Sanitarios D/C",
+    "desc": "Batería de sanitarios diferenciados para damas y caballeros de Planta Alta con ventilación directa.",
+    "real_w": 2.8,
+    "real_h": 5.0,
+    "doorWall": "west",
+    "doorRatio": 0.5
+  },
+  {
+    "id": "pa_sala_previa",
+    "floor": "pa",
+    "num": "FOYER / SALA PREVIA",
+    "x": 484,
+    "y": 440,
+    "w": 28,
+    "h": 110,
+    "cat": "Sociales",
+    "icon": "🏛️",
+    "m": "Recepción y Foyer Auditorio",
+    "t": "Encuentros y Entrevistas",
+    "n": "Preparación de Actos",
+    "desc": "Espacio de antesala, recepción protocolar y acreditación previo al ingreso al Auditorio Institucional.",
+    "real_w": 2.8,
+    "real_h": 11.0,
+    "doorWall": "east",
+    "doorRatio": 0.5
+  },
+  {
+    "id": "pa_auditorio",
+    "floor": "pa",
+    "num": "AUDITORIO INSTITUCIONAL",
+    "x": 512,
+    "y": 340,
+    "w": 138,
+    "h": 195,
+    "cat": "Sociales",
+    "icon": "🎭",
+    "m": "Conferencias, Presentaciones y Actos (100 pers)",
+    "t": "Capacitaciones y Eventos",
+    "n": "Defensas de Tesis",
+    "isAuditorio": true,
+    "desc": "Auditorio institucional de 19,5 m × 13,65 m × 3,95 m de altura libre (medidas oficiales del documento). Estrado elevado al norte con pantalla de proyección y platea con capacidad para 100 personas sentadas.",
+    "real_w": 13.65,
+    "real_h": 19.5,
+    "real_alt": 3.95,
+    "doorWall": "west",
+    "doorRatio": 0.3
+  }
+];
+
+    // Application state
+    let activeReportType = 'directivo';
+    let activeViewMode = 'doc';
+    let currentRooms = [];
+
+    // Load rooms from localStorage or use defaults
+    function loadInitialRooms() {
+      try {
+        const saved = localStorage.getItem('iesnh_synced_rooms_v1') || localStorage.getItem('inst_aulas_master_v11');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            currentRooms = parsed;
+            updateSyncBadge("Sincronizado desde Plano 2D");
+            return;
+          }
+        }
+      } catch(e) {
+        console.warn("Could not read local storage, using defaults", e);
+      }
+      currentRooms = JSON.parse(JSON.stringify(OFFICIAL_DEFAULT_ROOMS));
+      updateSyncBadge("Datos Oficiales IESNH");
+    }
+
+    function updateSyncBadge(text) {
+      const el = document.getElementById('sync-timestamp');
+      if (el) el.innerText = text;
+    }
+
+    function reloadFromStorage() {
+      loadInitialRooms();
+      renderCurrentView();
+      alert("¡Datos del plano 2D recargados exitosamente!");
+    }
+
+    function setViewMode(mode) {
+      activeViewMode = mode;
+      
+      const vDoc = document.getElementById('view-document');
+      const vMet = document.getElementById('view-metrics');
+      const vEd = document.getElementById('view-editor');
+
+      const bDoc = document.getElementById('btn-view-doc');
+      const bMet = document.getElementById('btn-view-metrics');
+      const bEd = document.getElementById('btn-view-editor');
+
+      [vDoc, vMet, vEd].forEach(v => v.classList.add('hidden'));
+      [bDoc, bMet, bEd].forEach(b => {
+        b.className = 'px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition flex items-center space-x-1.5';
+      });
+
+      if (mode === 'doc') {
+        vDoc.classList.remove('hidden');
+        bDoc.className = 'px-3.5 py-1.5 rounded-xl bg-blue-600 text-white transition flex items-center space-x-1.5 shadow font-bold';
+      } else if (mode === 'metrics') {
+        vMet.classList.remove('hidden');
+        bMet.className = 'px-3.5 py-1.5 rounded-xl bg-blue-600 text-white transition flex items-center space-x-1.5 shadow font-bold';
+      } else if (mode === 'editor') {
+        vEd.classList.remove('hidden');
+        bEd.className = 'px-3.5 py-1.5 rounded-xl bg-blue-600 text-white transition flex items-center space-x-1.5 shadow font-bold';
+        renderEditorTable();
+      }
+
+      renderCurrentView();
+    }
+
+    function selectReportType(type) {
+      activeReportType = type;
+      
+      const allTypes = ['directivo', 'academico', 'infraestructura', 'seguridad', 'it', 'ejecutivo'];
+      allTypes.forEach(t => {
+        const card = document.getElementById('card-rep-' + t);
+        if (card) {
+          if (t === type) {
+            card.className = 'p-3 rounded-2xl cursor-pointer border border-blue-500/50 bg-blue-600/20 text-white transition flex items-start space-x-3 shadow-md';
+          } else {
+            card.className = 'p-3 rounded-2xl cursor-pointer border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 transition flex items-start space-x-3';
+          }
+        }
+      });
+
+      const badge = document.getElementById('doc-title-badge');
+      const titles = {
+        directivo: 'Informe General Institucional & Rectoral',
+        academico: 'Informe Académico & Ocupación Áulica',
+        infraestructura: 'Informe de Infraestructura Edilicia & Espacios',
+        seguridad: 'Plan de Autoprotección & Seguridad Institucional',
+        it: 'Relevamiento Técnico de Telecomunicaciones & Redes IT',
+        ejecutivo: 'Resumen Ejecutivo One-Page (Supervisión Ministerial)'
+      };
+      if (badge) badge.innerText = titles[type] || 'Informe Institucional';
+
+      // Switch to document view if in another view
+      if (activeViewMode !== 'doc') {
+        setViewMode('doc');
+      } else {
+        renderDocumentCanvas();
+      }
+    }
+
+    function onParamChange() {
+      renderCurrentView();
+    }
+
+    function renderCurrentView() {
+      if (activeViewMode === 'doc') {
+        renderDocumentCanvas();
+      } else if (activeViewMode === 'metrics') {
+        renderMetricsDashboard();
+      } else if (activeViewMode === 'editor') {
+        renderEditorTable();
+      }
+    }
+
+    // Helper data bundle
+    function getParamsBundle() {
+      const name = document.getElementById('cfg-inst-name')?.value || 'INSTITUTO DE EDUCACIÓN SUPERIOR "NUEVO HORIZONTE"';
+      const cue = document.getElementById('cfg-inst-cue')?.value || '3800985-00';
+      const year = document.getElementById('cfg-inst-year')?.value || '2026';
+      const address = document.getElementById('cfg-inst-address')?.value || 'Manuel Castellano 3323, B° 47 Hectáreas, Alto Comedero, Jujuy';
+      const auth = document.getElementById('cfg-inst-auth')?.value || 'Lic. Rector / Equipo de Gestión Institucional';
+      const floorFilter = document.getElementById('cfg-filter-floor')?.value || 'all';
+      const turnFilter = document.getElementById('cfg-filter-turn')?.value || 'all';
+      
+      const optRenders = document.getElementById('cfg-opt-renders')?.checked ?? true;
+      const optTables = document.getElementById('cfg-opt-tables')?.checked ?? true;
+      const optSignatures = document.getElementById('cfg-opt-signatures')?.checked ?? true;
+
+      // Filtered rooms
+      let list = currentRooms;
+      if (floorFilter === 'pb') list = list.filter(r => r.floor === 'pb' || !r.floor || r.floor === 1);
+      else if (floorFilter === 'pa') list = list.filter(r => r.floor === 'pa' || r.floor === 2);
+
+      let totalCapacity = 0;
+      list.forEach(r => {
+        if (r.isPatio || r.isCorridor || r.cat === 'Pasillos') return;
+        if (r.isGabinete) totalCapacity += 32;
+        else if (r.isAuditorio) totalCapacity += 100;
+        else if (r.cat === 'Administración' || r.cat === 'Servicios') totalCapacity += 6;
+        else totalCapacity += Math.min(45, Math.max(25, Math.round((r.w * r.h) / 450)));
+      });
+
+      const totalActiveRooms = list.filter(r => !r.isPatio && !r.isCorridor && r.cat !== 'Pasillos').length;
+
+      return {
+        name, cue, year, address, auth,
+        floorFilter, turnFilter,
+        optRenders, optTables, optSignatures,
+        rooms: list,
+        totalActiveRooms,
+        totalCapacity
+      };
+    }
+
+    // =========================================================================
+    // RENDERIZADO DE DOCUMENTO EN FORMATO HOJA A4 INSTITUCIONAL
+    // =========================================================================
+    function renderDocumentCanvas() {
+      const canvas = document.getElementById('document-canvas');
+      if (!canvas) return;
+
+      const p = getParamsBundle();
+      let docHtml = '';
+
+      if (activeReportType === 'directivo') {
+        docHtml = buildDirectivoDoc(p);
+      } else if (activeReportType === 'academico') {
+        docHtml = buildAcademicoDoc(p);
+      } else if (activeReportType === 'infraestructura') {
+        docHtml = buildInfraestructuraDoc(p);
+      } else if (activeReportType === 'seguridad') {
+        docHtml = buildSeguridadDoc(p);
+      } else if (activeReportType === 'it') {
+        docHtml = buildITDoc(p);
+      } else if (activeReportType === 'ejecutivo') {
+        docHtml = buildEjecutivoDoc(p);
+      }
+
+      canvas.innerHTML = docHtml;
+    }
+
+    // 1. INFORME DIRECTIVO
+    function buildDirectivoDoc(p) {
+      return `
+        <div>
+          <!-- Cabecera Oficial -->
+          <div style="border-bottom: 3px solid #1e3a8a; padding-bottom: 14px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+              <div>
+                <div style="font-size: 9pt; font-weight: 800; color: #1e3a8a; text-transform: uppercase;">
+                  REPÚBLICA ARGENTINA • PROVINCIA DE JUJUY • MINISTERIO DE EDUCACIÓN
+                </div>
+                <h1 style="font-size: 17pt; font-weight: 900; color: #0f172a; margin: 4px 0 2px 0;">
+                  ${p.name}
+                </h1>
+                <div style="font-size: 10.5pt; font-weight: 700; color: #0284c7; margin-bottom: 4px;">
+                  INFORME GENERAL INSTITUCIONAL & DICTAMEN DIRECTIVO (CICLO LECTIVO ${p.year})
+                </div>
+                <div style="font-size: 8pt; color: #475569;">
+                  ${p.address} • CUE: ${p.cue}
+                </div>
+              </div>
+              <div style="text-align: right; min-width: 80px;">
+                <div style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #1e3a8a, #0284c7); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin-left: auto;">
+                  🏛️
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila de Metadatos -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 8pt;">
+              <div><strong style="color: #64748b;">EXPEDIENTE:</strong><br><span style="font-weight: 700; color: #0f172a;">EXP-IESNH-${p.year}-DIR</span></div>
+              <div><strong style="color: #64748b;">SUPERFICIE TOTAL:</strong><br><span style="font-weight: 700; color: #0f172a;">2.400 m² (Lote 60×40m)</span></div>
+              <div><strong style="color: #64748b;">AFORO SIMULTÁNEO:</strong><br><span style="font-weight: 700; color: #0f172a;">~${p.totalCapacity} Alumnos / Turno</span></div>
+              <div><strong style="color: #64748b;">MATRÍCULA ESTIMADA:</strong><br><span style="font-weight: 700; color: #0f172a;">~2.040 Estudiantes</span></div>
+            </div>
+          </div>
+
+          <!-- 1. Misión y Resumen -->
+          <div style="margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; background: #ffffff;">
+            <h2 style="font-size: 10.5pt; font-weight: 800; color: #1e3a8a; margin: 0 0 6px 0; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 4px;">
+              1. RESUMEN EJECUTIVO & PROPÓSITO INSTITUCIONAL
+            </h2>
+            <p style="font-size: 8.5pt; color: #334155; line-height: 1.5; margin: 0 0 6px 0;">
+              El <strong>${p.name}</strong> constituye una unidad académica de nivel superior técnico terciario en la ciudad de San Salvador de Jujuy, orientada a la capacitación profesional y técnica con inserción laboral inmediata.
+            </p>
+            <p style="font-size: 8.5pt; color: #334155; line-height: 1.5; margin: 0;">
+              La institución administra un predio perimetral en "C" de <strong>2.400 m²</strong> en Planta Baja con 23 aulas regulares, y un bloque en Planta Alta de <strong>651 m² (31 m × 21 m)</strong> donde funcionan el Gabinete de 32 computadoras, Estudio Multimedia, Auditorio para 100 personas y dependencias de archivo y servicios.
+            </p>
+          </div>
+
+          <!-- 2. Autoridades y Equipo -->
+          <div style="margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; background: #ffffff;">
+            <h2 style="font-size: 10.5pt; font-weight: 800; color: #1e3a8a; margin: 0 0 6px 0; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 4px;">
+              2. EQUIPO DE RELEVAMIENTO & GESTIÓN INSTITUCIONAL (DOC IESNH)
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 14px; font-size: 8pt; color: #334155;">
+              <div>• <strong>Moreno Leandro:</strong> Gestión de proyectos / Planificación</div>
+              <div>• <strong>Argañaraz Bruno:</strong> Gestión de proyectos / Planificación</div>
+              <div>• <strong>Velazquez Nicolas:</strong> Gestión de proyectos / Planificación</div>
+              <div>• <strong>Murquite Leandro:</strong> Gestión de proyectos / Planificación</div>
+              <div>• <strong>Mustang Cristian:</strong> Ingeniería / Implementación</div>
+              <div>• <strong>Subelza Jonathan:</strong> Ingeniería / Implementación</div>
+              <div>• <strong>Lopez Alejandro:</strong> Ingeniería / Implementación</div>
+              <div>• <strong>Gonzalo Narvaez:</strong> Diseño / Implementación</div>
+            </div>
+          </div>
+
+          <!-- 3. Renders si están habilitados -->
+          ${p.optRenders ? `
+          <div style="margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; background: #ffffff;">
+            <h2 style="font-size: 10.5pt; font-weight: 800; color: #1e3a8a; margin: 0 0 8px 0; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 4px;">
+              3. VISTAS ARQUITECTÓNICAS Y CORTES DEL COMPLEJO
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center;">
+              <div>
+                <img src="assets/renders_3d/corte_isometrico_instituto.jpg" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1;" onerror="this.style.display='none'">
+                <div style="font-size: 7.5pt; font-weight: bold; color: #475569; margin-top: 3px;">Corte Isométrico General</div>
+              </div>
+              <div>
+                <img src="assets/renders_3d/detalle_escalera_gabinete.jpg" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1;" onerror="this.style.display='none'">
+                <div style="font-size: 7.5pt; font-weight: bold; color: #475569; margin-top: 3px;">Escalera & Gabinete PA</div>
+              </div>
+              <div>
+                <img src="assets/renders_3d/corte_auditorio_principal.jpg" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1;" onerror="this.style.display='none'">
+                <div style="font-size: 7.5pt; font-weight: bold; color: #475569; margin-top: 3px;">Auditorio Institucional</div>
+              </div>
+            </div>
+          </div>
+          ` : ''}
+
+          <!-- 4. Oferta Formativa -->
+          <div style="margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; background: #ffffff;">
+            <h2 style="font-size: 10.5pt; font-weight: 800; color: #1e3a8a; margin: 0 0 6px 0; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 4px;">
+              4. OFERTA FORMATIVA INSTITUCIONAL (14 TECNICATURAS SUPERIORES)
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 7.5pt; color: #334155;">
+              <div style="background: #eff6ff; padding: 8px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                <strong style="color: #1e40af;">Área Tecnológica:</strong><br>
+                • Tec. Sup. en Desarrollo de Software<br>
+                • Tec. Sup. en Ciencia de Datos e IA<br>
+                • Tec. Sup. en Soporte de Infraestructura TI
+              </div>
+              <div style="background: #fdf2f8; padding: 8px; border-radius: 6px; border: 1px solid #fbcfe8;">
+                <strong style="color: #9d174d;">Área de la Salud:</strong><br>
+                • Tec. Sup. en Enfermería<br>
+                • Tec. Sup. en Hemoterapia<br>
+                • Tec. Sup. en Farmacia y Esterilización
+              </div>
+              <div style="background: #f0fdf4; padding: 8px; border-radius: 6px; border: 1px solid #bbf7d0;">
+                <strong style="color: #166534;">Área Gestión & Servicios:</strong><br>
+                • Tec. Sup. en Gestión Jurídica<br>
+                • Tec. Sup. en Administración de Salud<br>
+                • Tec. Sup. en Higiene y Seguridad<br>
+                • Tec. Sup. en Gastronomía y Cocina<br>
+                • Tec. Sup. en Traducción en Inglés
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Firmas si están habilitadas -->
+          ${p.optSignatures ? `
+          <div style="border-top: 1.5px solid #cbd5e1; padding-top: 18px; margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; font-size: 8pt;">
+            <div>
+              __________________________________<br>
+              <strong>Moreno / Murquite / Equipo</strong><br>
+              <span style="color:#64748b; font-size: 7.5pt;">Gestión de Proyecto & Redes</span>
+            </div>
+            <div>
+              __________________________________<br>
+              <strong>Secretaría Académica</strong><br>
+              <span style="color:#64748b; font-size: 7.5pt;">Coordinación de Carreras</span>
+            </div>
+            <div>
+              __________________________________<br>
+              <strong>Rectoría / Dirección General</strong><br>
+              <span style="color:#64748b; font-size: 7.5pt;">${p.name}</span>
+            </div>
+          </div>
+          ` : ''}
+
+        </div>
+      `;
+    }
+
+    // 2. INFORME ACADÉMICO
+    function buildAcademicoDoc(p) {
+      let rowsHtml = '';
+      p.rooms.forEach(r => {
+        if (r.isPatio || r.isCorridor || r.cat === 'Pasillos') return;
+        const fl = (r.floor === 'pa' || r.floor === 2) ? 'Planta Alta' : 'Planta Baja';
+        const cap = r.isGabinete ? 32 : (r.isAuditorio ? 100 : Math.min(45, Math.max(25, Math.round((r.w * r.h) / 450))));
+        rowsHtml += `
+          <tr style="border-bottom: 1px solid #f1f5f9; font-size: 7.5pt;">
+            <td style="padding: 4px 6px; font-weight:bold; color:#1e293b;">${r.num || r.id}</td>
+            <td style="padding: 4px 6px; color:#64748b;">${fl}</td>
+            <td style="padding: 4px 6px; font-weight:bold; color:#0284c7;">${cap} as.</td>
+            <td style="padding: 4px 6px;">${r.m || '—'}</td>
+            <td style="padding: 4px 6px;">${r.t || '—'}</td>
+            <td style="padding: 4px 6px;">${r.n || '—'}</td>
+          </tr>
+        `;
+      });
+
+      return `
+        <div>
+          <div style="border-bottom: 3px solid #0284c7; padding-bottom: 10px; margin-bottom: 14px;">
+            <h1 style="font-size: 16pt; font-weight: 900; color: #0f172a; margin: 0 0 2px 0;">
+              INFORME ACADÉMICO & CENSO DE OCUPACIÓN ÁULICA
+            </h1>
+            <div style="font-size: 9pt; font-weight: 700; color: #0284c7;">
+              ${p.name} • CUE: ${p.cue} • Ciclo Lectivo ${p.year}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead>
+                <tr style="background: #f1f5f9; color: #1e293b; font-size: 8pt; border-bottom: 2px solid #cbd5e1;">
+                  <th style="padding: 6px;">Espacio / Aula</th>
+                  <th style="padding: 6px;">Ubicación</th>
+                  <th style="padding: 6px;">Capacidad</th>
+                  <th style="padding: 6px;">Turno Mañana</th>
+                  <th style="padding: 6px;">Turno Tarde</th>
+                  <th style="padding: 6px;">Turno Noche</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 8pt; color: #334155; margin-bottom: 14px;">
+            <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+              <strong>Espacios de Práctica Específica:</strong><br>
+              • Gabinete de Informática: 32 PCs cableadas para Desarrollo de Software y Ciencia de Datos.<br>
+              • Estudio de Streaming: Grabación de clases, entrevistas y podcasting.<br>
+              • Auditorio Institucional: 100 asientos para defensas de tesis y eventos.
+            </div>
+            <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+              <strong>Tasas de Uso Áulico:</strong><br>
+              • Turno Mañana: <strong>88%</strong> de utilización.<br>
+              • Turno Tarde: <strong>82%</strong> de utilización.<br>
+              • Turno Noche: <strong>96%</strong> de ocupación (alta afluencia de trabajadores).
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. INFORME DE INFRAESTRUCTURA
+    function buildInfraestructuraDoc(p) {
+      return `
+        <div>
+          <div style="border-bottom: 3px solid #0f766e; padding-bottom: 10px; margin-bottom: 14px;">
+            <h1 style="font-size: 16pt; font-weight: 900; color: #0f172a; margin: 0 0 2px 0;">
+              INFORME TÉCNICO DE INFRAESTRUCTURA EDILICIA & SUPERFICIES
+            </h1>
+            <div style="font-size: 9pt; font-weight: 700; color: #0f766e;">
+              ${p.name} • Superficie Total: 2.400 m² (Lote 60×40 m)
+            </div>
+          </div>
+
+          <div style="font-size: 8.5pt; color: #334155; line-height: 1.5; margin-bottom: 14px;">
+            <p><strong>1. Planta Baja (2.400 m²):</strong> Traza en "C" con galerías de 4,50m a 5,50m de ancho que rodean el patio central descubierto de 368 m². Alberga 23 aulas, hall central de acceso, secretaría a la izquierda y buffet central a la derecha.</p>
+            <p><strong>2. Planta Alta (651 m²):</strong> Bloque de 31,00 m × 21,00 m sobre el ala oeste y norte. Contiene Gabinete (32 PCs), Streaming, Sector Títulos, Sanitarios, Foyer y Auditorio con pasillo distribuidor de 2,60 m de ancho.</p>
+            <p><strong>3. Núcleo de Circulación Vertical:</strong> Escalera de hormigón en "U" con descanso intermedio a 1,70 m y pasamanos tubulares dobles.</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 8pt; color: #334155;">
+            <div style="background: #f0fdfa; padding: 10px; border-radius: 6px; border: 1px solid #ccfbf1;">
+              <strong style="color: #0f766e;">Red Eléctrica:</strong><br>Acometida trifásica, disyuntores diferenciales seccionales por ala y jabalina de puesta a tierra.
+            </div>
+            <div style="background: #f0fdfa; padding: 10px; border-radius: 6px; border: 1px solid #ccfbf1;">
+              <strong style="color: #0f766e;">Instalación Sanitaria:</strong><br>Baterías para damas y caballeros en PB y PA con presurización de agua continua.
+            </div>
+            <div style="background: #f0fdfa; padding: 10px; border-radius: 6px; border: 1px solid #ccfbf1;">
+              <strong style="color: #0f766e;">Estructura Resistente:</strong><br>Hormigón armado antisísmico, mampostería cerámica y cubiertas aisladas térmicamente.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. INFORME DE SEGURIDAD
+    function buildSeguridadDoc(p) {
+      return `
+        <div>
+          <div style="border-bottom: 3px solid #b91c1c; padding-bottom: 10px; margin-bottom: 14px;">
+            <h1 style="font-size: 16pt; font-weight: 900; color: #0f172a; margin: 0 0 2px 0;">
+              PLAN DE AUTOPROTECCIÓN, SEGURIDAD & EVACUACIÓN INSTITUCIONAL
+            </h1>
+            <div style="font-size: 9pt; font-weight: 700; color: #b91c1c;">
+              Conforme a Ley Nacional de Higiene y Seguridad N° 19.587 • ${p.name}
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 8.5pt; margin-bottom: 14px;">
+            <div style="background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca;">
+              <strong style="color:#b91c1c;">Punto de Encuentro Seguro:</strong><br>
+              <strong>Patio Central Descubierto (368 m²):</strong> Área libre de caídas de mampostería. Desahogo inmediato desde todas las alas de Planta Baja y desde la escalera de Planta Alta.
+            </div>
+            <div style="background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca;">
+              <strong style="color:#b91c1c;">Vías de Escape Planta Alta:</strong><br>
+              Flujo canalizado por el Pasillo Distribuidor central (2,60 m) hacia la escalera en 'U' (ancho 1,20 m) que desemboca directamente al patio oeste sin interferencias.
+            </div>
+          </div>
+
+          <div style="font-size: 8pt; color: #334155; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <strong>Medios de Protección Contra Incendios:</strong><br>
+            • Extintores PQS ABC (10 kg) cada 15 metros en pasillos.<br>
+            • Extintores de CO₂ en Gabinete de Computación, Rack mural y Buffet.<br>
+            • Luces de emergencia autónomas LED en todas las vías de egreso.<br>
+            • Capacidad máxima simultánea de evacuación: <strong>1.250 personas</strong>.
+          </div>
+        </div>
+      `;
+    }
+
+    // 5. INFORME IT
+    function buildITDoc(p) {
+      return `
+        <div>
+          <div style="border-bottom: 3px solid #4338ca; padding-bottom: 10px; margin-bottom: 14px;">
+            <h1 style="font-size: 16pt; font-weight: 900; color: #0f172a; margin: 0 0 2px 0;">
+              RELEVAMIENTO TÉCNICO DE TELECOMUNICACIONES, REDES & GABINETE
+            </h1>
+            <div style="font-size: 9pt; font-weight: 700; color: #4338ca;">
+              Documento Técnico Oficial IESNH • Parque Informático & 16 APs Wi-Fi
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 8pt; margin-bottom: 14px;">
+            <div style="background: #eef2ff; padding: 10px; border-radius: 6px; border: 1px solid #c7d2fe;">
+              <strong style="color:#4338ca;">Gabinete (32 Computadoras):</strong><br>
+              • 4 filas dobles de escritorios (8 puestos c/u).<br>
+              • Pasillo central de <strong>1,60 m</strong> y pasillos de 1,20 m.<br>
+              • Rack mural SOHO 6U en esquina superior izquierda.<br>
+              • Segmentación VLAN (VLAN 10 Admin, VLAN 20 Alumnos, VLAN 30 Streaming, VLAN 50 Wi-Fi).
+            </div>
+            <div style="background: #eef2ff; padding: 10px; border-radius: 6px; border: 1px solid #c7d2fe;">
+              <strong style="color:#4338ca;">Red Wi-Fi y Telecomunicaciones PB:</strong><br>
+              • 16 Puntos de Acceso (APs 1 a 16) 100% operativos.<br>
+              • Switch PoE de 16 puertos y Firewall perimetral en Buffet Central.<br>
+              • Enlace troncal vertical PB a PA por ducto de escalera.
+            </div>
+          </div>
+
+          <div style="font-size: 8pt; color: #334155; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <strong>Metodología de Clonación con Sergei Strelec (WinPE):</strong><br>
+            Despliegue de imágenes maestras (.tib / .wim) en 4 grupos de hardware (Banghó, G-Fast, OVER TECH y Performance), reduciendo el tiempo de instalación a 15-20 min por PC con uniformidad del 100%.
+          </div>
+        </div>
+      `;
+    }
+
+    // 6. RESUMEN EJECUTIVO
+    function buildEjecutivoDoc(p) {
+      return `
+        <div>
+          <div style="border-bottom: 2px solid #1e3a8a; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 8pt; font-weight: 800; color: #1e3a8a;">FICHA TÉCNICA RESUMEN • NIVEL SUPERIOR</div>
+              <h1 style="font-size: 15pt; font-weight: 900; color: #0f172a; margin: 2px 0;">${p.name}</h1>
+              <div style="font-size: 8pt; color: #475569;">CUE: ${p.cue} • Ciclo Lectivo ${p.year} • San Salvador de Jujuy</div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; font-size: 8pt;">
+            <div style="background: #f1f5f9; padding: 6px 10px; border-radius: 6px;">
+              <span style="color:#64748b;">Superficie Predio:</span><br><strong>2.400 m² (60×40m)</strong>
+            </div>
+            <div style="background: #f1f5f9; padding: 6px 10px; border-radius: 6px;">
+              <span style="color:#64748b;">Aulas Totales:</span><br><strong>${p.totalActiveRooms} Recintos</strong>
+            </div>
+            <div style="background: #f1f5f9; padding: 6px 10px; border-radius: 6px;">
+              <span style="color:#64748b;">Aforo Simultáneo:</span><br><strong>~${p.totalCapacity} Asientos</strong>
+            </div>
+            <div style="background: #f1f5f9; padding: 6px 10px; border-radius: 6px;">
+              <span style="color:#64748b;">Matrícula Est.:</span><br><strong>~2.040 Alumnos</strong>
+            </div>
+          </div>
+
+          <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; margin-bottom: 12px; font-size: 8pt; color: #334155;">
+            <strong>Síntesis de Oferta Formativa (14 Carreras):</strong><br>
+            Desarrollo de Software, Ciencia de Datos e IA, Redes y Soporte TI, Gestión Jurídica, Administración de Salud, Enfermería, Hemoterapia, Farmacia, Esterilización, Higiene y Seguridad, Gastronomía, Educación Física, Traducción de Inglés y Niñez y Familia.
+          </div>
+
+          <div style="border-top: 1px solid #cbd5e1; padding-top: 16px; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: center; font-size: 8pt;">
+            <div>
+              __________________________________<br>
+              <strong>Secretaría Académica</strong><br>
+              ${p.name}
+            </div>
+            <div>
+              __________________________________<br>
+              <strong>Rectoría / Dirección General</strong><br>
+              Elevado a Supervisión de Nivel Superior
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // RENDERIZADO DE TABLA DE EDICIÓN DE AULAS (VIEW 3)
+    // =========================================================================
+    function renderEditorTable() {
+      const tbody = document.getElementById('editor-table-body');
+      if (!tbody) return;
+
+      let html = '';
+      currentRooms.forEach((r, idx) => {
+        if (r.isPatio || r.isCorridor || r.cat === 'Pasillos') return;
+        const fl = (r.floor === 'pa' || r.floor === 2) ? 'Planta Alta' : 'Planta Baja';
+        const cap = r.isGabinete ? 32 : (r.isAuditorio ? 100 : Math.min(45, Math.max(25, Math.round((r.w * r.h) / 450))));
+
+        html += `
+          <tr class="hover:bg-slate-900/40 transition">
+            <td class="p-3 font-mono font-bold text-cyan-400">${r.id}</td>
+            <td class="p-3 font-bold text-white">
+              <input type="text" value="${r.num || r.id}" onchange="updateRoomField(${idx}, 'num', this.value)" class="bg-slate-900 px-2 py-1 rounded border border-slate-700 w-36">
+            </td>
+            <td class="p-3 text-slate-400">${fl}</td>
+            <td class="p-3 font-bold text-emerald-400">${cap} as.</td>
+            <td class="p-3">
+              <input type="text" value="${r.m || ''}" onchange="updateRoomField(${idx}, 'm', this.value)" placeholder="Carrera Mañana" class="bg-slate-900 px-2 py-1 rounded border border-slate-700 w-36">
+            </td>
+            <td class="p-3">
+              <input type="text" value="${r.t || ''}" onchange="updateRoomField(${idx}, 't', this.value)" placeholder="Carrera Tarde" class="bg-slate-900 px-2 py-1 rounded border border-slate-700 w-36">
+            </td>
+            <td class="p-3">
+              <input type="text" value="${r.n || ''}" onchange="updateRoomField(${idx}, 'n', this.value)" placeholder="Carrera Noche" class="bg-slate-900 px-2 py-1 rounded border border-slate-700 w-36">
+            </td>
+            <td class="p-3 text-right">
+              <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">${r.w}×${r.h}</span>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function updateRoomField(idx, field, value) {
+      if (currentRooms[idx]) {
+        currentRooms[idx][field] = value;
+      }
+    }
+
+    function saveCustomRoomsToStorage() {
+      try {
+        localStorage.setItem('iesnh_synced_rooms_v1', JSON.stringify(currentRooms));
+        localStorage.setItem('inst_aulas_master_v11', JSON.stringify(currentRooms));
+        alert("¡Asignaciones de aulas guardadas con éxito! Los cambios se reflejarán en todos los informes y en el plano 2D.");
+        renderCurrentView();
+      } catch(e) {
+        alert("Error al guardar: " + e);
+      }
+    }
+
+    function resetRoomsToDefaults() {
+      if (confirm("¿Deseas restablecer todas las aulas a los valores oficiales por defecto?")) {
+        currentRooms = JSON.parse(JSON.stringify(OFFICIAL_DEFAULT_ROOMS));
+        renderEditorTable();
+        renderCurrentView();
+      }
+    }
+
+    // =========================================================================
+    // EXPORTACIÓN, IMPRESIÓN Y DESCARGAS
+    // =========================================================================
+    function printCurrentDocument() {
+      window.print();
+    }
+
+    function downloadDocumentHTML() {
+      const docCanvas = document.getElementById('document-canvas');
+      if (!docCanvas) return;
+
+      const p = getParamsBundle();
+      const fullHtml = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>${p.name} - ${activeReportType.toUpperCase()}</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 960px; margin: 30px auto; padding: 30px; background: #f8fafc; color: #0f172a; line-height: 1.5; }
+    .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    ${docCanvas.innerHTML}
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Informe_Institucional_${activeReportType.toUpperCase()}_${p.year}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportToCSV() {
+      let csv = 'Codigo,Nombre,Piso,Capacidad,Turno Manana,Turno Tarde,Turno Noche\n';
+      currentRooms.forEach(r => {
+        if (r.isPatio || r.isCorridor || r.cat === 'Pasillos') return;
+        const fl = (r.floor === 'pa' || r.floor === 2) ? 'Planta Alta' : 'Planta Baja';
+        const cap = r.isGabinete ? 32 : (r.isAuditorio ? 100 : Math.min(45, Math.max(25, Math.round((r.w * r.h) / 450))));
+        const name = (r.num || r.id).replace(/,/g, ' ');
+        const m = (r.m || '').replace(/,/g, ' ');
+        const t = (r.t || '').replace(/,/g, ' ');
+        const n = (r.n || '').replace(/,/g, ' ');
+        csv += `${r.id},${name},${fl},${cap},${m},${t},${n}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'censo_aulas_institucional.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      loadInitialRooms();
+      selectReportType('directivo');
+    });
+  </script>
+</body>
+</html>
