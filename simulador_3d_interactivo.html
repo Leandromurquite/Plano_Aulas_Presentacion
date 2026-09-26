@@ -883,82 +883,144 @@
     // PLANTA ALTA ROOMS (Medidas exactas del documento oficial del IES Nuevo Horizonte)
     // PLANTA ALTA ROOMS (Medidas exactas de la Página 6 del Informe Oficial del IESNH)
     let DEFAULT_ROOMS_PA_OFFICIAL = [
-      // 1. AuLA (Oeste)
-      { 
-        id: "pa_aula", floor: 2, num: "AuLA", x: 40, y: 55, w: 200, h: 360, 
-        cat: "Tecnología", icon: "📐", 
-        m: "Clases y Capacitaciones (Sin Uso - Esperando Asignación)", t: "Clases y Capacitaciones", n: "Formación Académica",
-        doorWall: "east", doorRatio: 0.5,
-        desc: "El aula es un espacio destinado al desarrollo de clases, capacitaciones y actividades académicas. Actualmente se encuentra sin uso esperando asignaciones de clases. Cuenta con cobertura de red Wi-Fi.",
-        real_w: 8.5, real_h: 15.0
-      },
-      // 2. GABINETE DE INFORMÁTICA (31 PCs en 4 islas dobles + Rack 6U)
-      { 
-        id: "pa_gabinete", floor: 2, num: "GABINETE (31 PCs)", x: 255, y: 55, w: 350, h: 255, 
-        cat: "Tecnología", icon: "💻", 
-        m: "Tec. Sup. Desarrollo de Software (3° 1°)", t: "Tec. Sup. Desarrollo de Software", n: "Tec. Sup. Infraestructura y Redes",
-        isGabinete: true, 
-        desc: "El gabinete es un aula informática equipada con 31 computadoras distribuidas en 4 filas de puestos dobles. En su esquina inferior izquierda cuenta con el Rack mural SOHO pivotante de 6U con módem Huawei HG8145X6-10 y 2 switches Hikvision administrables de 24 puertos (48 bocas de red) y Deco 1.",
-        doorWall: "south", doorRatio: 0.8,
-        real_w: 15.0, real_h: 10.5
-      },
-      // 3. SECTOR TÍTULOS (Debajo del Aula)
-      { 
-        id: "pa_sector_titulos", floor: 2, num: "SECTOR TÍTULOS", x: 40, y: 430, w: 200, h: 185, 
-        cat: "Administración", icon: "📜", 
-        m: "Gestión y Entrega de Títulos", t: "Organización Documental y Certificados", n: "Resguardo y Archivo Institucional",
-        desc: "Destinado a actividades administrativas relacionadas con la documentación académica, resguardo de títulos, certificados y legajos. Cuenta con mesa ejecutiva de trabajo (10 puestos) y conexión directa por cableado estructurado UTP Cat 6.",
-        doorWall: "east", doorRatio: 0.5,
-        real_w: 8.5, real_h: 7.5
-      },
-      // 4. SALA DE STREAMING (Debajo del Gabinete)
-      { 
-        id: "pa_streaming", floor: 2, num: "SALA DE STREAMING", x: 255, y: 430, w: 230, h: 185, 
-        cat: "Tecnología", icon: "🎙️", 
-        m: "Producción Audiovisual & Clases", t: "Transmisiones en Vivo & Entrevistas", n: "Grabación de Podcasts & Contenidos",
-        isStreaming: true, 
-        desc: "Preparada para la producción y transmisión de contenidos audiovisuales en vivo, clases y conferencias. Mesa curva para 4 conductores con micrófonos articulados y puesto técnico con 3 computadoras conectadas a la red.",
-        doorWall: "north", doorRatio: 0.5,
-        real_w: 9.5, real_h: 7.5
-      },
-      // 5. ESCALERAS PLANTA ALTA (Conexión física a Planta Baja)
-      { 
-        id: "pa_escaleras", floor: 2, num: "ESCALERA (CONEXIÓN PB)", x: 500, y: 430, w: 245, h: 185, 
-        cat: "Pasillos", icon: "🪜", 
-        m: "Circulación Vertical Planta Baja - Planta Alta", t: "Circulación Vertical", n: "Circulación",
-        desc: "Núcleo de escalera con peldaños de hormigón y descanso que interconecta físicamente la Planta Baja con el pasillo central de Planta Alta.",
-        doorWall: "west", doorRatio: 0.5,
-        real_w: 10.0, real_h: 7.5
-      },
-      // 6. BAÑOS PLANTA ALTA (Caballeros y Damas)
-      { 
-        id: "pa_banos", floor: 2, num: "BAÑOS DAMAS / CABALLEROS", x: 500, y: 240, w: 245, h: 175, 
-        cat: "Servicios", icon: "🚻", 
-        m: "Sanitarios Diferenciados", t: "Sanitarios Damas y Caballeros", n: "Sanitarios",
-        desc: "Sanitarios diferenciados para caballeros y damas en zona central. En el pasillo exterior se encuentra el nodo Wi-Fi Mesh Deco n2.",
-        doorWall: "west", doorRatio: 0.5,
-        real_w: 10.0, real_h: 7.0
-      },
-      // 7. SALA PREVIA (Foyer de acceso al Auditorio)
-      { 
-        id: "pa_previa", floor: 2, num: "SALA PREVIA", x: 620, y: 55, w: 125, h: 170, 
-        cat: "Sociales", icon: "🛋️", 
-        m: "Recepción y Coordinación Auditorio", t: "Encuentros y Entrevistas", n: "Preparación de Actos",
-        desc: "Espacio de recepción y preparación antes del ingreso al auditorio. Cuenta con mesa ejecutiva de reuniones, sillas y sillones para encuentros de coordinación y entrevistas.",
-        doorWall: "west", doorRatio: 0.5,
-        real_w: 5.0, real_h: 6.8
-      },
-      // 8. AUDITORIO INSTITUCIONAL (19.5m x 13.65m x 3.95m - 100 personas)
-      { 
-        id: "pa_auditorio", floor: 2, num: "AUDITORIO INSTITUCIONAL", x: 760, y: 55, w: 450, h: 560, 
-        cat: "Sociales", icon: "🎭", 
-        m: "Conferencias, Presentaciones y Actos (100 pers)", t: "Capacitaciones y Eventos Institucionales", n: "Defensas de Tesis y Proyecciones",
-        isAuditorio: true, 
-        desc: "Espacio principal para eventos de mayor convocatoria. Dimensiones oficiales: Largo 19,5 m, Ancho 13,65 m, Altura 3,95 m. Estrado con mesa de disertante, proyector HD, Deco n3 y 2 bloques de butacas con pasillo central.",
-        doorWall: "west", doorRatio: 0.3,
-        real_w: 19.5, real_h: 13.65, real_alt: 3.95
-      }
-    ];
+    {
+        "id": "pa_gabinete",
+        "floor": 2,
+        "num": "GABINETE (32 PCs)",
+        "x": 120,
+        "y": 280,
+        "w": 118,
+        "h": 115,
+        "cat": "Tecnología",
+        "icon": "💻",
+        "m": "Tec. Sup. Desarrollo de Software (3° 1°)",
+        "t": "Tec. Sup. Desarrollo de Software",
+        "n": "Tec. Sup. Infraestructura y Redes",
+        "isGabinete": true,
+        "desc": "Laboratorio informático con 32 computadoras en 4 filas dobles de 8 puestos (pasillo central de 1,60 m). Rack Mural SOHO 6U en esquina superior izquierda con switches Hikvision 24P.",
+        "doorWall": "east",
+        "doorRatio": 0.8,
+        "real_w": 11.8,
+        "real_h": 11.5
+    },
+    {
+        "id": "pa_streaming",
+        "floor": 2,
+        "num": "SALA DE STREAMING",
+        "x": 120,
+        "y": 398,
+        "w": 118,
+        "h": 52,
+        "cat": "Tecnología",
+        "icon": "🎙️",
+        "m": "Producción Audiovisual & Clases",
+        "t": "Transmisiones en Vivo & Entrevistas",
+        "n": "Grabación de Podcasts",
+        "isStreaming": true,
+        "desc": "Estudio multimedia institucional IESNH: puesto técnico de control ergonómico con triple monitor, micrófono en brazo articulado con filtro anti-pop, mesa de conductores y paneles acústicos.",
+        "doorWall": "east",
+        "doorRatio": 0.5,
+        "real_w": 11.8,
+        "real_h": 5.2
+    },
+    {
+        "id": "pa_sector_titulos",
+        "floor": 2,
+        "num": "SECTOR TÍTULOS / AULA",
+        "x": 120,
+        "y": 452,
+        "w": 118,
+        "h": 38,
+        "cat": "Administración",
+        "icon": "📜",
+        "m": "Gestión y Entrega de Títulos",
+        "t": "Organización Documental y Certificados",
+        "n": "Resguardo y Archivo",
+        "desc": "Área administrativa para resguardo y archivo de títulos, actas de examen y legajos académicos.",
+        "doorWall": "east",
+        "doorRatio": 0.5,
+        "real_w": 11.8,
+        "real_h": 3.8
+    },
+    {
+        "id": "pa_escalera",
+        "floor": 2,
+        "num": "ESCALERA (Llegada PB)",
+        "x": 240,
+        "y": 280,
+        "w": 55,
+        "h": 60,
+        "cat": "Pasillos",
+        "icon": "🪜",
+        "m": "Circulación Vertical Planta Baja - Planta Alta",
+        "t": "Circulación Vertical",
+        "n": "Circulación Vertical",
+        "desc": "Llegada directa de la escalera en 'U' desde el patio de Planta Baja.",
+        "doorWall": "south",
+        "doorRatio": 0.5,
+        "real_w": 5.5,
+        "real_h": 6.0
+    },
+    {
+        "id": "pa_banos",
+        "floor": 2,
+        "num": "Baños Damas y Caballeros",
+        "x": 240,
+        "y": 342,
+        "w": 55,
+        "h": 55,
+        "cat": "Servicios",
+        "icon": "🚻",
+        "m": "Sanitarios Diferenciados D/C",
+        "t": "Sanitarios D/C",
+        "n": "Sanitarios D/C",
+        "desc": "Batería de sanitarios para damas y caballeros.",
+        "doorWall": "east",
+        "doorRatio": 0.5,
+        "real_w": 5.5,
+        "real_h": 5.5
+    },
+    {
+        "id": "pa_sala_previa",
+        "floor": 2,
+        "num": "SALA PREVIA / FOYER",
+        "x": 240,
+        "y": 400,
+        "w": 55,
+        "h": 90,
+        "cat": "Sociales",
+        "icon": "🛋️",
+        "m": "Recepción y Foyer Auditorio",
+        "t": "Encuentros y Entrevistas",
+        "n": "Preparación de Actos",
+        "desc": "Espacio de antesala y recepción protocolar previo al ingreso al Auditorio.",
+        "doorWall": "east",
+        "doorRatio": 0.5,
+        "real_w": 5.5,
+        "real_h": 9.0
+    },
+    {
+        "id": "pa_auditorio",
+        "floor": 2,
+        "num": "AUDITORIO INSTITUCIONAL",
+        "x": 297,
+        "y": 280,
+        "w": 133,
+        "h": 210,
+        "cat": "Sociales",
+        "icon": "🎭",
+        "m": "Conferencias, Presentaciones y Actos (100 pers)",
+        "t": "Capacitaciones y Eventos",
+        "n": "Defensas de Tesis",
+        "isAuditorio": true,
+        "desc": "Auditorio institucional de 19,5 m × 13,65 m × 3,95 m de altura. Estrado elevado al norte con pantalla de proyección y platea para 100 personas.",
+        "doorWall": "west",
+        "doorRatio": 0.3,
+        "real_w": 13.3,
+        "real_h": 21.0,
+        "real_alt": 3.95
+    }
+];
 
     // Cargar calibraciones guardadas o usar valores oficiales
     let initialRoomsPA = JSON.parse(JSON.stringify(DEFAULT_ROOMS_PA_OFFICIAL));
@@ -1011,13 +1073,8 @@
     // INVENTARIO EXACTO DE LAS 31 PCs DEL GABINETE (Según los 4 Grupos del Informe Oficial)
     function generateDocPCInventory() {
       const list = [];
-
-      // Grupo 1: Banghó (PC-01 a PC-08) -> Win 11 Pro
-      // Grupo 2: G-Fast (PC-09 a PC-12) -> Win 11 Home
-      // Grupo 3: Over Tech (PC-13 a PC-21) -> Win 11 Pro
-      // Grupo 4: Performance (PC-22 a PC-31) -> Win 11 Pro
-
-      for (let i = 1; i <= 31; i++) {
+      // 32 PCs exactas en 4 filas dobles de 8 puestos (8 PCs por fila)
+      for (let i = 1; i <= 32; i++) {
         const tag = `PC-${i < 10 ? '0' : ''}${i}`;
         let groupName = "Grupo 4: Performance";
         let brand = "Performance";
@@ -1052,134 +1109,30 @@
           if (i === 23) notes = "Equipo Maestro de Clonación (Grupo 4 Performance).";
         }
 
-        // Posiciones iniciales dentro del Gabinete (4 filas x 8 puestos dobles)
-        // Fila 1 tiene 7 PCs (puesto 1 aloja Deco 1), Filas 2, 3, 4 tienen 8 PCs
-        let rowIdx = 0;
-        let colIdx = 0;
-        if (i <= 7) {
-          rowIdx = 0;
-          colIdx = i; // 1 a 7 (el 0 es Deco 1)
-        } else if (i <= 15) {
-          rowIdx = 1;
-          colIdx = i - 8;
-        } else if (i <= 23) {
-          rowIdx = 2;
-          colIdx = i - 16;
-        } else {
-          rowIdx = 3;
-          colIdx = i - 24;
-        }
+        // 4 filas x 8 puestos adentro de x: 120..238, y: 280..395
+        const rowIdx = Math.floor((i - 1) / 8); // 0, 1, 2, 3
+        const colIdx = (i - 1) % 8;             // 0..7
 
-        const rowYs = [85, 140, 205, 260];
-        const colXs = [270, 310, 350, 390, 440, 480, 520, 560];
+        const rowYs = [295, 320, 355, 380]; // Pasillo central de 1.60m entre fila 2 y 3
+        const colXs = [130, 142, 155, 168, 185, 198, 210, 222];
 
         list.push({
           id: `pc_gab_${i < 10 ? '0' : ''}${i}`,
           floor: 2,
-          type: "pc_desktop",
-          name: `PC Gabinete ${i < 10 ? '0' : ''}${i}`,
-          room: "GABINETE",
-          x: colXs[colIdx],
-          y: rowYs[rowIdx],
-          rot: 0,
+          type: "pc_bangho",
           tag: tag,
           brand: brand,
-          groupName: groupName,
-          caseModel: "Torre ATX",
           os: osName,
           cpu: cpu,
           ram: ram,
           status: status,
-          software: [...SOFTWARE_STACK_BASE],
+          group: groupName,
           notes: notes,
-          realPhoto: "assets/planta_alta/foto_gabinete_31pcs.jpeg"
+          x: colXs[colIdx],
+          y: rowYs[rowIdx],
+          rot: 0
         });
       }
-
-      // RACK Mural SOHO 6U (Pivotante) en la esquina inferior izquierda del Gabinete (x=268, y=282)
-      list.push({
-        id: "rack_pa_gabinete",
-        floor: 2,
-        type: "switch_net",
-        name: "RACK Mural SOHO 6U (Pivotante)",
-        room: "GABINETE",
-        x: 268,
-        y: 282,
-        rot: 0,
-        tag: "RACK-6U-GAB",
-        ip: "Huawei HG8145X6-10 + 2x Hikvision 24P",
-        port: "48 Puertos Administrables Gigabit",
-        status: "Operativo",
-        notes: "Rack mural pivotante de 6U con 600 mm de profundidad. Contiene módem Huawei OptiXstar HG8145X6-10 y dos switches Hikvision administrables de 24 puertos (48 bocas de red)."
-      });
-
-      // 3 PCs de la Sala de Streaming
-      list.push(
-        {
-          id: "pc_str_01",
-          floor: 2,
-          type: "pc_desktop",
-          name: "PC Streaming Master IESNH",
-          room: "SALA DE STREAMING",
-          x: 460,
-          y: 470,
-          rot: 0,
-          tag: "PC-STR-01",
-          brand: "Custom Studio Workstation",
-          groupName: "Estudio Streaming",
-          caseModel: "Torre ATX",
-          os: "Windows 11 Pro",
-          cpu: "Intel Core i7-13700K (16C/24T)",
-          ram: "32 GB DDR5 5600MHz",
-          status: "Operativo",
-          software: ["OBS Studio", "Adobe Premiere Pro", "DaVinci Resolve", "Audacity", "Photoshop", "XAMPP"],
-          notes: "Puesto de control ergonómico con triple monitor, luces LED institucionales y micrófono Rode con filtro anti-pop.",
-          realPhoto: "assets/planta_alta/foto_streaming_puesto_tecnico.jpeg"
-        },
-        {
-          id: "pc_str_02",
-          floor: 2,
-          type: "pc_desktop",
-          name: "PC Edición y Render",
-          room: "SALA DE STREAMING",
-          x: 460,
-          y: 520,
-          rot: 0,
-          tag: "PC-STR-02",
-          brand: "Render Station",
-          groupName: "Estudio Streaming",
-          caseModel: "Torre ATX",
-          os: "Windows 11 Pro",
-          cpu: "AMD Ryzen 9 7900X",
-          ram: "32 GB DDR5",
-          status: "Operativo",
-          software: ["DaVinci Resolve", "Blender 3D", "After Effects", "HandBrake"],
-          notes: "Estación de renderizado y postproducción de video para proyectos académicos.",
-          realPhoto: "assets/planta_alta/foto_streaming_puesto_tecnico.jpeg"
-        },
-        {
-          id: "pc_str_03",
-          floor: 2,
-          type: "pc_desktop",
-          name: "PC Monitoreo & Ingesta",
-          room: "SALA DE STREAMING",
-          x: 460,
-          y: 570,
-          rot: 0,
-          tag: "PC-STR-03",
-          brand: "Monitor Station",
-          groupName: "Estudio Streaming",
-          caseModel: "Torre ATX",
-          os: "Windows 11 Pro",
-          cpu: "Intel Core i5-13500",
-          ram: "16 GB DDR4",
-          status: "Operativo",
-          software: ["vMix", "NDI Tools", "OBS Studio", "Audio Router"],
-          notes: "Monitoreo en vivo de cámaras NDI, niveles de audio y switch de video.",
-          realPhoto: "assets/planta_alta/foto_streaming_puesto_tecnico.jpeg"
-        }
-      );
-
       return list;
     }
 
@@ -1626,12 +1579,12 @@
         floor2Group.add(paGroup);
       });
 
-      // Losa conector de pasillo de Planta Alta
-      const paCorridorGeo = new THREE.BoxGeometry(45 * paConfig.scaleX, 0.15, 8 * paConfig.scaleZ);
-      const paCorridorMesh = new THREE.Mesh(paCorridorGeo, floorSlabMaterial);
-      paCorridorMesh.position.set(paConfig.offsetX, paElevY + 0.075, -5.5 * paConfig.scaleZ + paConfig.offsetZ);
-      paCorridorMesh.receiveShadow = true;
-      floor2Group.add(paCorridorMesh);
+            // Losa base de Planta Alta: exactamente 31.0 m de ancho x 21.0 m de fondo
+      const paSlabGeo = new THREE.BoxGeometry(31 * paConfig.scaleX, 0.25, 21 * paConfig.scaleZ);
+      const paSlabMesh = new THREE.Mesh(paSlabGeo, floorSlabMaterial);
+      paSlabMesh.position.set(-32.5 * paConfig.scaleX, paElevY - 0.125, 4.5 * paConfig.scaleZ);
+      paSlabMesh.receiveShadow = true;
+      floor2Group.add(paSlabMesh);
 
       // --- APs Wi-Fi (PB & PA) ---
       initialAPs.forEach(ap => {
