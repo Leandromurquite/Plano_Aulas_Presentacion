@@ -9,6 +9,65 @@
   <!-- Three.js & OrbitControls -->
   <script src="lib/three.min.js"></script>
   <script>
+
+    // =============================================================
+    // RECEPTOR DE SINCRONIZACIÓN EN TIEMPO REAL DESDE EL PLANO 2D
+    // =============================================================
+    const liveSyncReceiver = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('iesnh_simultaneous_sync') : null;
+
+    if (liveSyncReceiver) {
+      liveSyncReceiver.onmessage = function(event) {
+        if (!event.data || event.data.type !== 'ROOM_CHANGE') return;
+        const updated = event.data.room;
+        if (!updated) return;
+
+        // Mostrar indicador visual de sincronización
+        showLiveSyncIndicator(updated.num || updated.id);
+
+        // Actualizar en initialRoomsPA o initialRoomsPB
+        let targetList = (updated.floor === 'pa' || updated.floor === 2) ? initialRoomsPA : initialRoomsPB;
+        let r = targetList.find(x => x.id === updated.id);
+        if (r) {
+          r.x = updated.x;
+          r.y = updated.y;
+          r.w = updated.w;
+          r.h = updated.h;
+          allRooms = [...initialRoomsPB, ...initialRoomsPA];
+          buildSchool3D();
+        }
+      };
+    }
+
+    // Escuchar también cambios por localStorage
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'iesnh_synced_rooms_v1' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          parsed.forEach(up => {
+            let targetList = (up.floor === 'pa' || up.floor === 2) ? initialRoomsPA : initialRoomsPB;
+            let r = targetList.find(x => x.id === up.id);
+            if (r) { r.x = up.x; r.y = up.y; r.w = up.w; r.h = up.h; }
+          });
+          allRooms = [...initialRoomsPB, ...initialRoomsPA];
+          buildSchool3D();
+        } catch(err) {}
+      }
+    });
+
+    function showLiveSyncIndicator(roomName) {
+      let badge = document.getElementById('live-sync-toast');
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.id = 'live-sync-toast';
+        badge.className = 'fixed top-16 right-6 z-50 glass px-4 py-2 rounded-2xl border border-emerald-500/50 shadow-2xl flex items-center space-x-2 text-xs font-bold text-emerald-300 pointer-events-none transition duration-300';
+        document.body.appendChild(badge);
+      }
+      badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span><span>⚡ Sincronizado en vivo: <b>${roomName}</b></span>`;
+      badge.style.opacity = '1';
+      clearTimeout(badge._timer);
+      badge._timer = setTimeout(() => { badge.style.opacity = '0'; }, 2000);
+    }
+    
     if (typeof THREE === 'undefined') {
       document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
     }

@@ -14,6 +14,28 @@
   <!-- html2pdf.js local y CDN fallback -->
   <script src="lib/html2pdf.bundle.min.js"></script>
   <script>
+
+    // =============================================================
+    // SINCRONIZACIÓN EN TIEMPO REAL CON SIMULADOR 3D / VIDEOJUEGO
+    // =============================================================
+    const liveSyncChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('iesnh_simultaneous_sync') : null;
+
+    function broadcastRoomLiveChange(room) {
+      if (!room) return;
+      try {
+        localStorage.setItem('iesnh_synced_rooms_v1', JSON.stringify(roomsData));
+        if (liveSyncChannel) {
+          liveSyncChannel.postMessage({
+            type: 'ROOM_CHANGE',
+            roomId: room.id,
+            room: room,
+            allRooms: roomsData,
+            timestamp: Date.now()
+          });
+        }
+      } catch(e) {}
+    }
+    
     if (typeof html2pdf === 'undefined') {
       document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>');
     }
@@ -1614,6 +1636,7 @@
           room.y = Math.round(p.y - dragOffset.y);
           updateSidebarWithRoom(room);
           renderAll();
+          broadcastRoomLiveChange(room);
         }
       } else if (dragTarget.type === 'resize') {
         const room = roomsData.find(r => r.id === dragTarget.id);
@@ -1624,6 +1647,7 @@
           room.h = newH;
           updateSidebarWithRoom(room);
           renderAll();
+          broadcastRoomLiveChange(room);
         }
       }
     }
@@ -1792,6 +1816,7 @@
 
       renderAll();
       saveToStorage();
+      broadcastRoomLiveChange(r);
     }
 
     function resetPaDimensions() {
@@ -2047,14 +2072,30 @@
               👥 Equipo Responsable de Relevamiento & Auditoría Técnica:
             </h3>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 8.5pt; color: #1e293b;">
-              <div>• <strong>Moreno Leandro</strong></div>
-              <div>• <strong>Argañaraz Bruno</strong></div>
-              <div>• <strong>Velazquez Nicolas</strong></div>
-              <div>• <strong>Murquite Leandro</strong></div>
-              <div>• <strong>Mustang Cristian</strong></div>
-              <div>• <strong>Subelza Jonathan</strong></div>
-              <div>• <strong>Lopez Alejandro</strong></div>
-              <div>• <strong>Gonzalo Narvaez</strong></div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #0284c7;">
+                <strong>Moreno Leandro</strong><br><span style="font-size: 7.5pt; color: #475569;">Gestión de Proyectos • Planificación</span>
+              </div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #0284c7;">
+                <strong>Argañaraz Bruno</strong><br><span style="font-size: 7.5pt; color: #475569;">Gestión de Proyectos • Planificación</span>
+              </div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #0284c7;">
+                <strong>Velazquez Nicolas</strong><br><span style="font-size: 7.5pt; color: #475569;">Gestión de Proyectos • Planificación</span>
+              </div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #0284c7;">
+                <strong>Murquite Leandro</strong><br><span style="font-size: 7.5pt; color: #475569;">Gestión de Proyectos • Planificación</span>
+              </div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #10b981;">
+                <strong>Mustang Cristian</strong><br><span style="font-size: 7.5pt; color: #475569;">Ingeniería • Implementación de Redes</span>
+              </div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #10b981;">
+                <strong>Subelza Jonathan</strong><br><span style="font-size: 7.5pt; color: #475569;">Ingeniería • Despliegue de Hardware</span>
+              </div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #10b981;">
+                <strong>Lopez Alejandro</strong><br><span style="font-size: 7.5pt; color: #475569;">Ingeniería • Configuración de Servidores</span>
+              </div>
+              <div style="background: #f1f5f9; padding: 6px 8px; rounded: 6px; border-left: 3px solid #8b5cf6;">
+                <strong>Gonzalo Narvaez</strong><br><span style="font-size: 7.5pt; color: #475569;">Diseño Multimedia • Implementación</span>
+              </div>
             </div>
           </div>
 
@@ -2309,7 +2350,109 @@
             </p>
           </div>
 
+          
           <!-- ========================================== -->
+          <!-- SECCIÓN: PUNTOS DE RED E INFRAESTRUCTURA DE PLANTA BAJA -->
+          <!-- ========================================== -->
+          <div style="margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; page-break-inside: avoid;">
+            <div style="background: #1e293b; color: #ffffff; padding: 8px 12px; font-size: 10pt; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+              <span>PUNTOS DE RED IDENTIFICADOS • PLANTA BAJA (16 APs & DISPOSITIVOS CORE)</span>
+              <span style="font-size: 8pt; background: #0ea5e9; padding: 2px 6px; border-radius: 4px;">Relevamiento Doc Oficial</span>
+            </div>
+            <div style="padding: 12px;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 8pt; text-align: left;">
+                <thead>
+                  <tr style="background: #f8fafc; border-bottom: 2px solid #cbd5e1; color: #334155;">
+                    <th style="padding: 4px 6px;">Ubicación</th>
+                    <th style="padding: 4px 6px;">Equipo Instalado</th>
+                    <th style="padding: 4px 6px;">Función / Conexión</th>
+                    <th style="padding: 4px 6px;">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 4px 6px;"><strong>Rectoría</strong></td>
+                    <td style="padding: 4px 6px;">Módem ISP + Router DHCP + Switch P16</td>
+                    <td style="padding: 4px 6px;">Ingreso troncal de fibra óptica y ruteo central</td>
+                    <td style="padding: 4px 6px; color: #16a34a; font-weight: bold;">● Funcionando</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 4px 6px;"><strong>Preceptoría</strong></td>
+                    <td style="padding: 4px 6px;">Switch P8 + APs 16</td>
+                    <td style="padding: 4px 6px;">Gestión de alumnos y cobertura Wi-Fi frontal</td>
+                    <td style="padding: 4px 6px; color: #16a34a; font-weight: bold;">● Funcionando</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 4px 6px;"><strong>Sectoría de Títulos (PB)</strong></td>
+                    <td style="padding: 4px 6px;">Switch P16</td>
+                    <td style="padding: 4px 6px;">Interconexión administrativa y archivo</td>
+                    <td style="padding: 4px 6px; color: #16a34a; font-weight: bold;">● Funcionando</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 4px 6px;"><strong>Buffet Central</strong></td>
+                    <td style="padding: 4px 6px;">Firewall + Switch POE P16 + APs 1</td>
+                    <td style="padding: 4px 6px;">Seguridad perimetral y alimentación PoE de APs</td>
+                    <td style="padding: 4px 6px; color: #16a34a; font-weight: bold;">● Funcionando</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 4px 6px;"><strong>Ala Este (Aulas 2, 4, 6, 7, 9)</strong></td>
+                    <td style="padding: 4px 6px;">APs 2, APs 3, APs 4, APs 5, APs 6</td>
+                    <td style="padding: 4px 6px;">Puntos de acceso Wi-Fi dedicados por módulo áulico</td>
+                    <td style="padding: 4px 6px; color: #16a34a; font-weight: bold;">● Funcionando</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 4px 6px;"><strong>Ala Fondo / Norte (Aulas 11, Laboratorio, Cocina)</strong></td>
+                    <td style="padding: 4px 6px;">APs 7, APs 9 (Laboratorio), APs 12 (Cocina)</td>
+                    <td style="padding: 4px 6px;">Cobertura académica técnica y área de servicios</td>
+                    <td style="padding: 4px 6px; color: #16a34a; font-weight: bold;">● Funcionando</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 4px 6px;"><strong>Ala Oeste (Aulas 12, 15, 17, 19, Sanitarios)</strong></td>
+                    <td style="padding: 4px 6px;">Router Wi-Fi Oculto + APs 8, APs 11, APs 13, APs 14, APs 15</td>
+                    <td style="padding: 4px 6px;">Puntos de red ala izquierda y área adyacente a escalera</td>
+                    <td style="padding: 4px 6px; color: #16a34a; font-weight: bold;">● Funcionando</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+    
+
+          <!-- ========================================== -->
+          <!-- PROPUESTAS TÉCNICAS DE MEJORA PARA EL ESTUDIO DE STREAMING -->
+          <!-- ========================================== -->
+          <div style="margin-bottom: 24px; border: 1px solid #fbcfe8; background: #fff5f7; border-radius: 8px; overflow: hidden; page-break-inside: avoid;">
+            <div style="background: #9d174d; color: #ffffff; padding: 8px 12px; font-size: 10pt; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+              <span>PROPUESTAS DE MEJORA ESTRATÉGICA • ESTUDIO DE STREAMING (5 PUNTOS CLAVE)</span>
+              <span style="font-size: 8pt; background: #be185d; padding: 2px 6px; border-radius: 4px;">Optimización IESNH</span>
+            </div>
+            <div style="padding: 12px; font-size: 8.5pt; color: #475569; line-height: 1.5;">
+              <ol style="margin: 0; padding-left: 18px; space-y: 6px;">
+                <li style="margin-bottom: 6px;">
+                  <strong style="color: #9d174d;">1. Gestión Integral de Cableado e Infraestructura Eléctrica:</strong>
+                  Implementación de cajas de conexión embebidas (Pass-Through) sobre la mesa con tomas XLR, HDMI, RJ45 y energía, más canalización de suelo con zócalos industriales para eliminar cables sueltos en zonas de paso.
+                </li>
+                <li style="margin-bottom: 6px;">
+                  <strong style="color: #9d174d;">2. Acondicionamiento Lumínico y Térmico del Entorno:</strong>
+                  Instalación de sistema corta-luz Blackout enrollable motorizado para regular temperatura de color en cámaras, sumado a aire acondicionado Inverter ultra silencioso (bajo ruido NC-25) apto para microfonía condensador.
+                </li>
+                <li style="margin-bottom: 6px;">
+                  <strong style="color: #9d174d;">3. Parrilla de Iluminación Aérea (Despeje del 100% de Piso):</strong>
+                  Estructura de rieles y trusses de techo para suspender el esquema principal de luces (luz principal, relleno y contraluz), liberando el suelo de trípodes y permitiendo esquemas de iluminación fijos.
+                </li>
+                <li style="margin-bottom: 6px;">
+                  <strong style="color: #9d174d;">4. Sistema de Monitoreo de Retorno y Teleprompter:</strong>
+                  Incorporación de pantalla de retorno de piso/pared fuera de cuadro con la señal al aire y teleprompter con espejo divisor de haz sobre la cámara principal para locución fluida de anuncios oficiales.
+                </li>
+                <li style="margin-bottom: 4px;">
+                  <strong style="color: #9d174d;">5. Centralización del Control y Flujo de Señal (Puesto Técnico):</strong>
+                  Switcher de video multicanal (tipo ATEM / Tricaster) para ponchado en vivo, consola de mezcla de audio dedicada con supresores de ruido por hardware y sistema de intercomunicación in-ear discreto entre técnico y conductores.
+                </li>
+              </ol>
+            </div>
+          </div>
+    
+<!-- ========================================== -->
           <!-- 9. RED WI-FI MESH DECOS 1, 2, 3 & NÚCLEO PB -->
           <!-- ========================================== -->
           <div style="margin-bottom: 24px;">

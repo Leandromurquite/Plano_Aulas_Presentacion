@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estudio Simultáneo 2D + 3D en Vivo | IES "Nuevo Horizonte"</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .glass { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .split-pane { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 h-full flex flex-col overflow-hidden">
+
+  <!-- Header Control Bar -->
+  <header class="glass z-30 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-lg font-bold shadow-md">
+        ⚡
+      </div>
+      <div>
+        <h1 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
+          <span>Estudio Simultáneo 2D + 3D en Vivo</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse font-mono">
+            ● CONEXIÓN EN VIVO
+          </span>
+        </h1>
+        <p class="text-[11px] text-slate-400">
+          Arrastrá o modificá un aula en el Plano 2D y mirá cómo se mueve instantáneamente en la Simulación 3D
+        </p>
+      </div>
+    </div>
+
+    <!-- Center Mode Switchers -->
+    <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+      <button id="btn-view-split" onclick="setViewMode('split')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition flex items-center space-x-1.5 shadow">
+        <i class="fa-solid fa-table-columns"></i>
+        <span class="hidden sm:inline">Pantalla Dividida (50/50)</span>
+      </button>
+      <button id="btn-view-2d" onclick="setViewMode('2d')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+        <i class="fa-solid fa-map"></i>
+        <span>Solo Plano 2D</span>
+      </button>
+      <button id="btn-view-3d" onclick="setViewMode('3d')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+        <i class="fa-solid fa-cube"></i>
+        <span>Solo Simulador 3D</span>
+      </button>
+    </div>
+
+    <!-- Right Quick Actions -->
+    <div class="flex items-center space-x-2">
+      <button onclick="openReportInNewTab()" class="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow">
+        <i class="fa-solid fa-file-invoice"></i>
+        <span>Informe Oficial (10 Pts)</span>
+      </button>
+      <a href="index.html" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-slate-700">
+        <i class="fa-solid fa-house"></i>
+        <span>Inicio</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Dual Split-Screen Work Area -->
+  <main id="main-container" class="flex-1 flex flex-col md:flex-row w-full h-[calc(100vh-60px)] overflow-hidden relative">
+    
+    <!-- Left Pane: Plano 2D Interactivo -->
+    <section id="pane-2d" class="split-pane w-full md:w-1/2 h-1/2 md:h-full border-b md:border-b-0 md:border-r border-slate-800 relative bg-slate-900 flex flex-col">
+      <div class="bg-slate-950/80 px-3 py-1.5 border-b border-slate-800/80 flex items-center justify-between text-[11px] font-bold text-slate-300">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+          <span>PLANO 2D VECTORIAL (EDITOR DE ARRASTRE & MEDIDAS)</span>
+        </div>
+        <span class="text-slate-400 text-[10px]">Hacé clic y arrastrá cualquier aula para moverla</span>
+      </div>
+      <iframe id="iframe-2d" src="plano_institucional_interactivo.html" class="w-full flex-1 border-0" title="Plano 2D Interactivo"></iframe>
+    </section>
+
+    <!-- Right Pane: Simulador 3D / Videojuego -->
+    <section id="pane-3d" class="split-pane w-full md:w-1/2 h-1/2 md:h-full relative bg-slate-950 flex flex-col">
+      <div class="bg-slate-950/80 px-3 py-1.5 border-b border-slate-800/80 flex items-center justify-between text-[11px] font-bold text-slate-300">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+          <span>SIMULADOR 3D / VIDEOJUEGO (RESPUESTA EN TIEMPO REAL)</span>
+        </div>
+        <span class="text-slate-400 text-[10px]">Modo Órbita o WASD / Primera Persona</span>
+      </div>
+      <iframe id="iframe-3d" src="simulador_3d_interactivo.html" class="w-full flex-1 border-0" title="Simulador 3D Interactivo"></iframe>
+    </section>
+
+  </main>
+
+  <!-- Live Sync Floating Toast -->
+  <div id="sync-notification" class="fixed bottom-6 right-6 z-50 glass px-4 py-2.5 rounded-2xl border border-emerald-500/40 shadow-2xl flex items-center space-x-2.5 text-xs text-emerald-300 font-bold opacity-0 transition-opacity duration-300 pointer-events-none">
+    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+    <span id="sync-msg">⚡ Aula sincronizada en vivo</span>
+  </div>
+
+  <script>
+    let currentMode = 'split';
+
+    function setViewMode(mode) {
+      currentMode = mode;
+      const pane2D = document.getElementById('pane-2d');
+      const pane3D = document.getElementById('pane-3d');
+      const btnSplit = document.getElementById('btn-view-split');
+      const btn2D = document.getElementById('btn-view-2d');
+      const btn3D = document.getElementById('btn-view-3d');
+
+      // Reset buttons
+      [btnSplit, btn2D, btn3D].forEach(b => {
+        b.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center space-x-1.5';
+      });
+
+      if (mode === 'split') {
+        btnSplit.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition flex items-center space-x-1.5 shadow font-bold';
+        pane2D.style.display = 'flex';
+        pane2D.className = 'split-pane w-full md:w-1/2 h-1/2 md:h-full border-b md:border-b-0 md:border-r border-slate-800 relative bg-slate-900 flex flex-col';
+        pane3D.style.display = 'flex';
+        pane3D.className = 'split-pane w-full md:w-1/2 h-1/2 md:h-full relative bg-slate-950 flex flex-col';
+      } else if (mode === '2d') {
+        btn2D.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition flex items-center space-x-1.5 shadow font-bold';
+        pane2D.style.display = 'flex';
+        pane2D.className = 'split-pane w-full h-full relative bg-slate-900 flex flex-col';
+        pane3D.style.display = 'none';
+      } else if (mode === '3d') {
+        btn3D.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition flex items-center space-x-1.5 shadow font-bold';
+        pane2D.style.display = 'none';
+        pane3D.style.display = 'flex';
+        pane3D.className = 'split-pane w-full h-full relative bg-slate-950 flex flex-col';
+      }
+    }
+
+    function openReportInNewTab() {
+      // Invocamos el informe abriendo el plano con el modal de informe activo
+      const ifr = document.getElementById('iframe-2d');
+      if (ifr && ifr.contentWindow && ifr.contentWindow.openFormalReportModal) {
+        setViewMode('2d');
+        ifr.contentWindow.openFormalReportModal();
+      } else {
+        window.open('plano_institucional_interactivo.html', '_blank');
+      }
+    }
+
+    // Escuchar el canal de sincronización para mostrar alerta visual
+    const syncChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('iesnh_simultaneous_sync') : null;
+    if (syncChannel) {
+      syncChannel.onmessage = (e) => {
+        if (e.data && e.data.type === 'ROOM_CHANGE') {
+          const toast = document.getElementById('sync-notification');
+          const msg = document.getElementById('sync-msg');
+          const rName = e.data.room ? (e.data.room.num || e.data.room.id) : 'Aula';
+          msg.innerHTML = `⚡ Sincronizado en tiempo real: <b class="text-white">${rName}</b>`;
+          toast.style.opacity = '1';
+          clearTimeout(toast._timer);
+          toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2200);
+        }
+      };
+    }
+  </script>
+</body>
+</html>
