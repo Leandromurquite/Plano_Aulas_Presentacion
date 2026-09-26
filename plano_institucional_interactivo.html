@@ -123,6 +123,12 @@
         </a>
 
         <!-- Botón Ver Informe Oficial Completo (14 Puntos) -->
+        <!-- Botón Ver Renders 3D Cutaway -->
+        <button onclick="toggleRendersModal()" 
+          class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm border border-amber-400/40">
+          <span>📸</span>
+          <span class="hidden sm:inline">Renders 3D</span>
+        </button>
         <button onclick="openFormalReportModal()" 
           class="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
           <span>📋</span>
@@ -1856,6 +1862,11 @@
     // ==========================================
     // GENERADOR DE INFORME OFICIAL (14 PUNTOS)
     // ==========================================
+    function toggleRendersModal() {
+      const m = document.getElementById('modal-renders-3d');
+      if (m) m.classList.toggle('hidden');
+    }
+
     function openFormalReportModal() {
       const body = document.getElementById('formalReportBody');
       body.innerHTML = generateOfficialReportHTML();
